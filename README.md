@@ -1,6 +1,10 @@
 
 ### to run:
 
-backend: python backend/app.py
+backend:
+from backend folder in the terminal:
+`python app.py`
 
-frontend: cd frontend && npm run dev
+frontend: 
+from frontend folder in the terminal:
+`npm run dev`
