@@ -87,6 +87,11 @@ body {
   color: var(--accent);
 }
 
+.brand-link {
+  text-decoration: none;
+}
+
+
 .nav {
   display: flex;
   gap: 34px;
@@ -233,20 +238,18 @@ body {
   position: relative;
   padding: 110px 90px 60px;
   min-height: calc(100vh - var(--topH));
-  background:
-    linear-gradient(
-      90deg,
-      rgba(0,0,0,0.00) 0%,
-      rgba(0,0,0,0.00) 55%,
-      rgba(0,0,0,0.10) 55%,
-      rgba(0,0,0,0.10) 65%,
-      rgba(0,0,0,0.00) 65%
-    ),
-    linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+
+  background: linear-gradient(
+    90deg,
+    #062c31 0%,        /* much darker left */
+    var(--bg2) 40%,
+    var(--bg) 45%,
+    var(--bg) 100%
+  );
 }
 
 .home-title {
-  font-size: 78px;
+  font-size: 62px; 
   font-weight: 700;
   color: rgba(210,176,106,0.92);
   margin-bottom: 14px;

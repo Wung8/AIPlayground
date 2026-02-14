@@ -11,12 +11,11 @@ export function Layout(active: "home" | "environments" | "acm" | "about" | "logi
             <div class="brand-dot dot-2"></div>
             <div class="brand-v">v</div>
           </div>
-          <div class="brand-text">AI Playground</div>
+          <a class="brand-text brand-link" href="#/">AI Playground</a>
         </div>
 
         <nav class="nav">
           ${nav("Home", "#/", "home")}
-          ${nav("About", "#/about", "about")}
           ${nav("Environments", "#/environments", "environments")}
           ${nav("ACM", "#/acm", "acm")}
           ${nav("Login", "#/login", "login")}
