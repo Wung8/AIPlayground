@@ -1,10 +1,12 @@
 
 ### to run:
 
-backend:
+#### backend
+
 from backend folder in the terminal:
 `python app.py`
 
-frontend: 
+#### frontend: 
+
 from frontend folder in the terminal:
 `npm run dev`
