@@ -1,12 +1,6 @@
 import math
-from enum import IntEnum
 
-
-class SlimeAgent:
-    def getAction(self, your_position, enemy_position, ball_position, ball_velocity):
-        return [0, 0]  # stand still
-
-class BaseAgent(SlimeAgent):
+class BaseAgent:
     def getAction(self, your_position, enemy_position, ball_position, ball_velocity):
         action = [0, 0]
 

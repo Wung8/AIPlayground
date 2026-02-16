@@ -10,10 +10,7 @@ from collections import defaultdict
 # SlimeVolleyball, Slime, Ball
 # (Remove display(), keyboard stuff, cv2 usage)
 
-from SlimeVolleyball import SlimeVolleyball  # assume you moved logic here
-from SlimeAgent import BaseAgent
-
-agent = BaseAgent()
+from environments.slimevolleyball.SlimeVolleyball import SlimeVolleyball  # assume you moved logic here
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -50,14 +47,8 @@ def handle_input(data):
     if not game:
         return
 
-    action = [0, 0]
-    if data['action'].get('w'): action[1] += 1
-    if data['action'].get('a'): action[0] -= 1
-    if data['action'].get('d'): action[0] += 1
-
     obs = game.getInputs()
-    p2_action = agent.getAction(*obs[1])
-    obs, reward, done = game.step([action, p2_action], display=False)
+    obs, reward, done = game.step({"p1":"keyboard", "p2":"keyboard"}, keyboard=data['action'], display=False)
 
     state = {
         "left": {

@@ -2,8 +2,6 @@ import numpy as np
 import cv2, math, time, random
 import keyboard as k
 
-from SlimeAgent import SlimeAgent, BaseAgent
-
 def add(l1, l2): return [a+b for a,b in zip(l1,l2)]
 def subtract(l1, l2): return [a-b for a,b in zip(l1,l2)]
 def scale(lst, s): return [a*s for a in lst]
@@ -65,30 +63,29 @@ class SlimeVolleyball:
         return (vel[0], -vel[1])
 
     def getInputs(self):
-        return (
-            (
+        return {
+            "p1": (
                 self.norm_pos(self.slime_left.pos), 
                 self.norm_pos(self.slime_right.pos), 
                 self.norm_pos(self.ball.pos), 
                 self.norm_vel(self.ball.vel)
             ),
-            (
+            "p2": (
                 self.norm_pos(self.slime_right.pos), 
                 self.norm_pos(self.slime_left.pos), 
                 self.norm_pos(self.ball.pos), 
                 self.norm_vel(self.ball.vel)
             )
-        )
+        }
 
-    def step(self, actions, display=True, is_skip=False):
-        action1, action2 = actions
+    def step(self, actions, keyboard={}, display=True, is_skip=False):
         self.timestep += 1
         ball_side = 2*int(self.ball.pos[0] > self.screen_size[0]/2) - 1
         
         # process skip frames
         if is_skip == False:
             for i in range(self.skip_frames):
-                result = self.step((action1, action2), display=False, is_skip=True)
+                result = self.step(actions, keyboard=keyboard, display=False, is_skip=True)
                 if result == -1:
                     ball_side = 2*int(self.ball.pos[0] > self.screen_size[0]/2) - 1
                     self.score[(1-ball_side)//2] += 1
@@ -96,7 +93,27 @@ class SlimeVolleyball:
 
         # slime controls
         for i in range(2):
-            action = [action1, action2][i]
+            action = actions[f"p{i+1}"]
+
+            if action == "keyboard":
+                match i:
+                    case 0:
+                        action = [0, 0]
+                        if keyboard.get('w'): action[1] += 1
+                        if keyboard.get('a'): action[0] -= 1
+                        if keyboard.get('d'): action[0] += 1
+                    case 1:
+                        action = [0, 0]
+                        if keyboard.get("ArrowUp"): action[1] += 1
+                        if keyboard.get("ArrowLeft"): action[0] -= 1
+                        if keyboard.get("ArrowRight"): action[0] += 1
+            
+            # verify action
+            if not action[0] in {-1, 0, 1}:
+                raise ValueError
+            if not action[1] in {0, 1}:
+                raise ValueError
+
             slime = [self.slime_left, self.slime_right][i]
 
             slime.vel[0] = slime.move_speed * action[0]
@@ -285,6 +302,8 @@ def update_usr1():
     elif k.is_pressed('a'): usr1[0] = -1
     if k.is_pressed('w'): u1p = False
     else: u1p = True
+    usr1 = {"type":"player",
+            "action":usr1}
 
 def update_usr2():
     global usr2, u2p
@@ -294,24 +313,23 @@ def update_usr2():
     else: usr2 = 0
     if k.is_pressed('up'): u2p = False
     else: u2p = True
+    usr2 = {"type":"player",
+            "action":usr2}
 
 
 if __name__ == '__main__':
     env = SlimeVolleyball()
     obs = env.reset()
 
-    p2 = BaseAgent()
     env.score = [0,0]
     c = 0
     frame = 1/20
     while True:
         c += 1
         update_usr1()
-        #update_usr2()
-        p2_action = p2.getAction(*obs[1])
-        print(p2_action)
-        #obs, r, done = env.step([usr1, usr2], display=True)
-        obs, r, done = env.step([usr1, p2_action], display=True)
+        update_usr2()
+        obs, r, done = env.step({"p1":usr1, "p2":usr2}, display=True)
+        #obs, r, done = env.step([usr1, p2_action], display=True)
 
         if done:
             print(env.score)
