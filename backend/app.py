@@ -10,7 +10,7 @@ from collections import defaultdict
 # SlimeVolleyball, Slime, Ball
 # (Remove display(), keyboard stuff, cv2 usage)
 
-from environments.slimevolleyball.SlimeVolleyball import SlimeVolleyball  # assume you moved logic here
+from environments.soccer.Soccer import SoccerEnv  # assume you moved logic here
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -26,7 +26,7 @@ def index():
 @socketio.on("connect")
 def handle_connect():
     print("Client connected")
-    games[request.sid] = SlimeVolleyball()
+    games[request.sid] = SoccerEnv()
     games[request.sid].reset()
 
 
@@ -48,23 +48,12 @@ def handle_input(data):
         return
 
     obs = game.getInputs()
-    obs, reward, done = game.step({"p1":"keyboard", "p2":"keyboard"}, keyboard=data['action'], display=False)
-
-    state = {
-        "left": {
-            "x": game.slime_left.pos[0],
-            "y": game.slime_left.pos[1]
-        },
-        "right": {
-            "x": game.slime_right.pos[0],
-            "y": game.slime_right.pos[1]
-        },
-        "ball": {
-            "x": game.ball.pos[0],
-            "y": game.ball.pos[1]
-        },
-        "score": game.score
-    }
+    obs, reward, done = game.step(
+        actions={"p1":"keyboard", "p2":"keyboard", "p3":"keyboard", "p4":"keyboard"}, 
+        keyboard=data['action'], 
+        display=False
+    )
+    state = game.getState()
 
     emit("state", state)
 

@@ -4,11 +4,14 @@
     <title>Slime Volleyball</title>
 </head>
 <body>
-<canvas id="game" width="800" height="400"></canvas>
+
+<canvas id="game" width="900" height="600"></canvas>
 
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 
-<script>
+<script type="module">
+import { draw } from "./static/soccer/draw.js";
+
 const socket = io();
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -18,52 +21,6 @@ const keys = {};
 document.addEventListener("keydown", e => { keys[e.key] = true; });
 document.addEventListener("keyup", e => { keys[e.key] = false; });
 
-function getCurrentAction() {
-    if (keys["w"]) return 3;
-    if (keys["d"]) return 2;
-    if (keys["a"]) return 1;
-    return 0;
-}
-
-function draw(state) {
-    ctx.clearRect(0, 0, 800, 400);
-
-    // background
-    ctx.fillStyle = "#F5F8FE";
-    ctx.fillRect(0, 0, 800, 400);
-
-    // ground
-    ctx.fillStyle = "#7CE396";
-    ctx.fillRect(0, 320, 800, 80);
-
-    // net
-    ctx.fillStyle = "#F1D37C";
-    ctx.fillRect(395, 280, 10, 40);
-
-    // left slime
-    ctx.beginPath();
-    ctx.arc(state.left.x, state.left.y, 30, Math.PI, 2*Math.PI);
-    ctx.fillStyle = "red";
-    ctx.fill();
-
-    // right slime
-    ctx.beginPath();
-    ctx.arc(state.right.x, state.right.y, 30, Math.PI, 2*Math.PI);
-    ctx.fillStyle = "blue";
-    ctx.fill();
-
-    // ball
-    ctx.beginPath();
-    ctx.arc(state.ball.x, state.ball.y, 15, 0, 2*Math.PI);
-    ctx.fillStyle = "orange";
-    ctx.fill();
-
-    // score
-    ctx.fillStyle = "black";
-    ctx.font = "24px Arial";
-    ctx.fillText(state.score[0], 200, 75);
-    ctx.fillText(state.score[1], 600, 75);
-}
 
 
 let lastTime = 0;
@@ -85,7 +42,7 @@ function gameLoop(currentTime) {
 }
 
 socket.on("state", state => {
-    draw(state);
+    draw(ctx, state);
 });
 
 gameLoop();

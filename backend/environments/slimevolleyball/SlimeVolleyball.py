@@ -9,7 +9,9 @@ def norm(lst): return [i/(sum(map(abs, lst))) for i in lst]
 def mag(lst): return math.sqrt(sum(i**2 for i in lst))
 def turn_int(lst): return [int(i) for i in lst]
 
-class SlimeVolleyball:
+class SlimeVolleyballEnv:
+    resolution = 800, 400
+
     def __init__(self, render_mode="none"):
         self.render_mode = render_mode
         self.score = [0,0]
@@ -203,6 +205,24 @@ class SlimeVolleyball:
                 r2 += 0.01
             
         return self.getInputs(), (r1, r2), False
+
+    def getState(self):
+        state = {
+            "left": {
+                "x": self.slime_left.pos[0],
+                "y": self.slime_left.pos[1]
+            },
+            "right": {
+                "x": self.slime_right.pos[0],
+                "y": self.slime_right.pos[1]
+            },
+            "ball": {
+                "x": self.ball.pos[0],
+                "y": self.ball.pos[1]
+            },
+            "score": self.score
+        }
+        return state
 
     def display(self):
         # fill in bg

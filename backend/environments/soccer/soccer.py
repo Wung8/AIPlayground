@@ -25,6 +25,7 @@ def process_reward(lst):
     return np.array(lst) - np.average(lst)
 
 class SoccerEnv:
+    resolution = 900, 600
 
     def __init__(self):
         # Set up pymunk space
@@ -158,6 +159,9 @@ class SoccerEnv:
         angle = math.atan2(dy, dx)
         return (math.cos(angle), math.sin(angle))
 
+    def getInputs(self):
+        return 0
+
     # add distance inputs, ie distance from the goals, maybe distance from the players?
     def get_inputs(self, player):
         idxs = [0,1,2,3]
@@ -199,13 +203,45 @@ class SoccerEnv:
             player.reset()
         return [self.get_inputs(i) for i in range(4)]
 
-    def step(self, actions, display=False):
+    def step(self, actions, keyboard={}, display=False):
         self.last_ball_position = self.ball_body.position
         if self.display_prev != display:
             self.screen = pygame.display.set_mode((900, 600), flags=[pygame.HIDDEN, pygame.SHOWN][display])
-        for i in range(4):
-            for j in range(4):
-                self.players[j].step(actions[j])
+        
+        numplayers = 0
+        for p in ["p1","p2","p3","p4"]:
+            if actions[p] == "player":
+                numplayers += 1
+
+        keysets = [
+            "wasdq", 
+            "tfghr",
+            "ijklu",
+            ["ArrowUp","ArrowLeft","ArrowDown","ArrowRight","."],
+        ]
+
+        for i in range(3):
+            p_num = -1
+            for j, p in enumerate(["p1","p2","p3","p4"]):
+                action = actions[p]
+                if action == "keyboard":
+                    p_num += 1
+                    action = [0,0,0]
+                    keys = keysets[-1] if p_num==numplayers-1 else keysets[p_num]
+                    if numplayers == 1:
+                        keys = "wasd "
+                    if keyboard.get(keys[0]): action[1] -= 1
+                    if keyboard.get(keys[1]): action[0] -= 1
+                    if keyboard.get(keys[2]): action[1] += 1
+                    if keyboard.get(keys[3]): action[0] += 1
+                    if keyboard.get(keys[4]): action[2] += 1
+                
+                #validate actions
+                if not action[0] in {-1, 0, 1}: raise ValueError
+                if not action[1] in {-1, 0, 1}: raise ValueError
+                if not action[2] in {0, 1}: raise ValueError
+
+                self.players[j].step(action)
             self.space.step(1 / 60)
             if display:
                 self.display_prev = True
@@ -219,6 +255,29 @@ class SoccerEnv:
             return [self.get_inputs(i) for i in range(4)], np.array([1,1,-1,-1])*self.reward_scaling, True
         return [self.get_inputs(i) for i in range(4)], [self.get_rewards(i) for i in range(4)], False
             
+    def getState(self):
+        players = []
+        for p in self.players:
+            x, y = p.body.position
+            kicking = p.shape.kicking
+            team = p.shape.name
+            players.append({
+                "x":x,
+                "y":y,
+                "kicking":kicking,
+                "team":team
+            })
+        
+        x,y = self.ball_body.position
+
+        state = {
+            "players": players,
+            "ball": { 
+                "x":x, 
+                "y":y,
+            },
+        }
+        return state
 
     def display(self):
         pygame.event.pump()
@@ -308,8 +367,8 @@ class Player:
         #print(actions)
         # (left/right, up/down, kick)
         self.body_last_position = self.body.position
-        self.body.apply_force_at_local_point(Vec2d(self.force * (actions[0]-1), 0))
-        self.body.apply_force_at_local_point(Vec2d(0, self.force * (actions[1]-1)))
+        self.body.apply_force_at_local_point(Vec2d(self.force * (actions[0]), 0))
+        self.body.apply_force_at_local_point(Vec2d(0, self.force * (actions[1])))
         if actions[2]:
             self.shape.kicking = 1
             self.parent.kick_ball(self.body)
