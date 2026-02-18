@@ -13,6 +13,16 @@ ENVIRONMENTS = [
         "image": {"kind": "placeholder", "value": "slime"},
     },
     {
+        "slug": "soccer",
+        "title": "Soccer",
+        "difficulty": 4,
+        "description": "Play 2v2 soccer.",
+        "docSections": [
+            {"title": "Goal", "items": ["reach the exit", "avoid traps"]},
+        ],
+        "image": {"kind": "placeholder", "value": "soccer"},
+    },
+    {
         "slug": "maze",
         "title": "Maze",
         "difficulty": 2,
