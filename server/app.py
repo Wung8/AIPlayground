@@ -3,8 +3,8 @@ from flask_socketio import SocketIO, emit
 
 import json
 
-from slimevolleyball import SlimeVolleyballEnv  # assume you moved logic here
-from slimeagent import BaseAgent
+from SlimeVolleyball import SlimeVolleyballEnv  # assume you moved logic here
+from SlimeAgent import BaseAgent
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 socketio = SocketIO(app, cors_allowed_origins="*")
