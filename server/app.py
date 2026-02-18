@@ -5,7 +5,7 @@ eventlet.monkey_patch()
 
 from data.environments import ENVIRONMENTS, get_env
 
-from SlimeVolleyball import SlimeVolleyball  # assume you moved logic here
+from SlimeVolleyball import SlimeVolleyballEnv  # assume you moved logic here
 from SlimeAgent import BaseAgent
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
@@ -80,7 +80,7 @@ def contact():
 @socketio.on("connect")
 def handle_connect():
     print("Client connected")
-    games[request.sid] = SlimeVolleyball()
+    games[request.sid] = SlimeVolleyballEnv()
     games[request.sid].reset()
 
 
@@ -101,30 +101,13 @@ def handle_input(data):
     if not game:
         return
 
-    action = [0, 0]
-    if data['action'].get('w'): action[1] += 1
-    if data['action'].get('a'): action[0] -= 1
-    if data['action'].get('d'): action[0] += 1
-
     obs = game.getInputs()
-    p2_action = agent.getAction(*obs[1])
-    obs, reward, done = game.step([action, p2_action], display=False)
-
-    state = {
-        "left": {
-            "x": game.slime_left.pos[0],
-            "y": game.slime_left.pos[1]
-        },
-        "right": {
-            "x": game.slime_right.pos[0],
-            "y": game.slime_right.pos[1]
-        },
-        "ball": {
-            "x": game.ball.pos[0],
-            "y": game.ball.pos[1]
-        },
-        "score": game.score
-    }
+    obs, reward, done = game.step(
+        actions={"p1":"keyboard", "p2":"keyboard", "p3":"keyboard", "p4":"keyboard"}, 
+        keyboard=data['action'], 
+        display=False
+    )
+    state = game.getState()
 
     emit("state", state)
 
