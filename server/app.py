@@ -6,6 +6,7 @@ eventlet.monkey_patch()
 from data.environments import ENVIRONMENTS, get_env
 
 from slimevolleyball import SlimeVolleyballEnv  # assume you moved logic here
+from soccer import SoccerEnv
 from SlimeAgent import BaseAgent
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
@@ -77,17 +78,27 @@ def contact():
 
 
 
-@socketio.on("connect")
-def handle_connect():
-    print("Client connected")
-    games[request.sid] = SlimeVolleyballEnv()
+@socketio.on("join_env")
+def handle_connect(data):
+    slug = data.get("env_slug")
+
+    if slug == "soccer":
+        games[request.sid] = SoccerEnv()
+    elif slug == "slimevolleyball":
+        games[request.sid] = SlimeVolleyballEnv()
+    else:
+        print("Unknown environment:", slug)
+        return
+
     games[request.sid].reset()
+    print(f"{request.sid} joined {slug}")
 
 
 @socketio.on("disconnect")
 def handle_disconnect():
+    if request.sid in games:
+        del games[request.sid]
     print("Client disconnected")
-    games.pop(request.sid, None)
 
 
 @socketio.on("input")

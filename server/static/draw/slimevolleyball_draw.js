@@ -1,4 +1,4 @@
-export function draw(ctx, state) {
+export default function draw(ctx, state) {
     ctx.clearRect(0, 0, 800, 400);
 
     // background

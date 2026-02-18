@@ -76,5 +76,5 @@
   <script>
     window.__ENV_SLUG__ = {{ env.slug|tojson }};
   </script>
-  <script src="{{ url_for('static', filename='play_slime.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='play_handler.js') }}"></script>
 {% endblock %}
