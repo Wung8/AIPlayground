@@ -5,7 +5,7 @@ eventlet.monkey_patch()
 
 from data.environments import ENVIRONMENTS, get_env
 
-from SlimeVolleyball import SlimeVolleyballEnv  # assume you moved logic here
+from slimevolleyball import SlimeVolleyballEnv  # assume you moved logic here
 from SlimeAgent import BaseAgent
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
