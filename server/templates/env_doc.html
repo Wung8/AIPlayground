@@ -1,0 +1,81 @@
+<!-- backend/templates/env_doc.html -->
+{% extends "base.html" %}
+{% set active = "environments" %}
+{% set title = env.title ~ " Docs" %}
+
+{% macro stars(n) -%}
+  {%- set n = 0 if n < 0 else (5 if n > 5 else n) -%}
+  {{ "★" * n }}{{ "☆" * (5 - n) }}
+{%- endmacro %}
+
+{% block content %}
+  <div class="content">
+    <aside class="sidebar wide">
+      <div class="side-section">
+        <div class="side-title">User Documentation</div>
+        <div class="side-item small">Installation</div>
+        <div class="side-item small">Creating Agents</div>
+        <div class="side-item small">Uploading Agents</div>
+      </div>
+
+      <div class="side-section">
+        <div class="side-title">Environments</div>
+        <div class="side-box">
+          {% for e in environments %}
+            <a class="side-item {{ 'is-active' if e.slug == env.slug else '' }}"
+               href="{{ url_for('env_doc', slug=e.slug) }}">{{ e.title }}</a>
+          {% endfor %}
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="doc-header">
+        <div class="doc-left">
+          <a class="back-link" href="{{ url_for('environments') }}">Back</a>
+          <div class="doc-title-row">
+            <div class="doc-title">{{ env.title }}</div>
+            <div class="doc-title-muted">Documentation</div>
+          </div>
+          <div class="doc-diff">
+            <span class="doc-diff-label">Difficulty:</span>
+            <span class="doc-stars">{{ stars(env.difficulty) }}</span>
+          </div>
+        </div>
+
+        <a class="doc-gh" href="{{ url_for('github') }}">Github</a>
+      </div>
+
+      <div class="doc-canvas-wrap">
+        <div class="doc-canvas"></div>
+      </div>
+
+      <div class="doc-play-wrap">
+        <a class="doc-play-btn" href="{{ url_for('play', slug=env.slug) }}">Play now</a>
+      </div>
+
+      <div class="doc-desc">
+        <div class="doc-desc-h">Description</div>
+        <div class="doc-desc-p">{{ env.description }}</div>
+      </div>
+
+      {% set blocks = env.docSections or [] %}
+      {% if blocks|length %}
+        <div class="doc-sections">
+          {% for s in blocks %}
+            {% if (s.title or "")|trim|lower != "user documentation" %}
+              <div class="doc-block">
+                <div class="doc-h">{{ s.title }}</div>
+                <ul class="doc-ul">
+                  {% for it in (s.items or []) %}
+                    <li>{{ it }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </main>
+  </div>
+{% endblock %}

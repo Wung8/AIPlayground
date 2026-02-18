@@ -1,0 +1,136 @@
+from flask import Flask, render_template, request
+from flask_socketio import SocketIO, emit
+import eventlet
+eventlet.monkey_patch()
+
+from data.environments import ENVIRONMENTS, get_env
+
+from SlimeVolleyball import SlimeVolleyball  # assume you moved logic here
+from SlimeAgent import BaseAgent
+
+app = Flask(__name__, static_folder="static", template_folder="templates")
+socketio = SocketIO(app, cors_allowed_origins="*")
+
+agent = BaseAgent()
+
+BOTS = [
+    {"name": "epicbot", "elo": 1400, "by": "someone"},
+    {"name": "basicbot25", "elo": 1000, "by": "wung8"},
+    {"name": "another_bot2000", "elo": 600, "by": "wung8"},
+]
+
+# store one game per client (later: one per env per client)
+games = {}
+
+# pages
+@app.route("/")
+def home():
+    return render_template("home.html")
+
+@app.route("/environments")
+def environments():
+    selected_slug = request.args.get("slug") or (ENVIRONMENTS[0]["slug"] if ENVIRONMENTS else "")
+    return render_template(
+        "environments.html",
+        environments=ENVIRONMENTS,
+        selected_slug=selected_slug,
+    )
+
+@app.route("/doc/<slug>")
+def env_doc(slug):
+    env = get_env(slug) or (ENVIRONMENTS[0] if ENVIRONMENTS else None)
+    if not env:
+        return "missing env", 404
+    return render_template("env_doc.html", env=env, environments=ENVIRONMENTS)
+
+@app.route("/play/<slug>")
+def play(slug):
+    env = get_env(slug) or (ENVIRONMENTS[0] if ENVIRONMENTS else None)
+    if not env:
+        return "missing env", 404
+    return render_template("play.html", env=env, bots=BOTS)
+
+@app.route("/profile")
+def profile():
+    return render_template("profile.html")
+
+# placeholders for navbar links you already show
+@app.route("/acm")
+def acm():
+    return "acm page placeholder"
+
+@app.route("/login")
+def login():
+    return "login page placeholder"
+
+@app.route("/github")
+def github():
+    return "github placeholder"
+
+@app.route("/discord")
+def discord():
+    return "discord placeholder"
+
+@app.route("/contact")
+def contact():
+    return "contact placeholder"
+
+
+
+@socketio.on("connect")
+def handle_connect():
+    print("Client connected")
+    games[request.sid] = SlimeVolleyball()
+    games[request.sid].reset()
+
+
+@socketio.on("disconnect")
+def handle_disconnect():
+    print("Client disconnected")
+    games.pop(request.sid, None)
+
+
+@socketio.on("input")
+def handle_input(data):
+    """
+    data = {
+        "action": 0/1/2/3
+    }
+    """
+    game = games.get(request.sid)
+    if not game:
+        return
+
+    action = [0, 0]
+    if data['action'].get('w'): action[1] += 1
+    if data['action'].get('a'): action[0] -= 1
+    if data['action'].get('d'): action[0] += 1
+
+    obs = game.getInputs()
+    p2_action = agent.getAction(*obs[1])
+    obs, reward, done = game.step([action, p2_action], display=False)
+
+    state = {
+        "left": {
+            "x": game.slime_left.pos[0],
+            "y": game.slime_left.pos[1]
+        },
+        "right": {
+            "x": game.slime_right.pos[0],
+            "y": game.slime_right.pos[1]
+        },
+        "ball": {
+            "x": game.ball.pos[0],
+            "y": game.ball.pos[1]
+        },
+        "score": game.score
+    }
+
+    emit("state", state)
+
+    if done:
+        game.reset()
+
+
+if __name__ == "__main__":
+    socketio.run(app, debug=True)

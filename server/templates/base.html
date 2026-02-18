@@ -1,0 +1,35 @@
+<!-- backend/templates/base.html -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{{ title or "AI Playground" }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-icon" aria-hidden="true">
+            <div class="brand-dot dot-1"></div>
+            <div class="brand-dot dot-2"></div>
+            <div class="brand-v">v</div>
+          </div>
+          <a class="brand-text brand-link" href="{{ url_for('home') }}">AI Playground</a>
+        </div>
+
+        <nav class="nav">
+          <a class="nav-link {{ 'is-active' if active == 'home' else '' }}" href="{{ url_for('home') }}">Home</a>
+          <a class="nav-link {{ 'is-active' if active == 'environments' else '' }}" href="{{ url_for('environments') }}">Environments</a>
+          <a class="nav-link {{ 'is-active' if active == 'acm' else '' }}" href="{{ url_for('acm') }}">ACM</a>
+          <a class="nav-link {{ 'is-active' if active == 'login' else '' }}" href="{{ url_for('login') }}">Login</a>
+        </nav>
+      </header>
+
+      {% block content %}{% endblock %}
+    </div>
+
+    {% block scripts %}{% endblock %}
+  </body>
+</html>
