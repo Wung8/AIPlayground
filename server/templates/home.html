@@ -11,14 +11,14 @@
 
       <div class="home-actions">
         <a class="home-btn" href="{{ url_for('environments') }}">Learn More</a>
-        <a class="home-btn" href="{{ url_for('acm') }}">About ACM</a>
+        <a class="home-btn" href="https://acmwm.github.io/about" target="_blank" rel="noopener noreferrer">About ACM</a>
       </div>
     </div>
 
     <div class="home-footer">
-      <!-- <a class="home-footer-link" href="{{ url_for('github') }}">[ ] Github</a> -->
-      <a class="home-footer-link" href="{{ url_for('discord') }}">[ ] Discord</a>
-      <a class="home-footer-link" href="{{ url_for('contact') }}">[ ] Contact</a>
+      <a class="home-footer-link" href="{{ url_for('home') }}">[ ] Github</a>
+      <a class="home-footer-link" href="{{ url_for('home') }}">[ ] Discord</a>
+      <a class="home-footer-link" href="{{ url_for('home') }}">[ ] Contact</a>
     </div>
   </div>
 {% endblock %}

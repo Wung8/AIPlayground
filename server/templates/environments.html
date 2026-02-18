@@ -36,7 +36,7 @@
           {% for e in environments %}
             <div class="env-card">
               <div class="env-card-left">
-                <div class="env-h2">{{ e.title }}</div>
+                <a class="env-h2" href="{{ url_for('play', slug=e.slug) }}">{{ e.title }}</a>
                 <div class="env-diff">
                   <span class="env-diff-label">Difficulty:</span>
                   <span class="env-stars">{{ stars(e.difficulty) }}</span>
@@ -45,7 +45,7 @@
                 <a class="env-doc-link" href="{{ url_for('env_doc', slug=e.slug) }}">documentation</a>
               </div>
               <div class="env-card-right">
-                <div class="env-img"></div>
+                <a href="{{ url_for('play', slug=e.slug) }}" class="env-img"></a>
               </div>
             </div>
           {% endfor %}
