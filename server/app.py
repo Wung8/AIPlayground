@@ -1,12 +1,10 @@
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, emit
-import eventlet
-eventlet.monkey_patch()
 
-from data.environments import ENVIRONMENTS, get_env
+import json
 
 from slimevolleyball import SlimeVolleyballEnv  # assume you moved logic here
-from SlimeAgent import BaseAgent
+from slimeagent import BaseAgent
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -19,6 +17,9 @@ BOTS = [
     {"name": "another_bot2000", "elo": 600, "by": "wung8"},
 ]
 
+env_list = json.load(open('data/environments.json', 'r'))
+env_by_slug = {env["slug"]: env for env in env_list}
+
 # store one game per client (later: one per env per client)
 games = {}
 
@@ -29,23 +30,19 @@ def home():
 
 @app.route("/environments")
 def environments():
-    selected_slug = request.args.get("slug") or (ENVIRONMENTS[0]["slug"] if ENVIRONMENTS else "")
-    return render_template(
-        "environments.html",
-        environments=ENVIRONMENTS,
-        selected_slug=selected_slug,
-    )
+    slug = request.args.get("slug")
+    return render_template("environments.html", environments=env_list, selected_slug=slug)
 
 @app.route("/doc/<slug>")
 def env_doc(slug):
-    env = get_env(slug) or (ENVIRONMENTS[0] if ENVIRONMENTS else None)
+    env = env_by_slug[slug]
     if not env:
         return "missing env", 404
-    return render_template("env_doc.html", env=env, environments=ENVIRONMENTS)
+    return render_template("env_doc.html", env=env, environments=env_list)
 
 @app.route("/play/<slug>")
 def play(slug):
-    env = get_env(slug) or (ENVIRONMENTS[0] if ENVIRONMENTS else None)
+    env = env_by_slug[slug]
     if not env:
         return "missing env", 404
     return render_template("play.html", env=env, bots=BOTS)
@@ -53,27 +50,6 @@ def play(slug):
 @app.route("/profile")
 def profile():
     return render_template("profile.html")
-
-# placeholders for navbar links you already show
-@app.route("/acm")
-def acm():
-    return "acm page placeholder"
-
-@app.route("/login")
-def login():
-    return "login page placeholder"
-
-@app.route("/github")
-def github():
-    return "github placeholder"
-
-@app.route("/discord")
-def discord():
-    return "discord placeholder"
-
-@app.route("/contact")
-def contact():
-    return "contact placeholder"
 
 
 

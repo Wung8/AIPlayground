@@ -19,8 +19,8 @@
         <nav class="nav">
           <a class="nav-link {{ 'is-active' if active == 'home' else '' }}" href="{{ url_for('home') }}">Home</a>
           <a class="nav-link {{ 'is-active' if active == 'environments' else '' }}" href="{{ url_for('environments') }}">Environments</a>
-          <a class="nav-link {{ 'is-active' if active == 'acm' else '' }}" href="{{ url_for('acm') }}">ACM</a>
-          <a class="nav-link {{ 'is-active' if active == 'login' else '' }}" href="{{ url_for('login') }}">Login</a>
+          <a class="nav-link {{ 'is-active' if active == 'acm' else '' }}" href="{{ url_for('home') }}">ACM</a>
+          <a class="nav-link {{ 'is-active' if active == 'login' else '' }}" href="{{ url_for('home') }}">Login</a>
         </nav>
       </header>
 

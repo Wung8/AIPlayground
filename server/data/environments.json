@@ -1,6 +1,4 @@
-# backend/data/environments.py
-
-ENVIRONMENTS = [
+[
     {
         "slug": "slimevolleyball",
         "title": "Slime Volleyball",
@@ -8,9 +6,9 @@ ENVIRONMENTS = [
         "description": "Classic slime volleyball environment.",
         "docSections": [
             {"title": "Observation Space", "items": ["slime positions", "ball position", "ball velocity"]},
-            {"title": "Action Space", "items": ["left/right movement", "jump"]},
+            {"title": "Action Space", "items": ["left/right movement", "jump"]}
         ],
-        "image": {"kind": "placeholder", "value": "slime"},
+        "image": {"kind": "placeholder", "value": "slime"}
     },
     {
         "slug": "soccer",
@@ -18,9 +16,9 @@ ENVIRONMENTS = [
         "difficulty": 4,
         "description": "Play 2v2 soccer.",
         "docSections": [
-            {"title": "Goal", "items": ["reach the exit", "avoid traps"]},
+            {"title": "Goal", "items": ["reach the exit", "avoid traps"]}
         ],
-        "image": {"kind": "placeholder", "value": "soccer"},
+        "image": {"kind": "placeholder", "value": "soccer"}
     },
     {
         "slug": "maze",
@@ -28,15 +26,8 @@ ENVIRONMENTS = [
         "difficulty": 2,
         "description": "Navigate a maze to reach the goal.",
         "docSections": [
-            {"title": "Goal", "items": ["reach the exit", "avoid traps"]},
+            {"title": "Goal", "items": ["reach the exit", "avoid traps"]}
         ],
-        "image": {"kind": "placeholder", "value": "maze"},
-    },
+        "image": {"kind": "placeholder", "value": "maze"}
+    }
 ]
-
-def get_env(slug: str):
-    slug = (slug or "").strip().lower()
-    for e in ENVIRONMENTS:
-        if e["slug"] == slug:
-            return e
-    return None
