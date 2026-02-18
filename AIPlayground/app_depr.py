@@ -1,18 +1,12 @@
-from flask import Flask, render_template, request
-from flask_socketio import SocketIO, emit
-import eventlet
-eventlet.monkey_patch()
+from flask import render_template, request
+from flask_socketio import emit
 
-from data.environments import ENVIRONMENTS, get_env
+from AIPlayground import app, socketio
 
-from slimevolleyball import SlimeVolleyballEnv  # assume you moved logic here
-from soccer import SoccerEnv
-from SlimeAgent import BaseAgent
+from AIPlayground.data.environments import ENVIRONMENTS, get_env
+from AIPlayground.slimevolleyball import SlimeVolleyballEnv  # assume you moved logic here
+from AIPlayground.soccer import SoccerEnv
 
-app = Flask(__name__, static_folder="static", template_folder="templates")
-socketio = SocketIO(app, cors_allowed_origins="*")
-
-agent = BaseAgent()
 
 BOTS = [
     {"name": "epicbot", "elo": 1400, "by": "someone"},
