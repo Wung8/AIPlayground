@@ -1,0 +1,24 @@
+<!-- backend/templates/home.html -->
+{% extends "base.html" %}
+{% set active = "home" %}
+{% set title = "AI Playground" %}
+
+{% block content %}
+  <div class="home">
+    <div class="home-hero">
+      <div class="home-title">AI Playground</div>
+      <div class="home-subtitle">A platform for learning and<br/>experimenting with AI.</div>
+
+      <div class="home-actions">
+        <a class="home-btn" href="{{ url_for('environments') }}">Learn More</a>
+        <a class="home-btn" href="{{ url_for('acm') }}">About ACM</a>
+      </div>
+    </div>
+
+    <div class="home-footer">
+      <a class="home-footer-link" href="{{ url_for('github') }}">[ ] Github</a>
+      <a class="home-footer-link" href="{{ url_for('discord') }}">[ ] Discord</a>
+      <a class="home-footer-link" href="{{ url_for('contact') }}">[ ] Contact</a>
+    </div>
+  </div>
+{% endblock %}

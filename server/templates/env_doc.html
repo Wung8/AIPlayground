@@ -63,11 +63,11 @@
       {% if blocks|length %}
         <div class="doc-sections">
           {% for s in blocks %}
-            {% if (s.title or "")|trim|lower != "user documentation" %}
+            {% if (s["title"] or "")|trim|lower != "user documentation" %}
               <div class="doc-block">
-                <div class="doc-h">{{ s.title }}</div>
+                <div class="doc-h">{{ s["title"] }}</div>
                 <ul class="doc-ul">
-                  {% for it in (s.items or []) %}
+                  {% for it in (s["items"] or []) %}
                     <li>{{ it }}</li>
                   {% endfor %}
                 </ul>

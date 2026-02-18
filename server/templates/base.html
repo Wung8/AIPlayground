@@ -5,16 +5,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>{{ title or "AI Playground" }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   </head>
   <body>
     <div class="page">
       <header class="topbar">
         <div class="brand">
           <div class="brand-icon" aria-hidden="true">
-            <div class="brand-dot dot-1"></div>
-            <div class="brand-dot dot-2"></div>
-            <div class="brand-v">v</div>
           </div>
           <a class="brand-text brand-link" href="{{ url_for('home') }}">AI Playground</a>
         </div>
