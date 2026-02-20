@@ -1,6 +1,6 @@
 from datetime import datetime
 from itsdangerous import URLSafeTimedSerializer as Serializer
-from AIPlayground import db, login_manager, app
+from backend import db, login_manager, app
 from flask_login import UserMixin
 
 @login_manager.user_loader

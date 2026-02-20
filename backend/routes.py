@@ -2,13 +2,13 @@ from flask import render_template, request, redirect, url_for, flash
 from flask_socketio import emit
 from flask_login import login_user, logout_user, current_user, login_required
 
-from AIPlayground import app, socketio, db, bcrypt
-from AIPlayground.forms import LoginForm, RegistrationForm
-from AIPlayground.models import User
+from backend import app, socketio, db, bcrypt
+from backend.forms import LoginForm, RegistrationForm
+from backend.models import User
 
-from AIPlayground.data.environments import ENVIRONMENTS, get_env
-from AIPlayground.static.environments.slimevolleyball import SlimeVolleyballEnv  # assume you moved logic here
-from AIPlayground.static.environments.soccer import SoccerEnv
+from backend.data.environments import ENVIRONMENTS, get_env
+from backend.static.environments.slimevolleyball import SlimeVolleyballEnv  # assume you moved logic here
+from backend.static.environments.soccer import SoccerEnv
 
 
 BOTS = [

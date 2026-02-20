@@ -1,4 +1,5 @@
-from AIPlayground import app, socketio
+from backend import app, socketio
+# import app, socketio
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)
