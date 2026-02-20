@@ -1,7 +1,10 @@
-from flask import render_template, request
+from flask import render_template, request, redirect, url_for, flash
 from flask_socketio import emit
+from flask_login import login_user, logout_user, current_user, login_required
 
-from AIPlayground import app, socketio
+from AIPlayground import app, socketio, db, bcrypt
+from AIPlayground.forms import LoginForm, RegistrationForm
+from AIPlayground.models import User
 
 from AIPlayground.data.environments import ENVIRONMENTS, get_env
 from AIPlayground.slimevolleyball import SlimeVolleyballEnv  # assume you moved logic here
@@ -45,7 +48,44 @@ def play(slug):
         return "missing env", 404
     return render_template("play.html", env=env, bots=BOTS)
 
-@app.route("/profile")
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    # prefixes prevent collisions since both forms share field names like "email", "password", "submit"
+    login_form = LoginForm(prefix="login")
+    register_form = RegistrationForm(prefix="reg")
+
+    # login submit
+    if login_form.submit.data and login_form.validate_on_submit():
+        user = User.query.filter_by(email=login_form.email.data).first()
+        if user and bcrypt.check_password_hash(user.password, login_form.password.data):
+            login_user(user, remember=login_form.remember.data)
+            return redirect(url_for("home"))
+        else:
+            flash('Login Unsuccessful. Please check email and password', 'danger')
+
+    # register submit
+    if register_form.submit.data and register_form.validate_on_submit():
+        pw_hash = bcrypt.generate_password_hash(register_form.password.data).decode("utf-8")
+        user = User(username=register_form.username.data, email=register_form.email.data, password=pw_hash)
+        db.session.add(user)
+        db.session.commit()
+        flash(f'Your account has been created! You are now able to log in', 'success')
+        return redirect(url_for("login"))
+
+    return render_template(
+        "login.html",
+        title="Login - AI Playground",
+        active="login",
+        login_form=login_form,
+        register_form=register_form,
+    )
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+@app.route("/profile", methods=["GET", "POST"])
 def profile():
     return render_template("profile.html")
 
@@ -53,10 +93,6 @@ def profile():
 @app.route("/acm")
 def acm():
     return "acm page placeholder"
-
-@app.route("/login")
-def login():
-    return "login page placeholder"
 
 @app.route("/github")
 def github():
@@ -69,7 +105,6 @@ def discord():
 @app.route("/contact")
 def contact():
     return "contact placeholder"
-
 
 
 @socketio.on("join_env")

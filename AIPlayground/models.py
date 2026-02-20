@@ -1,8 +1,11 @@
 from datetime import datetime
 from itsdangerous import URLSafeTimedSerializer as Serializer
-from AIPlayground import db, app
+from AIPlayground import db, login_manager, app
 from flask_login import UserMixin
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -21,7 +24,7 @@ class Agent(db.Model):
     name = db.Column(db.String(100), nullable=False)
     file = db.Column(db.String(20), nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    elo = db.Column(db.Integer, primary_key=True)
+    elo = db.Column(db.Integer, default=800)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     #environment_id = db.Column(db.Integer, db.ForeignKey('environment.id'), nullable=False)
 
