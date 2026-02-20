@@ -7,8 +7,8 @@ from AIPlayground.forms import LoginForm, RegistrationForm
 from AIPlayground.models import User
 
 from AIPlayground.data.environments import ENVIRONMENTS, get_env
-from AIPlayground.slimevolleyball import SlimeVolleyballEnv  # assume you moved logic here
-from AIPlayground.soccer import SoccerEnv
+from AIPlayground.static.environments.slimevolleyball import SlimeVolleyballEnv  # assume you moved logic here
+from AIPlayground.static.environments.soccer import SoccerEnv
 
 
 BOTS = [
