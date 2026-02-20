@@ -1,0 +1,80 @@
+<!-- backend/templates/play.html -->
+{% extends "base.html" %}
+{% set active = "environments" %}
+{% set title = "Play - " ~ env.title %}
+
+{% block content %}
+  <div class="play-shell">
+    <aside class="play-left">
+      <div class="play-left-card">
+        <div class="play-left-title">Select Players:</div>
+
+        <div class="play-field">
+          <div class="play-label">P1:</div>
+          <div class="play-input">player</div>
+        </div>
+
+        <div class="play-field">
+          <div class="play-label">P2:</div>
+          <div class="play-input">basicbot25</div>
+          <div class="play-inline-elo">elo: 1000</div>
+        </div>
+
+        <div class="play-search">
+          <div class="play-search-row">
+            <div class="play-search-label">Search Bots:</div>
+            <div class="play-search-box">search</div>
+          </div>
+          <div class="play-sort-row">
+            <div class="play-sort-label">Sort By:</div>
+            <div class="play-sort-pill">Elo</div>
+          </div>
+        </div>
+
+        <div class="play-botlist">
+          {% for b in bots %}
+            <div class="bot-row">
+              <div class="bot-name">{{ b.name }}</div>
+              <div class="bot-meta">
+                <div class="bot-elo">elo: {{ b.elo }}</div>
+                <div class="bot-by">by: {{ b.by }}</div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </aside>
+
+    <main class="play-main">
+      <div class="play-main-head">
+        <a class="play-back" href="{{ url_for('env_doc', slug=env.slug) }}">Back</a>
+        <div class="play-title">{{ env.title }}</div>
+      </div>
+
+      <div class="play-stage">
+        <!-- replace this div with your real canvas -->
+        <canvas id="game" width="800" height="400"></canvas>
+
+        <div class="play-stage-controls">
+          <button class="play-stage-btn" type="button" id="btnReset">Reset</button>
+          <label class="play-stage-debug">
+            Debug <input type="checkbox" id="chkDebug" />
+          </label>
+          <button class="play-stage-btn" type="button" id="btnFullscreen">Fullscreen</button>
+        </div>
+      </div>
+
+      <div class="play-debug">
+        <div class="play-debug-box" id="debugBox"></div>
+      </div>
+    </main>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script>
+    window.__ENV_SLUG__ = {{ env.slug|tojson }};
+  </script>
+  <script type="module" src="{{ url_for('static', filename='play_handler.js') }}"></script>
+{% endblock %}

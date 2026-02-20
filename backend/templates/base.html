@@ -1,0 +1,68 @@
+<!-- backend/templates/base.html -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{{ title or "AI Playground" }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-icon" aria-hidden="true">
+          </div>
+          <a class="brand-text brand-link" href="{{ url_for('home') }}">AI Playground</a>
+        </div>
+
+        <nav class="nav">
+          <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+          <a class="nav-link" href="{{ url_for('environments') }}">Environments</a>
+          <a class="nav-link" href="{{ url_for('acm') }}">ACM</a>
+          {% if current_user.is_authenticated %}
+            <a class="nav-link" href="{{ url_for('profile') }}">Profile</a>
+            <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+          {% else %}
+            <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+          {% endif %}
+        </nav>
+      </header>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-wrap">
+            {% for category, message in messages %}
+              <div class="flash flash-{{ category|e }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </div>
+
+    {% block scripts %}{% endblock %}
+
+    <script>
+      (function () {
+        const flashes = document.querySelectorAll(".flash");
+        for (const el of flashes) {
+          let removed = false;
+
+          const hide = () => {
+            if (removed) return;
+            removed = true;
+            el.classList.add("is-hiding");
+            el.addEventListener("transitionend", () => el.remove(), { once: true });
+            setTimeout(() => el.remove(), 600); // fallback
+          };
+
+          el.addEventListener("click", hide);
+          setTimeout(hide, 5000);
+        }
+      })();
+    </script>
+
+  </body>
+</html>
