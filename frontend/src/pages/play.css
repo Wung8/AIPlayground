@@ -67,6 +67,7 @@ temporarily here, will move soon
   font-size: 16px;
 }
 
+
 .ap-input{
   width: 100%;
   padding: 10px 10px;
@@ -80,6 +81,18 @@ temporarily here, will move soon
 .ap-input:focus{
   border-color: rgba(255,255,255,0.18);
   box-shadow: 0 0 0 3px rgba(255,255,255,0.05);
+}
+
+/* highlight the currently selected player input */
+.ap-input.is-selected{
+  border-color: rgba(255,255,255,0.22);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
+}
+
+/* optional: slightly stronger on focus too */
+.ap-input.is-selected:focus{
+  border-color: rgba(255,255,255,0.28);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.08);
 }
 
 .ap-elo-inline{

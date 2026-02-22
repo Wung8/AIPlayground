@@ -47,52 +47,45 @@ export default function EnvironmentsPage({
   flashes = [],
 }) {
   return (
-    <Layout
-      title="Environments"
-      active="environments"
-      isAuthenticated={isAuthenticated}
-      flashes={flashes}
-    >
-      <div className="content">
-        <Sidebar selectedSlug="" />
+    <div className="content">
+      <Sidebar selectedSlug="" />
 
-        <main className="main panel">
-          <div className="panel-pad">
-            <div className="panel-title">Environments</div>
-            <div className="env-list">
-              {environments.map((e) => (
-                <div key={e.slug} className="env-card">
-                  <div className="env-card-left">
-                    <Link className="env-h2" to={`/environments/${e.slug}`}>
-                      {e.title}
-                    </Link>
+      <main className="main panel">
+        <div className="panel-pad">
+          <div className="panel-title">Environments</div>
+          <div className="env-list">
+            {environments.map((e) => (
+              <div key={e.slug} className="env-card">
+                <div className="env-card-left">
+                  <Link className="env-h2" to={`/play/${e.slug}`}>
+                    {e.title}
+                  </Link>
 
-                    <div className="env-diff">
-                    <span className="env-diff-label">Difficulty:</span>
-                    <span className="env-stars">
-                      <Stars n={e.difficulty} />
-                    </span>
-                    </div>
-
-                    <div className="env-desc">{e.description}</div>
-
-                    <Link className="env-doc-link" to={`/environments/${e.slug}`}>
-                      documentation
-                    </Link>
+                  <div className="env-diff">
+                  <span className="env-diff-label">Difficulty:</span>
+                  <span className="env-stars">
+                    <Stars n={e.difficulty} />
+                  </span>
                   </div>
 
-                  <div className="env-card-right">
-                    <Link to={`/play/${e.slug}`} className="env-img-link">
-                      <div className="env-img" />
-                    </Link>
-                  </div>
+                  <div className="env-desc">{e.description}</div>
 
+                  <Link className="env-doc-link" to={`/environments/${e.slug}`}>
+                    documentation
+                  </Link>
                 </div>
-              ))}
-            </div>
+
+                <div className="env-card-right">
+                  <Link to={`/play/${e.slug}`} className="env-img-link">
+                    <div className="env-img" />
+                  </Link>
+                </div>
+
+              </div>
+            ))}
           </div>
-        </main>
-      </div>
-    </Layout>
+        </div>
+      </main>
+    </div>
   );
 }
