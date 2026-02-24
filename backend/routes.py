@@ -1,10 +1,14 @@
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, jsonify
 from flask_socketio import emit
 from flask_login import login_user, logout_user, current_user, login_required
 
+# for uploading files
+import os, datetime
+from werkzeug.utils import secure_filename
+
 from backend import app, socketio, db, bcrypt
 from backend.forms import LoginForm, RegistrationForm
-from backend.models import User
+from backend.models import User, Agent
 
 from backend.data.environments import ENVIRONMENTS, get_env
 from backend.static.environments.slimevolleyball import SlimeVolleyballEnv  # assume you moved logic here
@@ -88,6 +92,58 @@ def logout():
 @app.route("/profile", methods=["GET", "POST"])
 def profile():
     return render_template("profile.html")
+
+# ---- upload files ----
+
+@app.route("/agents/upload", methods=["POST"])
+# @login_required
+def upload_agent():
+    # request args:
+    # file (.py)
+    # agent name (optional, default is filename)
+    # user_id of who is uploading (optional, default is 0)
+    # (maybe add environment id?)
+    f = request.files.get("file")
+    if not f or not f.filename:
+        return jsonify({"error": "missing file"}), 400
+
+    # replace spaces with _, normalize strange chars, ignore /s
+    filename = secure_filename(f.filename)
+
+    if not filename.lower().endswith(".py"):
+        return jsonify({"error": "only .py files allowed"}), 400
+
+    # use 0 if user_id isnt included
+    user_id = request.args.get('user_id', 0)
+
+    # create a folder for the user (or keep the same if one already exists)
+    user_folder = f"static/agents/user_{user_id:04d}"
+    upload_dir = os.path.join(app.root_path, user_folder)
+    os.makedirs(upload_dir, exist_ok=True)
+
+    # add file to the user's folder in the agents folder
+    abs_path = os.path.join(upload_dir, filename)
+    f.save(abs_path)
+
+    # get relative path to store as agent.file
+    rel_path = os.path.join(user_folder, filename)
+
+    # if no agent name, use filename
+    agent_name = request.args.get('name', os.path.splitext(filename)[0])
+    
+    agent = Agent(
+        name=agent_name,
+        file=rel_path,
+        user_id=user_id,
+        elo=0,
+    )
+    db.session.add(agent)
+    db.session.commit()
+
+    return jsonify({"agent_id": agent.id, "agent_name": agent.name, "file_path": agent.file, "user_id": agent.user_id}), 201
+
+
+
 
 # placeholders for navbar links you already show
 @app.route("/acm")
