@@ -1,3 +1,5 @@
+import importlib.util
+import sys
 import os
 
 from flask import render_template, request, redirect, url_for, flash
@@ -13,12 +15,6 @@ from server.data.environments import ENVIRONMENTS, get_env
 from server.static.environments.slimevolleyball import SlimeVolleyballEnv  # assume you moved logic here
 from server.static.environments.soccer import SoccerEnv
 
-
-AGENTS = [
-    {"name": "epicbot", "elo": 1400, "by": "someone"},
-    {"name": "basicbot25", "elo": 1000, "by": "wung8"},
-    {"name": "another_bot2000", "elo": 600, "by": "wung8"},
-]
 
 # store one game per client (later: one per env per client)
 games = {}
@@ -59,7 +55,7 @@ def play(slug):
             return redirect(url_for("play", slug=slug, tab="mine"))
 
         if form.validate_on_submit():
-            user_dir = os.path.join(app.root_path, "data", "user_uploads", str(current_user.id), slug)
+            user_dir = os.path.join(app.root_path, "data", "user_uploads", str(current_user.username), slug)
             os.makedirs(user_dir, exist_ok=True)
 
             existing = [f for f in os.listdir(user_dir) if f.endswith(".py")]
@@ -73,7 +69,7 @@ def play(slug):
                 flash("Only .py files are allowed.", "danger")
                 return redirect(url_for("play", slug=slug, tab="mine"))
 
-            if os.path.exists(os.path.join(user_dir, filename)):
+            if Bot.query.filter_by(name=filename[:-3]).first() or filename[:-3].lower() == "human":
                 flash("That filename is already in use.", "danger")
                 return redirect(url_for("play", slug=slug, tab="mine"))
 
@@ -204,14 +200,14 @@ def handle_connect(data):
     slug = data.get("env_slug")
 
     if slug == "soccer":
-        games[request.sid] = SoccerEnv()
+        games[request.sid] = [SoccerEnv(), ["human" for i in range(4)]]
     elif slug == "slimevolleyball":
-        games[request.sid] = SlimeVolleyballEnv()
+        games[request.sid] = [SlimeVolleyballEnv(), ["human" for i in range(4)]]
     else:
         print("Unknown environment:", slug)
         return
 
-    games[request.sid].reset()
+    games[request.sid][0].reset()
     print(f"{request.sid} joined {slug}")
 
 
@@ -229,13 +225,24 @@ def handle_input(data):
         "action": 0/1/2/3
     }
     """
-    game = games.get(request.sid)
+    game, agents = games.get(request.sid)
     if not game:
         return
 
-    obs = game.getInputs()
-    obs, reward, done = game.step(
-        actions={"p1":"keyboard", "p2":"keyboard", "p3":"keyboard", "p4":"keyboard"}, 
+    actions = {}
+    inputs = game.getInputs()
+    for n, agent in enumerate(agents):
+        pnum = f"p{n+1}"
+        if pnum not in inputs: 
+            continue
+        if agent == "human":
+            actions[pnum] = "keyboard"
+        else:
+            inp = inputs.get(pnum)
+            actions[pnum] = agent.getAction(*inp)
+    
+    _, _, done = game.step(
+        actions=actions, 
         keyboard=data['action'], 
         display=False
     )
@@ -245,6 +252,70 @@ def handle_input(data):
 
     if done:
         game.reset()
+
+def load_bot(bot, slug):
+    path = os.path.join(
+        app.root_path,
+        "data",
+        "user_uploads",
+        str(bot.creator.username),
+        slug,
+        bot.name + ".py"
+    )
+
+    if not os.path.exists(path):
+        print("Bot file missing:", path)
+        return None
+
+    module_name = f"bot_{bot.id}"
+
+    spec = importlib.util.spec_from_file_location(module_name, path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+
+    return module.Agent()
+
+@socketio.on("reset_game")
+def handle_reset(data):
+    slug = data.get("env_slug")
+    p1_name = (data.get("p1_name") or "").strip()
+    p2_name = (data.get("p2_name") or "").strip()
+
+    # Recreate environment
+    if slug == "soccer":
+        game = SoccerEnv()
+    elif slug == "slimevolleyball":
+        game = SlimeVolleyballEnv()
+    else:
+        return
+
+    agents = []
+
+    # === Load P1 bot ===
+    if p1_name and p1_name.lower() != "human":
+        bot = Bot.query.filter_by(name=p1_name).first()
+        if bot:
+            agent = load_bot(bot, slug)
+            agents.append(agent)
+        else:
+            emit("bot_error", {"message": f"P1 bot '{p1_name}' not found"})
+    else:
+        agents.append("human")
+
+    # === Load P2 bot ===
+    if p2_name and p2_name.lower() != "human":
+        bot = Bot.query.filter_by(name=p2_name).first()
+        if bot:
+            agent = load_bot(bot, slug)
+            agents.append(agent)
+        else:
+            emit("bot_error", {"message": f"P2 bot '{p2_name}' not found"})
+    else:
+        agents.append("human")
+    
+    game.reset()
+    games[request.sid] = [game, agents]
 
 
 if __name__ == "__main__":

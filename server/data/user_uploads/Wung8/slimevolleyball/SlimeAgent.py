@@ -6,7 +6,7 @@ class SlimeAgent:
     def getAction(self, your_position, enemy_position, ball_position, ball_velocity):
         return [0, 0]  # stand still
 
-class BaseAgent(SlimeAgent):
+class Agent(SlimeAgent):
     def getAction(self, your_position, enemy_position, ball_position, ball_velocity):
         action = [0, 0]
 
@@ -35,8 +35,8 @@ class BaseAgent(SlimeAgent):
         else:
             action[0] = -1
 
-        #jump_threshold = 20
-        #if not flag and your_position[0] - ball_position[0] < jump_threshold:
-        #    action[1] = 1
+        jump_threshold = 20
+        if not flag and your_position[0] - ball_position[0] < jump_threshold:
+            action[1] = 1
         
         return action

@@ -3,6 +3,43 @@
 
 const socket = io();
 
+const resetBtn = document.getElementById("btnReset");
+
+resetBtn.addEventListener("click", () => {
+  const p1Name = document.getElementById("p1Input").value.trim();
+  const p2Name = document.getElementById("p2Input").value.trim();
+
+  socket.emit("reset_game", {
+    env_slug: window.__ENV_SLUG__,
+    p1_name: p1Name,
+    p2_name: p2Name
+  });
+});
+
+socket.on("bot_error", (data) => {
+  showBotError(data.message);
+});
+
+function showBotError(message) {
+  const banner = document.getElementById("botErrorBanner");
+  banner.textContent = message;
+  banner.style.display = "block";
+
+  if (message.includes("P1")) {
+    document.getElementById("p1Input").style.borderColor = "red";
+  }
+
+  if (message.includes("P2")) {
+    document.getElementById("p2Input").style.borderColor = "red";
+  }
+
+  setTimeout(() => {
+    banner.style.display = "none";
+    document.getElementById("p1Input").style.borderColor = "";
+    document.getElementById("p2Input").style.borderColor = "";
+  }, 4000);
+}
+
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 

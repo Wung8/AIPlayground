@@ -21,7 +21,7 @@ class User(db.Model, UserMixin):
 
 class Bot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(30), nullable=False)
+    name = db.Column(db.String(30), unique=True, nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     elo = db.Column(db.Integer, default=800)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
