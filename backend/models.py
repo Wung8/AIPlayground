@@ -21,12 +21,12 @@ class User(db.Model, UserMixin):
 
 class Agent(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    file = db.Column(db.String(20), nullable=False)
-    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    name = db.Column(db.String(50), nullable=False)
+    file = db.Column(db.String(50), nullable=False)
+    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.now)
     elo = db.Column(db.Integer, default=800)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    #environment_id = db.Column(db.Integer, db.ForeignKey('environment.id'), nullable=False)
+    environment_id = db.Column(db.Integer, db.ForeignKey('environment.id'), nullable=False)
 
     def __repr__(self):
         return f"Agent('{self.name}', '{self.environment_id}', '{self.user_id}', '{self.elo}', '{self.date_posted}')"
