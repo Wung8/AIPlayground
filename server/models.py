@@ -1,6 +1,6 @@
 from datetime import datetime
 from itsdangerous import URLSafeTimedSerializer as Serializer
-from backend import db, login_manager, app
+from server import db, login_manager, app
 from flask_login import UserMixin
 
 @login_manager.user_loader
@@ -13,20 +13,19 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     password = db.Column(db.String(60), nullable=False)
-    posts = db.relationship('Agent', backref='creator', lazy=True)
+    posts = db.relationship('Bot', backref='creator', lazy=True)
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}', '{self.image_file}')"
 
 
-class Agent(db.Model):
+class Bot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    file = db.Column(db.String(20), nullable=False)
+    name = db.Column(db.String(30), nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     elo = db.Column(db.Integer, default=800)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     #environment_id = db.Column(db.Integer, db.ForeignKey('environment.id'), nullable=False)
 
     def __repr__(self):
-        return f"Agent('{self.name}', '{self.environment_id}', '{self.user_id}', '{self.elo}', '{self.date_posted}')"
+        return f"Bot('{self.name}', '{self.environment_id}', '{self.user_id}', '{self.elo}', '{self.date_posted}')"

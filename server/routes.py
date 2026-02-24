@@ -1,17 +1,20 @@
+import os
+
 from flask import render_template, request, redirect, url_for, flash
 from flask_socketio import emit
 from flask_login import login_user, logout_user, current_user, login_required
+from werkzeug.utils import secure_filename
 
-from backend import app, socketio, db, bcrypt
-from backend.forms import LoginForm, RegistrationForm
-from backend.models import User
+from server import app, socketio, db, bcrypt
+from server.forms import LoginForm, RegistrationForm, UploadAgentForm
+from server.models import User, Bot
 
-from backend.data.environments import ENVIRONMENTS, get_env
-from backend.static.environments.slimevolleyball import SlimeVolleyballEnv  # assume you moved logic here
-from backend.static.environments.soccer import SoccerEnv
+from server.data.environments import ENVIRONMENTS, get_env
+from server.static.environments.slimevolleyball import SlimeVolleyballEnv  # assume you moved logic here
+from server.static.environments.soccer import SoccerEnv
 
 
-BOTS = [
+AGENTS = [
     {"name": "epicbot", "elo": 1400, "by": "someone"},
     {"name": "basicbot25", "elo": 1000, "by": "wung8"},
     {"name": "another_bot2000", "elo": 600, "by": "wung8"},
@@ -41,12 +44,101 @@ def env_doc(slug):
         return "missing env", 404
     return render_template("env_doc.html", env=env, environments=ENVIRONMENTS)
 
-@app.route("/play/<slug>")
+@app.route("/play/<slug>", methods=["GET", "POST"])
 def play(slug):
     env = get_env(slug) or (ENVIRONMENTS[0] if ENVIRONMENTS else None)
     if not env:
         return "missing env", 404
-    return render_template("play.html", env=env, bots=BOTS)
+
+    form = UploadAgentForm()
+
+    # handle upload submit
+    if request.method == "POST":
+        if not current_user.is_authenticated:
+            flash("Log in to upload your own bots!", "warning")
+            return redirect(url_for("play", slug=slug, tab="mine"))
+
+        if form.validate_on_submit():
+            user_dir = os.path.join(app.root_path, "data", "user_uploads", str(current_user.id), slug)
+            os.makedirs(user_dir, exist_ok=True)
+
+            existing = [f for f in os.listdir(user_dir) if f.endswith(".py")]
+            if len(existing) >= 3:
+                flash("Maximum of 3 bots allowed per environment", "warning")
+                return redirect(url_for("play", slug=slug, tab="mine"))
+
+            f = form.agent_file.data
+            filename = secure_filename(f.filename or "")
+            if not filename.endswith(".py"):
+                flash("Only .py files are allowed.", "danger")
+                return redirect(url_for("play", slug=slug, tab="mine"))
+
+            if os.path.exists(os.path.join(user_dir, filename)):
+                flash("That filename is already in use.", "danger")
+                return redirect(url_for("play", slug=slug, tab="mine"))
+
+            f.save(os.path.join(user_dir, filename))
+
+            bot = Bot(
+                name=filename[:-3],
+                user_id=current_user.id,
+            )
+            db.session.add(bot)
+            db.session.commit()
+
+            flash("Bot uploaded!", "success")
+            return redirect(url_for("play", slug=slug, tab="mine"))
+
+        flash("Upload failed. Please choose a .py file.", "danger")
+        return redirect(url_for("play", slug=slug, tab="mine"))
+
+    # normal GET render
+    bots = Bot.query.all()
+
+    if current_user.is_authenticated:
+        my_bots = Bot.query.filter_by(user_id=current_user.id).all()
+    else:
+        my_bots = []
+
+    return render_template("play.html", env=env, bots=bots, my_bots=my_bots, form=form)
+
+'''
+@login_required
+@app.route("upload/<slug>")
+def upload_agent(slug):
+    env = get_env(slug) or (ENVIRONMENTS[0] if ENVIRONMENTS else None)
+    if not env:
+        return "missing env", 404
+    
+    form = UploadAgentForm()
+    if not form.validate_on_submit():
+        flash("Upload failed. Please choose a .py file.", "danger")
+        return redirect(url_for("upload", slug=slug, tab="mine"))
+    
+    user_dir = os.path.join(app.root_path, "data", "user_uploads", str(current_user.id), slug)
+    os.makedirs(user_dir, exist_ok=True)
+
+    existing = [f for f in os.listdir(user_dir) if f.endswith(".py")]
+    if len(existing) >= 3:
+        flash("You already have 3 bots for this environment.", "warning")
+        return redirect(url_for("play", slug=slug, tab="mine"))
+
+    f = form.agent_file.data
+    filename = secure_filename(f.filename or "")
+    if not filename.endswith(".py"):
+        flash("Only .py files are allowed.", "danger")
+        return redirect(url_for("play", slug=slug, tab="mine"))
+    if len(filename) < 6:
+        flash("Filename must be at least 3 characters long.", "danger")
+        return redirect(url_for("play", slug=slug, tab="mine"))
+    if os.path.exists(os.path.join(user_dir, filename)):
+        flash("That filename is already in use.", "danger")
+        return redirect(url_for("play", slug=slug, tab="mine"))
+
+    f.save(os.path.join(user_dir, filename))
+    flash("Bot uploaded.", "success")
+    return redirect(url_for("play", slug=slug, tab="mine"))
+'''
 
 @app.route("/login", methods=["GET", "POST"])
 def login():

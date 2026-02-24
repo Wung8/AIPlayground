@@ -1,4 +1,4 @@
-from backend import app, socketio
+from server import app, socketio
 # import app, socketio
 
 if __name__ == "__main__":

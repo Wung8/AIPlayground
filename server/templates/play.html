@@ -1,0 +1,194 @@
+<!-- backend/templates/play.html -->
+{% extends "base.html" %}
+{% set active = "environments" %}
+{% set title = "Play - " ~ env.title %}
+
+{% block content %}
+  <div class="play-shell">
+    <aside class="play-left">
+      <div class="play-left-card">
+        <div class="play-left-title">Select Players:</div>
+
+        <div class="play-field">
+          <div class="play-label">P1:</div>
+          <div class="play-input">player</div>
+        </div>
+
+        <div class="play-field">
+          <div class="play-label">P2:</div>
+          <div class="play-input">basicbot25</div>
+          <div class="play-inline-elo">elo: 1000</div>
+        </div>
+
+        <div class="play-tabs" role="tablist" aria-label="Bot list tabs">
+          <button
+            type="button"
+            class="play-tab is-active"
+            role="tab"
+            aria-selected="true"
+            aria-controls="tab-browse"
+            id="tabBtnBrowse"
+            data-tab="browse"
+          >Browse</button>
+
+          <button
+            type="button"
+            class="play-tab"
+            role="tab"
+            aria-selected="false"
+            aria-controls="tab-mine"
+            id="tabBtnMine"
+            data-tab="mine"
+          >My Bots</button>
+        </div>
+
+        <div class="play-tabpanes">
+          <!-- browse tab -->
+          <section class="play-pane is-active" role="tabpanel" id="tab-browse" aria-labelledby="tabBtnBrowse">
+            <div class="play-search">
+              <div class="play-search-row">
+                <div class="play-search-label">Search Bots:</div>
+                <input class="play-search-box-input" id="botSearch" type="text" placeholder="search" />
+              </div>
+
+              <div class="play-sort-row">
+                <div class="play-sort-label">Sort By:</div>
+                <button class="play-sort-pill" type="button" id="sortByElo">Elo</button>
+
+                <button class="play-filter-pill" type="button" id="eloFilterBtn" aria-haspopup="dialog" aria-expanded="false">
+                  Elo: Any
+                </button>
+              </div>
+
+              <div class="play-elo-pop" id="eloPop" aria-hidden="true">
+                <div class="play-elo-row">
+                  <input class="play-elo-input" id="eloMin" type="number" placeholder="min" />
+                  <div class="play-elo-to">to</div>
+                  <input class="play-elo-input" id="eloMax" type="number" placeholder="max" />
+                  <button class="play-elo-clear" type="button" id="eloClear">Clear</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="play-botlist" id="browseList">
+              {% for b in bots %}
+                <button class="bot-row bot-row-btn" type="button" data-bot="{{ b.name }}">
+                  <div class="bot-name">{{ b.name }}</div>
+                  <div class="bot-meta">
+                    <div class="bot-elo">elo: {{ b.elo }}</div>
+                    <div class="bot-by">by: {{ b.creator.username }}</div>
+                  </div>
+                </button>
+              {% endfor %}
+            </div>
+          </section>
+
+          <!-- my bots tab -->
+          <section class="play-pane" role="tabpanel" id="tab-mine" aria-labelledby="tabBtnMine">
+
+            <div class="play-botlist" id="myBotsList">
+              {% for b in my_bots %}
+                <button class="bot-row bot-row-btn" type="button" data-bot="{{ b.name }}">
+                  <div class="bot-name">{{ b.name }}</div>
+                  <div class="bot-meta">
+                    <div class="bot-elo">elo: {{ b.elo }}</div>
+                    <div class="bot-by">by: {{ b.creator.username }}</div>
+                  </div>
+                </button>
+              {% endfor %}
+              {% if current_user.is_authenticated %}
+                {% if my_bots|length == 3 %}
+                  <div class="play-mine-note">Maximum of 3 bots allowed per environment</div>
+                {% else %}
+                  <div class="play-mine-note">Upload Bot</div>
+                  <form method="POST" action="" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    {{ form.agent_file(class="play-upload-input") }}
+                    {{ form.submit(class="play-upload-btn") }}
+                  </form>
+                {% endif %}
+              {% else %}
+                <div class="play-mine-note">Log in to upload your own bots!</div>
+              {% endif %}
+            </div>
+          </section>
+        </div>
+      </div>
+    </aside>
+
+    <main class="play-main">
+      <div class="play-main-head">
+        <a class="play-back" href="{{ url_for('env_doc', slug=env.slug) }}">Back</a>
+        <div class="play-title">{{ env.title }}</div>
+      </div>
+
+      <div class="play-stage">
+        <!-- replace this div with your real canvas -->
+        <canvas id="game" width="800" height="400"></canvas>
+
+        <div class="play-stage-controls">
+          <button class="play-stage-btn" type="button" id="btnReset">Reset</button>
+          <label class="play-stage-debug">
+            Debug <input type="checkbox" id="chkDebug" />
+          </label>
+          <button class="play-stage-btn" type="button" id="btnFullscreen">Fullscreen</button>
+        </div>
+      </div>
+
+      <div class="play-debug">
+        <div class="play-debug-box" id="debugBox"></div>
+      </div>
+    </main>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script>
+    window.__ENV_SLUG__ = {{ env.slug|tojson }};
+  </script>
+  <script type="module" src="{{ url_for('static', filename='play_handler.js') }}"></script>
+
+  <script>
+    (function () {
+      const tabs = document.querySelectorAll(".play-tab");
+      const panes = {
+        browse: document.getElementById("tab-browse"),
+        mine: document.getElementById("tab-mine"),
+      };
+
+      function setTab(name) {
+        tabs.forEach(t => {
+          const active = t.dataset.tab === name;
+          t.classList.toggle("is-active", active);
+          t.setAttribute("aria-selected", active ? "true" : "false");
+        });
+        panes.browse.classList.toggle("is-active", name === "browse");
+        panes.mine.classList.toggle("is-active", name === "mine");
+      }
+
+      tabs.forEach(t => t.addEventListener("click", () => setTab(t.dataset.tab)));
+
+      const btn = document.getElementById("eloFilterBtn");
+      const pop = document.getElementById("eloPop");
+      if (btn && pop) {
+        btn.addEventListener("click", () => {
+          const open = !pop.classList.contains("is-open");
+          pop.classList.toggle("is-open", open);
+          btn.setAttribute("aria-expanded", open ? "true" : "false");
+        });
+      }
+
+      const clear = document.getElementById("eloClear");
+      if (clear) {
+        clear.addEventListener("click", () => {
+          const min = document.getElementById("eloMin");
+          const max = document.getElementById("eloMax");
+          if (min) min.value = "";
+          if (max) max.value = "";
+          if (btn) btn.textContent = "Elo: Any";
+        });
+      }
+    })();
+  </script>
+{% endblock %}
