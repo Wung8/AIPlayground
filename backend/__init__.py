@@ -1,11 +1,11 @@
+import eventlet
+eventlet.monkey_patch()
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_socketio import SocketIO
 from flask_login import LoginManager
-
-import eventlet
-eventlet.monkey_patch()
 
 import logging
 logging.getLogger('werkzeug').setLevel(logging.ERROR)
