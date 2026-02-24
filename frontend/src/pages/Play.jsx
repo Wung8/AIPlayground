@@ -110,6 +110,30 @@ export default function Play() {
     setSelectedPlayer(2);
   }
 
+  async function uploadAgentFile(file) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    // default agent name is filename (backend also defaults if name is omitted)
+    const baseName = file.name.replace(/\.py$/i, "");
+    const url = `/agents/upload?name=${encodeURIComponent(baseName)}`;
+
+    const res = await fetch(url, {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      throw new Error(data?.error || "upload failed");
+    }
+
+    return data;
+  }
+
+
   const fileInputRef = useRef(null);
 
   return (
@@ -208,8 +232,6 @@ export default function Play() {
                     onPick={assignToSelectedPlayer}
                   />
                 </div>
-
-                <div className="ap-signin-hint">Sign in to upload bots</div>
               </>
             ) : (
               <>
@@ -222,8 +244,20 @@ export default function Play() {
                     ref={fileInputRef}
                     type="file"
                     style={{ display: "none" }}
-                    onChange={() => {
-                      // intentionally no-op for now
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+
+                      try {
+                        const created = await uploadAgentFile(file);
+                        console.log("uploaded:", created);
+                      } catch (err) {
+                        console.error(err);
+                        alert(String(err.message || err));
+                      } finally {
+                        // allow re-selecting the same file later
+                        e.target.value = "";
+                      }
                     }}
                   />
 
@@ -237,8 +271,6 @@ export default function Play() {
                     +
                   </button>
                 </div>
-
-                {/* <div className="ap-signin-hint">Sign in to upload bots</div> */}
               </>
             )}
           </div>
