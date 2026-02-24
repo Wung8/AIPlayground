@@ -57,73 +57,66 @@ export default function EnvDocPage({
   const docSections = Array.isArray(env.docSections) ? env.docSections : [];
 
   return (
-    <Layout
-      title={title}
-      active="environments"
-      isAuthenticated={isAuthenticated}
-      flashes={flashes}
-    >
-      <div className="content">
-        <Sidebar activeSlug={env.slug} />
+    <div className="content">
+    <Sidebar activeSlug={env.slug} />
 
-        <main className="main">
-          <div className="doc-header">
-            <div className="doc-left">
-              <Link className="back-link" to="/environments">
-                Back
-              </Link>
-
-              <div className="doc-title-row">
-                <div className="doc-title">{env.title}</div>
-                <div className="doc-title-muted">Documentation</div>
-              </div>
-
-              <div className="doc-diff">
-                <span className="doc-diff-label">Difficulty:</span>
-                <span className="doc-stars">
-                  <Stars n={env.difficulty} />
-                </span>
-              </div>
-            </div>
-
-            <a className="doc-gh" href="/github">
-              Github
-            </a>
-          </div>
-
-          <div className="doc-canvas-wrap">
-            <div className="doc-canvas" />
-          </div>
-
-          <div className="doc-play-wrap">
-            <Link className="doc-play-btn" to={`/play/${env.slug}`}>
-              Play now
+    <main className="main">
+        <div className="doc-header">
+        <div className="doc-left">
+            <Link className="back-link" to="/environments">
+            Back
             </Link>
-          </div>
 
-          <div className="doc-desc">
-            <div className="doc-desc-h">Description</div>
-            <div className="doc-desc-p">{env.description}</div>
-          </div>
-
-          {docSections.length > 0 && (
-            <div className="doc-sections">
-              {docSections
-                .filter((sec) => String(sec?.title || "").trim().toLowerCase() !== "user documentation")
-                .map((sec, idx) => (
-                  <div key={`${sec?.title || "section"}-${idx}`} className="doc-block">
-                    <div className="doc-h">{sec.title}</div>
-                    <ul className="doc-ul">
-                      {(sec.items || []).map((it, j) => (
-                        <li key={`${idx}-${j}`}>{it}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
+            <div className="doc-title-row">
+            <div className="doc-title">{env.title}</div>
+            <div className="doc-title-muted">Documentation</div>
             </div>
-          )}
-        </main>
-      </div>
-    </Layout>
+
+            <div className="doc-diff">
+            <span className="doc-diff-label">Difficulty:</span>
+            <span className="doc-stars">
+                <Stars n={env.difficulty} />
+            </span>
+            </div>
+        </div>
+
+        <a className="doc-gh" href="/github">
+            Github
+        </a>
+        </div>
+
+        <div className="doc-canvas-wrap">
+        <div className="doc-canvas" />
+        </div>
+
+        <div className="doc-play-wrap">
+        <Link className="doc-play-btn" to={`/play/${env.slug}`}>
+            Play now
+        </Link>
+        </div>
+
+        <div className="doc-desc">
+        <div className="doc-desc-h">Description</div>
+        <div className="doc-desc-p">{env.description}</div>
+        </div>
+
+        {docSections.length > 0 && (
+        <div className="doc-sections">
+            {docSections
+            .filter((sec) => String(sec?.title || "").trim().toLowerCase() !== "user documentation")
+            .map((sec, idx) => (
+                <div key={`${sec?.title || "section"}-${idx}`} className="doc-block">
+                <div className="doc-h">{sec.title}</div>
+                <ul className="doc-ul">
+                    {(sec.items || []).map((it, j) => (
+                    <li key={`${idx}-${j}`}>{it}</li>
+                    ))}
+                </ul>
+                </div>
+            ))}
+        </div>
+        )}
+    </main>
+    </div>
   );
 }
