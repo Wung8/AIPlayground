@@ -1,0 +1,22 @@
+<aside class="sidebar wide">
+  <div class="side-section">
+    <div class="side-title">User Documentation</div>
+    <div class="side-item small">Installation</div>
+    <div class="side-item small">Creating Agents</div>
+    <div class="side-item small">Uploading Agents</div>
+  </div>
+
+  <div class="side-section">
+    <div class="side-title">Environments</div>
+    <div class="side-box">
+      {% for e in environments %}
+        <a
+          class="side-item {{ 'is-active' if e.slug == selected_slug else '' }}"
+          href="{{ url_for('play', slug=e.slug) }}"
+        >
+          {{ e.title }}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</aside>
