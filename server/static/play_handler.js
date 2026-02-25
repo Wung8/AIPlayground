@@ -6,13 +6,17 @@ const socket = io();
 const resetBtn = document.getElementById("btnReset");
 
 resetBtn.addEventListener("click", () => {
-  const p1Name = document.getElementById("p1Input").value.trim();
-  const p2Name = document.getElementById("p2Input").value.trim();
+  const inputs = document.querySelectorAll(".play-input");
+
+  const players = [];
+
+  inputs.forEach(input => {
+    players.push(input.value.trim());
+  });
 
   socket.emit("reset_game", {
     env_slug: window.__ENV_SLUG__,
-    p1_name: p1Name,
-    p2_name: p2Name
+    players: players
   });
 });
 

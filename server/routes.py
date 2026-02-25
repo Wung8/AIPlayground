@@ -196,11 +196,12 @@ def contact():
 @socketio.on("join_env")
 def handle_connect(data):
     slug = data.get("env_slug")
+    agents = ["human" for i in range(4)]
 
     if slug == "soccer":
-        games[request.sid] = [SoccerEnv(), ["human" for i in range(4)]]
+        games[request.sid] = [SoccerEnv(), agents]
     elif slug == "slimevolleyball":
-        games[request.sid] = [SlimeVolleyballEnv(), ["human" for i in range(4)]]
+        games[request.sid] = [SlimeVolleyballEnv(), agents]
     else:
         print("Unknown environment:", slug)
         return
@@ -277,8 +278,6 @@ def load_bot(bot, slug):
 @socketio.on("reset_game")
 def handle_reset(data):
     slug = data.get("env_slug")
-    p1_name = (data.get("p1_name") or "").strip()
-    p2_name = (data.get("p2_name") or "").strip()
 
     # Recreate environment
     if slug == "soccer":
@@ -290,27 +289,17 @@ def handle_reset(data):
 
     agents = []
 
-    # === Load P1 bot ===
-    if p1_name and p1_name.lower() != "human":
-        bot = Bot.query.filter_by(name=p1_name).first()
-        if bot:
-            agent = load_bot(bot, slug)
-            agents.append(agent)
+    player_names = data.get("players", [])
+    for i, name in enumerate(player_names):
+        if name and name.lower() != "human":
+            bot = Bot.query.filter_by(name=name).first()
+            if bot:
+                agent = load_bot(bot, slug)
+                agents.append(agent)
+            else:
+                emit("bot_error", {"message": f"P{i+1} bot '{name}' not found"})
         else:
-            emit("bot_error", {"message": f"P1 bot '{p1_name}' not found"})
-    else:
-        agents.append("human")
-
-    # === Load P2 bot ===
-    if p2_name and p2_name.lower() != "human":
-        bot = Bot.query.filter_by(name=p2_name).first()
-        if bot:
-            agent = load_bot(bot, slug)
-            agents.append(agent)
-        else:
-            emit("bot_error", {"message": f"P2 bot '{p2_name}' not found"})
-    else:
-        agents.append("human")
+            agents.append("human")
     
     game.reset()
     games[request.sid] = [game, agents]

@@ -56,13 +56,13 @@ class SoccerEnv:
         for start, end in walls:
             self.create_wall(start, end, WALL2_CATEGORY)
 
-        posts = [
+        self.posts = [
             (50,225,"darkblue"),
             (50,375,"darkblue"),
             (850,225,"darkred"),
             (850,375,"darkred")
         ]
-        for x,y,color in posts:
+        for x,y,color in self.posts:
             self.create_post((x,y),color)
 
         # Create players
@@ -201,21 +201,35 @@ class SoccerEnv:
             "velocity":self.ball_body.velocity,
             "position":self.ball_body.position
         }
+        goal_info = {
+            "blue":{
+                "post1": self.posts[0][:2],
+                "post2": self.posts[1][:2],
+            },
+            "red":{
+                "post1": self.posts[2][:2],
+                "post2": self.posts[3][:2],
+            }
+        }
 
         for i in range(4):
-            inp = {"ball":ball_info}
+            inp = {
+                "ball":ball_info,
+                "goals":goal_info,
+            }
             mapping = {
                 0:(1, (2,3)), 
                 1:(0, (2,3)), 
                 2:(3, (0,1)), 
                 3:(2, (0,1))
             }
-            me = self.players[i]
+            me = i
             teammate, (opp1, opp2) = mapping[me]
             for p, desc in zip((me, teammate, opp1, opp2), ("you", "teammate", "opponent1", "opponent2")):
                 player = self.players[p]
                 info = player.get_inputs()
                 inp[desc] = info
+            toreturn[f"p{i+1}"] = inp
         return toreturn
         
 
@@ -404,6 +418,7 @@ class Player:
 
     def get_inputs(self):
         return {
+            "team":self.shape.name,
             "position":self.body.position,
             "velocity":self.body.velocity,
             "kicking":self.shape.kicking
