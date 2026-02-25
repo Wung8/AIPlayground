@@ -19,7 +19,7 @@
         <nav class="nav">
           <a class="nav-link" href="{{ url_for('home') }}">Home</a>
           <a class="nav-link" href="{{ url_for('environments') }}">Environments</a>
-          <a class="nav-link" href="{{ url_for('acm') }}">ACM</a>
+          <a class="nav-link" href="https://acm.cs.wm.edu" target="_blank" rel="noopener noreferrer">ACM</a>
           {% if current_user.is_authenticated %}
             <a class="nav-link" href="{{ url_for('profile') }}">Profile</a>
             <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>

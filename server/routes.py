@@ -179,11 +179,7 @@ def logout():
 def profile():
     return render_template("profile.html")
 
-# placeholders for navbar links you already show
-@app.route("/acm")
-def acm():
-    return "acm page placeholder"
-
+# placeholders for navbar links
 @app.route("/github")
 def github():
     return "github placeholder"
