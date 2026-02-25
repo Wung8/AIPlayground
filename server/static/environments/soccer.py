@@ -25,6 +25,7 @@ def process_reward(lst):
     return np.array(lst) - np.average(lst)
 
 class SoccerEnv:
+    num_players = 4
     resolution = 900, 600
 
     def __init__(self):
@@ -192,6 +193,30 @@ class SoccerEnv:
             self.ball_body.velocity[0]/300,
             self.ball_body.velocity[1]/300
         ]
+    
+    def getInputs(self):
+        toreturn = {}
+
+        ball_info = {
+            "velocity":self.ball_body.velocity,
+            "position":self.ball_body.position
+        }
+
+        for i in range(4):
+            inp = {"ball":ball_info}
+            mapping = {
+                0:(1, (2,3)), 
+                1:(0, (2,3)), 
+                2:(3, (0,1)), 
+                3:(2, (0,1))
+            }
+            me = self.players[i]
+            teammate, (opp1, opp2) = mapping[me]
+            for p, desc in zip((me, teammate, opp1, opp2), ("you", "teammate", "opponent1", "opponent2")):
+                player = self.players[p]
+                info = player.get_inputs()
+                inp[desc] = info
+        return toreturn
         
 
     def reset(self):
@@ -378,13 +403,11 @@ class Player:
             self.body.mass = 1
 
     def get_inputs(self):
-        return [
-            self.body.position[0]/450-1,
-            self.body.position[1]/300-1,
-            self.body.velocity[0]/300,
-            self.body.velocity[1]/300,
-            self.shape.kicking
-        ]
+        return {
+            "position":self.body.position,
+            "velocity":self.body.velocity,
+            "kicking":self.shape.kicking
+        }
         
 
 if __name__ == "__main__":

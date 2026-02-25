@@ -25,7 +25,7 @@ class Bot(db.Model):
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     elo = db.Column(db.Integer, default=800)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    #environment_id = db.Column(db.Integer, db.ForeignKey('environment.id'), nullable=False)
+    environment = db.Column(db.String(30), nullable=False)
 
     def __repr__(self):
         return f"Bot('{self.name}', '{self.environment_id}', '{self.user_id}', '{self.elo}', '{self.date_posted}')"

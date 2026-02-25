@@ -10,6 +10,7 @@ def mag(lst): return math.sqrt(sum(i**2 for i in lst))
 def turn_int(lst): return [int(i) for i in lst]
 
 class SlimeVolleyballEnv:
+    num_players = 2
     resolution = 800, 400
 
     def __init__(self, render_mode="none"):
@@ -66,18 +67,18 @@ class SlimeVolleyballEnv:
 
     def getInputs(self):
         return {
-            "p1": (
-                self.norm_pos(self.slime_left.pos), 
-                self.norm_pos(self.slime_right.pos), 
-                self.norm_pos(self.ball.pos), 
-                self.norm_vel(self.ball.vel)
-            ),
-            "p2": (
-                self.norm_pos(self.slime_right.pos), 
-                self.norm_pos(self.slime_left.pos), 
-                self.norm_pos(self.ball.pos), 
-                self.norm_vel(self.ball.vel)
-            )
+            "p1": {
+                "your_position":self.norm_pos(self.slime_left.pos), 
+                "opponent_position":self.norm_pos(self.slime_right.pos), 
+                "ball_position":self.norm_pos(self.ball.pos), 
+                "ball_velocity":self.norm_vel(self.ball.vel)
+            },
+            "p2": {
+                "your_position":self.norm_pos(self.slime_right.pos), 
+                "opponent_position":self.norm_pos(self.slime_left.pos), 
+                "ball_position":self.norm_pos(self.ball.pos), 
+                "ball_velocity":self.norm_vel(self.ball.vel)
+            }
         }
 
     def step(self, actions, keyboard={}, display=True, is_skip=False):

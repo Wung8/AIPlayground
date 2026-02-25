@@ -9,25 +9,18 @@
       <div class="play-left-card">
         <div class="play-left-title">Select Players:</div>
 
-        <div class="play-field">
-          <div class="play-label">P1:</div>
-          <input 
-            class="play-input" 
-            id="p1Input" 
-            type="text" 
-            value="Human"
-          />
-        </div>
 
-        <div class="play-field">
-          <div class="play-label">P2:</div>
-          <input 
-            class="play-input" 
-            id="p2Input" 
-            type="text" 
-            value="Human"
-          />
-        </div>
+        {% for i in range(num_players) %}
+          <div class="play-field">
+            <div class="play-label">P{{ i + 1 }}:</div>
+            <input 
+              class="play-input" 
+              id="p{{ i + 1 }}Input"
+              type="text" 
+              value="Human"
+            />
+          </div>
+        {% endfor %}
 
         <div class="play-tabs" role="tablist" aria-label="Bot list tabs">
           <button
@@ -176,6 +169,15 @@
         panes.mine.classList.toggle("is-active", name === "mine");
       }
 
+      const params = new URLSearchParams(window.location.search);
+      const initialTab = params.get("tab");
+
+      if (initialTab === "mine") {
+        setTab("mine");
+      } else {
+        setTab("browse");
+      }
+
       tabs.forEach(t => t.addEventListener("click", () => setTab(t.dataset.tab)));
 
       const btn = document.getElementById("eloFilterBtn");
@@ -199,5 +201,15 @@
         });
       }
     })();
+  </script>
+
+  <script>
+    window.addEventListener("keydown", function (e) {
+      const keysToBlock = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "];
+
+      if (keysToBlock.includes(e.key)) {
+        e.preventDefault();
+      }
+    });
   </script>
 {% endblock %}

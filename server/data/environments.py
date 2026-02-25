@@ -4,6 +4,7 @@ ENVIRONMENTS = [
     {
         "slug": "slimevolleyball",
         "title": "Slime Volleyball",
+        "num_players": 2,
         "difficulty": 3,
         "description": "Classic slime volleyball environment.",
         "docSections": [
@@ -15,6 +16,7 @@ ENVIRONMENTS = [
     {
         "slug": "soccer",
         "title": "Soccer",
+        "num_players": 4,
         "difficulty": 4,
         "description": "Play 2v2 soccer.",
         "docSections": [
@@ -25,6 +27,7 @@ ENVIRONMENTS = [
     {
         "slug": "maze",
         "title": "Maze",
+        "num_players": 1,
         "difficulty": 2,
         "description": "Navigate a maze to reach the goal.",
         "docSections": [

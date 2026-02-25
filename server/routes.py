@@ -43,6 +43,7 @@ def env_doc(slug):
 @app.route("/play/<slug>", methods=["GET", "POST"])
 def play(slug):
     env = get_env(slug) or (ENVIRONMENTS[0] if ENVIRONMENTS else None)
+    environment = slug
     if not env:
         return "missing env", 404
 
@@ -73,14 +74,15 @@ def play(slug):
                 flash("That filename is already in use.", "danger")
                 return redirect(url_for("play", slug=slug, tab="mine"))
 
-            f.save(os.path.join(user_dir, filename))
-
             bot = Bot(
                 name=filename[:-3],
                 user_id=current_user.id,
+                environment=environment
             )
             db.session.add(bot)
             db.session.commit()
+
+            f.save(os.path.join(user_dir, filename))
 
             flash("Bot uploaded!", "success")
             return redirect(url_for("play", slug=slug, tab="mine"))
@@ -89,14 +91,14 @@ def play(slug):
         return redirect(url_for("play", slug=slug, tab="mine"))
 
     # normal GET render
-    bots = Bot.query.all()
+    bots = Bot.query.filter_by(environment=environment).all()
 
     if current_user.is_authenticated:
-        my_bots = Bot.query.filter_by(user_id=current_user.id).all()
+        my_bots = Bot.query.filter_by(environment=environment).filter_by(user_id=current_user.id).all()
     else:
         my_bots = []
 
-    return render_template("play.html", env=env, bots=bots, my_bots=my_bots, form=form)
+    return render_template("play.html", env=env, bots=bots, my_bots=my_bots, form=form, num_players=env["num_players"])
 
 '''
 @login_required
@@ -239,7 +241,7 @@ def handle_input(data):
             actions[pnum] = "keyboard"
         else:
             inp = inputs.get(pnum)
-            actions[pnum] = agent.getAction(*inp)
+            actions[pnum] = agent.getAction(inp)
     
     _, _, done = game.step(
         actions=actions, 
