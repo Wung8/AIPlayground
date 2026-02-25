@@ -2,7 +2,7 @@ import importlib.util
 import sys
 import os
 
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, jsonify
 from flask_socketio import emit
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
@@ -99,6 +99,37 @@ def play(slug):
         my_bots = []
 
     return render_template("play.html", env=env, bots=bots, my_bots=my_bots, form=form, num_players=env["num_players"])
+
+from flask import jsonify
+
+@app.route("/delete_bot/<int:bot_id>", methods=["POST"])
+@login_required
+def delete_bot(bot_id):
+    bot = Bot.query.get_or_404(bot_id)
+
+    # security: only allow deleting your own bot
+    if bot.user_id != current_user.id:
+        return jsonify({"success": False, "message": "Unauthorized"}), 403
+
+    # build file path
+    path = os.path.join(
+        app.root_path,
+        "data",
+        "user_uploads",
+        bot.creator.username,
+        bot.environment,
+        bot.name + ".py"
+    )
+
+    # delete file if exists
+    if os.path.exists(path):
+        os.remove(path)
+
+    # delete db entry
+    db.session.delete(bot)
+    db.session.commit()
+
+    return jsonify({"success": True})
 
 '''
 @login_required

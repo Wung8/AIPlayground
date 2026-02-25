@@ -45,7 +45,22 @@ class MazeEnv:
 
         self.last_frame = time.time()
 
-    def step(self, action):
+    def getInputs(self):
+        return {
+            "p1": {
+                "grid": self.grid,
+                "your_position": self.player
+            }
+        }
+
+    def step(self, actions, keyboard={}):
+        action = actions[f"p1"]
+        if action == "keyboard":
+            action = [0,0]
+            if keyboard.get('w'): action[1] -= 1
+            if keyboard.get('a'): action[0] -= 1
+            if keyboard.get('s'): action[1] += 1
+            if keyboard.get('d'): action[0] += 1
         new_pos = self.player[:]
         new_pos[0] += action[0]
         if self.grid[*new_pos] == 0:
@@ -54,6 +69,10 @@ class MazeEnv:
         new_pos[1] += action[1]
         if self.grid[*new_pos] == 0:
             self.player = new_pos
+        
+        done = tuple(self.player) == tuple(self.goal)
+
+        return self.getInputs(), 0, done
     
     def posToGrid(self, pos):
         return int(2*pos[0]+1), int(2*pos[1]+1)

@@ -90,13 +90,17 @@
 
             <div class="play-botlist" id="myBotsList">
               {% for b in my_bots %}
-                <button class="bot-row bot-row-btn" type="button" data-bot="{{ b.name }}">
-                  <div class="bot-name">{{ b.name }}</div>
-                  <div class="bot-meta">
-                    <div class="bot-elo">elo: {{ b.elo }}</div>
-                    <div class="bot-by">by: {{ b.creator.username }}</div>
-                  </div>
-                </button>
+                <div class="bot-row" data-bot="{{ b.name }}" data-id="{{ b.id }}">
+                  <button class="bot-select-btn" type="button" data-bot="{{ b.name }}">
+                    <div class="bot-name">{{ b.name }}</div>
+                    <div class="bot-meta">
+                      <div class="bot-elo">elo: {{ b.elo }}</div>
+                      <div class="bot-by">by: {{ b.creator.username }}</div>
+                    </div>
+                  </button>
+
+                  <button class="bot-delete-btn" type="button">X</button>
+                </div>
               {% endfor %}
               {% if current_user.is_authenticated %}
                 {% if my_bots|length == 3 %}
@@ -212,4 +216,30 @@
       }
     });
   </script>
+
+  <script>
+    document.addEventListener("click", async function (e) {
+      if (!e.target.classList.contains("bot-delete-btn")) return;
+
+      const row = e.target.closest(".bot-row");
+      const botId = row.dataset.id;
+
+      if (!confirm("Delete this bot permanently?")) return;
+
+      const res = await fetch(`/delete_bot/${botId}`, {
+        method: "POST",
+        headers: {
+          "X-Requested-With": "XMLHttpRequest"
+        }
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        row.remove();
+      } else {
+        alert(data.message || "Delete failed.");
+      }
+    });
+    </script>
 {% endblock %}

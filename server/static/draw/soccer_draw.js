@@ -133,5 +133,16 @@ export default function draw(ctx, state) {
         ctx.fill();
     });
 
+    // score
+    ctx.font = "32px Arial";
+    ctx.textAlign = "center"; 
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "rgb(94,156,243)";
+    ctx.fillText(state.score[0], 400, 75);
+    ctx.fillStyle = "rgb(195,135,95)"
+    ctx.fillText(state.score[1], 500, 75);
+    ctx.fillStyle = "white"
+    ctx.fillText("-", 450, 75);
+
     ctx.restore();
 }

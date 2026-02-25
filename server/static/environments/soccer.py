@@ -29,6 +29,7 @@ class SoccerEnv:
     resolution = 900, 600
 
     def __init__(self):
+        self.score = [0,0]
         # Set up pymunk space
         self.reward_scaling = 10
         self.reward_decay = 1
@@ -289,8 +290,10 @@ class SoccerEnv:
                 self.display_prev = False
 
         if self.ball_body.position[0] < 50:
+            self.score[1] += 1
             return [self.get_inputs(i) for i in range(4)], np.array([-1,-1,1,1])*self.reward_scaling, True
         elif self.ball_body.position[0] > 850:
+            self.score[0] += 1
             return [self.get_inputs(i) for i in range(4)], np.array([1,1,-1,-1])*self.reward_scaling, True
         return [self.get_inputs(i) for i in range(4)], [self.get_rewards(i) for i in range(4)], False
             
@@ -315,6 +318,7 @@ class SoccerEnv:
                 "x":x, 
                 "y":y,
             },
+            "score": self.score,
         }
         return state
 
