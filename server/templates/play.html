@@ -3,6 +3,10 @@
 {% set active = "environments" %}
 {% set title = "Play - " ~ env.title %}
 
+{% block styles %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/play.css') }}">
+{% endblock %}
+
 {% block content %}
   <div class="play-shell">
     {% include "_play_sidebar.html" %}

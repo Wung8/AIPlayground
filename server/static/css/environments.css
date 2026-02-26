@@ -1,0 +1,59 @@
+.main.panel {
+  margin: 18px;
+  max-width: calc(100% - 36px);
+}
+
+.panel-pad { padding: 16px 18px; }
+
+.panel-title {
+  font-size: 30px;
+  color: rgba(255,255,255,0.88);
+  margin-bottom: 10px;
+}
+
+.env-list { display: flex; flex-direction: column; gap: 22px; }
+
+.env-card {
+  display: grid;
+  grid-template-columns: 1fr minmax(260px, 360px);
+  gap: 18px;
+  align-items: start;
+}
+
+.env-h2 {
+  font-size: 36px;
+  color: rgba(210,176,106,0.92);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.env-diff { display: flex; gap: 12px; align-items: center; margin-bottom: 8px; }
+.env-diff-label { font-size: 18px; color: rgba(255,255,255,0.55); }
+.env-stars { font-size: 18px; color: rgba(210,176,106,0.70); letter-spacing: 1px; }
+
+.env-desc {
+  font-size: 18px;
+  color: rgba(255,255,255,0.62);
+  line-height: 1.25;
+  max-width: 540px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.env-doc-link {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 18px;
+  color: rgba(255,255,255,0.30);
+  text-decoration: none;
+}
+
+.env-card-right { display: grid; justify-items: end; }
+
+.env-img {
+  width: 100%;
+  max-width: 360px;
+  height: 230px;
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.10);
+}
