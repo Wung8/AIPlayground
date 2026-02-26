@@ -100,43 +100,6 @@ def play(slug):
 
     return render_template("play.html", env=env, bots=bots, my_bots=my_bots, form=form, num_players=env["num_players"])
 
-'''
-@login_required
-@app.route("upload/<slug>")
-def upload_agent(slug):
-    env = get_env(slug) or (ENVIRONMENTS[0] if ENVIRONMENTS else None)
-    if not env:
-        return "missing env", 404
-    
-    form = UploadAgentForm()
-    if not form.validate_on_submit():
-        flash("Upload failed. Please choose a .py file.", "danger")
-        return redirect(url_for("upload", slug=slug, tab="mine"))
-    
-    user_dir = os.path.join(app.root_path, "data", "user_uploads", str(current_user.id), slug)
-    os.makedirs(user_dir, exist_ok=True)
-
-    existing = [f for f in os.listdir(user_dir) if f.endswith(".py")]
-    if len(existing) >= 3:
-        flash("You already have 3 bots for this environment.", "warning")
-        return redirect(url_for("play", slug=slug, tab="mine"))
-
-    f = form.agent_file.data
-    filename = secure_filename(f.filename or "")
-    if not filename.endswith(".py"):
-        flash("Only .py files are allowed.", "danger")
-        return redirect(url_for("play", slug=slug, tab="mine"))
-    if len(filename) < 6:
-        flash("Filename must be at least 3 characters long.", "danger")
-        return redirect(url_for("play", slug=slug, tab="mine"))
-    if os.path.exists(os.path.join(user_dir, filename)):
-        flash("That filename is already in use.", "danger")
-        return redirect(url_for("play", slug=slug, tab="mine"))
-
-    f.save(os.path.join(user_dir, filename))
-    flash("Bot uploaded.", "success")
-    return redirect(url_for("play", slug=slug, tab="mine"))
-'''
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
