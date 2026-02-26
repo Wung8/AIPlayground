@@ -178,6 +178,8 @@
   margin-top: 10px;
   border-top: 1px solid rgba(255,255,255,0.08);
   padding-top: 12px;
+  padding-left: 8px;
+  padding-right: 8px;
   height: calc(100% - 260px);
   overflow: auto;
 }
@@ -189,6 +191,7 @@
   grid-template-columns: 1fr auto;
   align-items: center;
   padding: 0 12px;
+  width: 100%;
   margin-bottom: 12px;
   background: rgba(0,0,0,0.12);
   border: 1px solid rgba(255,255,255,0.08);
@@ -200,12 +203,19 @@
   grid-template-columns: 1fr auto;
   align-items: center;
   width: 100%;
+  min-width: 0;
   cursor: pointer;
 }
 
 .bot-name {
   font-size: 18px;
   color: rgba(255,255,255,0.55);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  justify-self: start;
 }
 
 .bot-meta {
