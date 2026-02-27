@@ -1,26 +1,33 @@
 import numpy as np
 import cv2, math, time, random
 import keyboard as k
+from colorsys import hsv_to_rgb
 
 class MazeEnv:
     num_players = 1
     framerate=20
     resolution = 800, 400
-    colors = {
-        "bg": (50, 50, 50),
-        "wall": (100, 100, 100),
-        "player": (200, 200, 200),
-        "goal": (100, 200, 100),
-        "complete": (230, 230, 100)
-    }
 
     def __init__(self, size=(32, 16)):
         self.size = size
         self.grid = None
         self.player = None
         self.goal = None
+        self.colors = None
     
     def reset(self):
+        hue = random.random() * 100
+        bg_hsv = (hue, 0.3, 50)
+        wall_hsv = (hue, 0.3, 100)
+        goal_hsv = (hue, 0.5, 200)
+
+        self.colors = {
+            "bg": hsv_to_rgb(*bg_hsv),
+            "wall": hsv_to_rgb(*wall_hsv),
+            "player": (200, 200, 200),
+            "goal": hsv_to_rgb(*goal_hsv),
+            "complete": (230, 230, 100)
+        }
 
         self.grid = np.ones((2*self.size[0]+1, 2*self.size[1]+1))
         stack = [(random.randint(0, self.size[0]-1), random.randint(0, self.size[1]-1))]
@@ -135,5 +142,9 @@ while True:
     if k.is_pressed('a'): actions[0] -= 1
     if k.is_pressed('s'): actions[1] += 1
     if k.is_pressed('d'): actions[0] += 1
-    env.step(actions)
+    if k.is_pressed('r'): env.reset()
+    inputs, r, done = env.step({"p1":actions})
     env.display()
+
+    if done:
+        env.reset()
