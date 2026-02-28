@@ -26,12 +26,26 @@ class SudokuEnv:
             [0,6,0, 0,0,0, 2,8,0],
             [0,0,0, 4,1,9, 0,0,5],
             [0,0,0, 0,8,0, 0,7,9]
-        ])
+        ], dtype=np.int8)
 
         self.grid = self.original.copy()
         self.cursor = [0, 0]
         self.prev_keys = {}
         self.last_frame = time.time()
+
+    def getState(self):
+        return {
+            "grid": self.grid.tolist(),
+            "original": self.original.tolist(),
+            "cursor": list(self.cursor),
+        }
+
+    def getInputs(self):
+        return {"p1": {
+            "grid": self.grid.tolist(),
+            "original": self.original.tolist(),
+            "cursor": list(self.cursor),
+        }}
 
     # -------------------------
     # Game Logic
@@ -63,7 +77,7 @@ class SudokuEnv:
     # Step Function
     # -------------------------
 
-    def step(self, actions, keyboard={}):
+    def step(self, actions, keyboard={}, display=False):
 
         action = actions["p1"]
 
@@ -74,13 +88,17 @@ class SudokuEnv:
                 'w': (-1, 0),
                 's': (1, 0),
                 'a': (0, -1),
-                'd': (0, 1)
+                'd': (0, 1),
+                'ArrowUp': (-1, 0),
+                'ArrowDown': (1, 0),
+                'ArrowLeft': (0, -1),
+                'ArrowRight': (0, 1)
             }
 
             for key, (dr, dc) in move_keys.items():
                 if keyboard.get(key) and not self.prev_keys.get(key):
-                    self.cursor[0] = np.clip(self.cursor[0] + dr, 0, 8)
-                    self.cursor[1] = np.clip(self.cursor[1] + dc, 0, 8)
+                    self.cursor[0] = int(np.clip(self.cursor[0] + dr, 0, 8))
+                    self.cursor[1] = int(np.clip(self.cursor[1] + dc, 0, 8))
 
             # Number input
             for num in range(1, 10):
@@ -91,7 +109,7 @@ class SudokuEnv:
                         self.grid[r, c] = num
 
             # Clear cell
-            if keyboard.get('backspace') and not self.prev_keys.get('backspace'):
+            if keyboard.get('0') and not self.prev_keys.get('0'):
                 r, c = self.cursor
                 if self.original[r, c] == 0:
                     self.grid[r, c] = 0
@@ -243,30 +261,31 @@ class SudokuEnv:
         self.last_frame = this_frame
 
 
+if __name__ == "__main__":
 # -------------------------
 # Run Loop (same style)
 # -------------------------
 
-env = SudokuEnv()
-env.reset()
+    env = SudokuEnv()
+    env.reset()
 
-while True:
-    keyboard_input = {}
+    while True:
+        keyboard_input = {}
 
-    for key in list("wasd123456789"):
-        if k.is_pressed(key):
-            keyboard_input[key] = True
+        for key in list("wasd123456789"):
+            if k.is_pressed(key):
+                keyboard_input[key] = True
 
-    if k.is_pressed('backspace'):
-        keyboard_input['backspace'] = True
+        if k.is_pressed('backspace'):
+            keyboard_input['backspace'] = True
 
-    if k.is_pressed('r'):
-        env.reset()
+        if k.is_pressed('r'):
+            env.reset()
 
-    _, _, done = env.step({"p1": "keyboard"}, keyboard=keyboard_input)
-    env.display()
+        _, _, done = env.step({"p1": "keyboard"}, keyboard=keyboard_input)
+        env.display()
 
-    if done:
-        print("Solved!")
-        time.sleep(2)
-        env.reset()
+        if done:
+            print("Solved!")
+            time.sleep(2)
+            env.reset()

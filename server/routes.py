@@ -15,6 +15,8 @@ from server.data.environments import ENVIRONMENTS, get_env
 from server.static.environments.slimevolleyball import SlimeVolleyballEnv  # assume you moved logic here
 from server.static.environments.soccer import SoccerEnv
 
+from server.environment_registry import ENV_REGISTRY
+
 
 # store one game per client (later: one per env per client)
 games = {}
@@ -131,44 +133,6 @@ def delete_bot(bot_id):
 
     return jsonify({"success": True})
 
-'''
-@login_required
-@app.route("upload/<slug>")
-def upload_agent(slug):
-    env = get_env(slug) or (ENVIRONMENTS[0] if ENVIRONMENTS else None)
-    if not env:
-        return "missing env", 404
-    
-    form = UploadAgentForm()
-    if not form.validate_on_submit():
-        flash("Upload failed. Please choose a .py file.", "danger")
-        return redirect(url_for("upload", slug=slug, tab="mine"))
-    
-    user_dir = os.path.join(app.root_path, "data", "user_uploads", str(current_user.id), slug)
-    os.makedirs(user_dir, exist_ok=True)
-
-    existing = [f for f in os.listdir(user_dir) if f.endswith(".py")]
-    if len(existing) >= 3:
-        flash("You already have 3 bots for this environment.", "warning")
-        return redirect(url_for("play", slug=slug, tab="mine"))
-
-    f = form.agent_file.data
-    filename = secure_filename(f.filename or "")
-    if not filename.endswith(".py"):
-        flash("Only .py files are allowed.", "danger")
-        return redirect(url_for("play", slug=slug, tab="mine"))
-    if len(filename) < 6:
-        flash("Filename must be at least 3 characters long.", "danger")
-        return redirect(url_for("play", slug=slug, tab="mine"))
-    if os.path.exists(os.path.join(user_dir, filename)):
-        flash("That filename is already in use.", "danger")
-        return redirect(url_for("play", slug=slug, tab="mine"))
-
-    f.save(os.path.join(user_dir, filename))
-    flash("Bot uploaded.", "success")
-    return redirect(url_for("play", slug=slug, tab="mine"))
-'''
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     # prefixes prevent collisions since both forms share field names like "email", "password", "submit"
@@ -229,10 +193,8 @@ def handle_connect(data):
     slug = data.get("env_slug")
     agents = ["human" for i in range(4)]
 
-    if slug == "soccer":
-        games[request.sid] = [SoccerEnv(), agents]
-    elif slug == "slimevolleyball":
-        games[request.sid] = [SlimeVolleyballEnv(), agents]
+    if slug in ENV_REGISTRY:
+        games[request.sid] = [ENV_REGISTRY[slug](), agents]
     else:
         print("Unknown environment:", slug)
         return
@@ -270,7 +232,7 @@ def handle_input(data):
         else:
             inp = inputs.get(pnum)
             actions[pnum] = agent.getAction(inp)
-    
+        
     _, _, done = game.step(
         actions=actions, 
         keyboard=data['action'], 

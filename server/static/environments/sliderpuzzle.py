@@ -70,19 +70,27 @@ class SliderPuzzleEnv:
     def getInputs(self):
         return {
             "p1": {
-                "grid": self.grid,
-                "your_position": self.player
+                "grid": self.grid[:],
             }
         }
+    
+    def getState(self):
+        return {
+            "grid": self.grid[:],
+            "moving_tile": self.moving_tile,
+            "animation_tick": self.animation_tick,
+            "animation": self.animation,
+            "solved": self.is_solved(self.grid)
+        }
 
-    def step(self, actions, keyboard={}):
+    def step(self, actions, keyboard={}, display=False):
 
         action = actions[f"p1"]
         neighbors = self.get_neighbors(self.grid)
 
         if action == "keyboard":
             keys = {'w':0, 's':1, 'a':2, 'd':3,
-                    'up':0, 'down':1, 'left':2, 'right':3}
+                    'ArrowUp':0, 'ArrowDown':1, 'ArrowLeft':2, 'ArrowRight':3}
             for key in keys:
                 if keyboard.get(key) and not self.prev_keys.get(key): 
                     action = [keys[key] + 1]
@@ -179,20 +187,20 @@ class SliderPuzzleEnv:
         self.last_frame = this_frame
         
 
+if __name__ == "__main__":
+                
+    env = SliderPuzzleEnv()
+    env.reset()
+    while True:
+        keyboard = {}
+        for key in "wasd":
+            if k.is_pressed(key): keyboard[key] = True
 
-            
-env = SliderPuzzleEnv()
-env.reset()
-while True:
-    keyboard = {}
-    for key in "wasd":
-        if k.is_pressed(key): keyboard[key] = True
+        if k.is_pressed('r'): env.reset()
 
-    if k.is_pressed('r'): env.reset()
+        _, _, done = env.step({"p1":"keyboard"}, keyboard=keyboard)
+        env.display()
 
-    _, _, done = env.step({"p1":"keyboard"}, keyboard=keyboard)
-    env.display()
-
-    if done:
-        env.reset()
+        if done:
+            env.reset()
 

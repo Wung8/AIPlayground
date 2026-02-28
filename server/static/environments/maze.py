@@ -60,7 +60,16 @@ class MazeEnv:
             }
         }
 
-    def step(self, actions, keyboard={}):
+    def getState(self):
+        state = {
+            "grid": self.grid.tolist(), 
+            "player": self.player,
+            "goal": self.goal,
+            "colors": self.colors
+        }
+        return state
+
+    def step(self, actions, keyboard={}, display=False):
         action = actions[f"p1"]
         if action == "keyboard":
             action = [0,0]
@@ -133,18 +142,19 @@ class MazeEnv:
         this_frame = time.time()
         cv2.waitKey(max(int(1000/self.framerate-(this_frame-self.last_frame)), 20))
         self.last_frame = this_frame
-            
-env = MazeEnv()
-env.reset()
-while True:
-    actions = [0,0]
-    if k.is_pressed('w'): actions[1] -= 1
-    if k.is_pressed('a'): actions[0] -= 1
-    if k.is_pressed('s'): actions[1] += 1
-    if k.is_pressed('d'): actions[0] += 1
-    if k.is_pressed('r'): env.reset()
-    inputs, r, done = env.step({"p1":actions})
-    env.display()
 
-    if done:
-        env.reset()
+if __name__ == "__main__":      
+    env = MazeEnv()
+    env.reset()
+    while True:
+        actions = [0,0]
+        if k.is_pressed('w'): actions[1] -= 1
+        if k.is_pressed('a'): actions[0] -= 1
+        if k.is_pressed('s'): actions[1] += 1
+        if k.is_pressed('d'): actions[0] += 1
+        if k.is_pressed('r'): env.reset()
+        inputs, r, done = env.step({"p1":actions})
+        env.display()
+
+        if done:
+            env.reset()

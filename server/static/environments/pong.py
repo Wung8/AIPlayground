@@ -11,7 +11,6 @@ class PongEnv:
     buffer = 30
     size = 300, 150
     scale = resolution[0] / size[0]
-    scale = 3
 
     paddle_offset = 50
     paddle_width = 3
@@ -54,18 +53,55 @@ XXX  XXXXXXX  XXXXXXX  XXXX  X
     def getInputs(self):
         return {
             "p1": {
-                "grid": self.grid,
-                "your_position": self.player
+                "your_position": self.player1,
+                "opponent_position": self.player2,
+                "ball_position": self.ball,
+                "ball_velocity": (self.ball_vel[0]*self.ball_speed, self.ball_vel[1]*self.ball_speed)
+            },
+            "p2": {
+                "your_position": self.player2,
+                "opponent_position": self.player1,
+                "ball_position": self.ball,
+                "ball_velocity": (self.ball_vel[0]*self.ball_speed, self.ball_vel[1]*self.ball_speed)
             }
         }
 
-    def step(self, actions, keyboard={}):
+    def getState(self):
+        state = {
+            "left": {
+                "x": self.player1[0],
+                "y": self.player1[1]
+            },
+            "right": {
+                "x": self.player2[0],
+                "y": self.player2[1]
+            },
+            "ball": {
+                "x": self.ball[0],
+                "y": self.ball[1]
+            },
+            "score": self.score
+        }
+        return state
+
+    def step(self, actions, keyboard={}, display=False):
         if self.counter: 
             self.counter -= 1
-            return
+            return 0, 0, 0
 
         for i in range(2):
             action = actions[f"p{i+1}"]
+            if action == "keyboard":
+                keys = {
+                    "p1": "ws",
+                    "p2": ["ArrowUp", "ArrowDown"]
+                }
+                action = [0]
+                keyset = keys[f"p{i+1}"]
+                for key in keyset:
+                    if keyboard.get(key):
+                        idx = keyset.index(key)
+                        action[0] += (idx-0.5) * 2
             player = [self.player1, self.player2][i]
             player[1] += action[0] * self.paddle_speed
             if player[1] < 0 + self.paddle_height//2:
@@ -110,6 +146,8 @@ XXX  XXXXXXX  XXXXXXX  XXXX  X
         if self.ball[0] >= self.size[0]-1:
             self.score[0] += 1
             self.reset()
+        
+        return 0, 0, 0
             
     def posToGrid(self, pos):
         return int(2*pos[0]+1), int(2*pos[1]+1)
@@ -204,18 +242,19 @@ XXX  XXXXXXX  XXXXXXX  XXXX  X
         this_frame = time.time()
         cv2.waitKey(max(int(1000/self.framerate-(this_frame-self.last_frame)), 20))
         self.last_frame = this_frame
-            
-env = PongEnv()
-env.reset()
-while True:
-    actions1, actions2 = [0], [0]
-    if k.is_pressed('w'): actions1[0] -= 1
-    if k.is_pressed('s'): actions1[0] += 1
-    if k.is_pressed('o'): actions2[0] -= 1
-    if k.is_pressed('l'): actions2[0] += 1
-    if k.is_pressed('r'): env.reset()
-    env.step({"p1":actions1, "p2":actions2})
-    env.display()
 
-    #if done:
-    #    env.reset()
+if __name__ == "__main__":   
+    env = PongEnv()
+    env.reset()
+    while True:
+        actions1, actions2 = [0], [0]
+        if k.is_pressed('w'): actions1[0] -= 1
+        if k.is_pressed('s'): actions1[0] += 1
+        if k.is_pressed('o'): actions2[0] -= 1
+        if k.is_pressed('l'): actions2[0] += 1
+        if k.is_pressed('r'): env.reset()
+        env.step({"p1":actions1, "p2":actions2})
+        env.display()
+
+        #if done:
+        #    env.reset()

@@ -250,7 +250,7 @@ class SoccerEnv:
         
         numplayers = 0
         for p in ["p1","p2","p3","p4"]:
-            if actions[p] == "player":
+            if actions[p] == "keyboard":
                 numplayers += 1
 
         keysets = [
