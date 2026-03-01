@@ -118,6 +118,19 @@
             outline: 2px solid rgba(255, 255, 255, 0.35);
             box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.10);
           }
+
+          /* search results list injected under the search bar */
+          .play-search-results{
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+          }
+
+          /* single elo sort button states */
+          .play-sort-pill.is-neutral{
+            opacity: 0.55;
+          }
         `;
         document.head.appendChild(style);
       }
@@ -154,7 +167,7 @@
       }
 
       document.addEventListener("click", (e) => {
-        const btnRow = e.target.closest(".bot-row-btn");
+        const btnRow = e.target.closest(".bot-row-btn, .bot-select-btn");
         if (!btnRow) return;
 
         const botName = btnRow.dataset.bot || "";
@@ -162,6 +175,176 @@
 
         fillActivePlayer(botName);
       });
+
+      // ===== browse: file-contains search results shown under the search bar =====
+      const searchInput = document.getElementById("botSearch");
+      const browseList = document.getElementById("browseList");
+
+      function ensureResultsContainer() {
+        if (!searchInput) return null;
+        const searchBlock = searchInput.closest(".play-search");
+        if (!searchBlock) return null;
+
+        let results = document.getElementById("botSearchResults");
+        if (results) return results;
+
+        results = document.createElement("div");
+        results.id = "botSearchResults";
+        results.className = "play-search-results";
+        results.style.display = "none";
+
+        // insert right below the search row (so it appears under the search bar)
+        const searchRow = searchBlock.querySelector(".play-search-row");
+        if (searchRow && searchRow.parentNode) {
+          searchRow.parentNode.insertBefore(results, searchRow.nextSibling);
+        } else {
+          searchBlock.appendChild(results);
+        }
+
+        return results;
+      }
+
+      function escapeHtml(s) {
+        return String(s ?? "").replace(/[&<>"']/g, (c) => (
+          { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]
+        ));
+      }
+
+      let searchTimer = null;
+      async function runFileSearch(q) {
+        const results = ensureResultsContainer();
+        if (!results) return;
+
+        const query = (q || "").trim();
+        if (!query) {
+          results.innerHTML = "";
+          results.style.display = "none";
+          return;
+        }
+
+        try {
+          const slug = window.__ENV_SLUG__ || "";
+          const res = await fetch(`/bot_search/${encodeURIComponent(slug)}?q=${encodeURIComponent(query)}`, {
+            headers: { "X-Requested-With": "XMLHttpRequest" }
+          });
+          const data = await res.json();
+
+          const items = Array.isArray(data.results) ? data.results : [];
+          results.innerHTML = items.map((b) => {
+            return `
+              <button class="bot-row bot-row-btn" type="button" data-bot="${escapeHtml(b.name)}">
+                <div class="bot-name">${escapeHtml(b.name)}</div>
+                <div class="bot-meta">
+                  <div class="bot-elo">elo: ${escapeHtml(b.elo)}</div>
+                  <div class="bot-by">by: ${escapeHtml(b.by)}</div>
+                </div>
+              </button>
+            `;
+          }).join("");
+
+          results.style.display = "flex";
+
+          // apply current sort to the results list too
+          applyCurrentSort(results);
+        } catch (e) {
+          results.innerHTML = "";
+          results.style.display = "none";
+        }
+      }
+
+      if (searchInput) {
+        searchInput.addEventListener("input", () => {
+          clearTimeout(searchTimer);
+          searchTimer = setTimeout(() => runFileSearch(searchInput.value), 180);
+        });
+      }
+
+      // ===== single elo sort button: neutral (alpha), up (elo desc), down (elo asc) =====
+      const eloSortBtn = document.getElementById("sortByElo");
+      let sortState = 0; // 0=neutral(alpha), 1=elo desc, 2=elo asc
+
+      function getBotNameFromRow(row) {
+        const el = row.querySelector(".bot-name");
+        return (el ? el.textContent : row.dataset.bot || "").trim().toLowerCase();
+      }
+
+      function getBotEloFromRow(row) {
+        // supports either data-elo, or parsing "elo: ####"
+        const d = row.getAttribute("data-elo");
+        if (d != null && d !== "") {
+          const n = Number(d);
+          return Number.isFinite(n) ? n : 0;
+        }
+        const el = row.querySelector(".bot-elo");
+        const txt = (el ? el.textContent : "").toLowerCase();
+        const m = txt.match(/(-?\d+(\.\d+)?)/);
+        if (!m) return 0;
+        const n = Number(m[1]);
+        return Number.isFinite(n) ? n : 0;
+      }
+
+      function sortContainer(container, mode) {
+        if (!container) return;
+
+        // only sort bot rows (buttons/divs using bot-row class)
+        const rows = Array.from(container.querySelectorAll(".bot-row"));
+        if (!rows.length) return;
+
+        rows.sort((a, b) => {
+          if (mode === 0) {
+            const an = getBotNameFromRow(a);
+            const bn = getBotNameFromRow(b);
+            return an.localeCompare(bn);
+          }
+          if (mode === 1) {
+            return getBotEloFromRow(b) - getBotEloFromRow(a);
+          }
+          return getBotEloFromRow(a) - getBotEloFromRow(b);
+        });
+
+        rows.forEach(r => container.appendChild(r));
+      }
+
+      function applyCurrentSort(maybeResultsContainer) {
+        // always sort main browse list
+        sortContainer(browseList, sortState);
+
+        // also sort injected results list if provided or exists
+        const results = maybeResultsContainer || document.getElementById("botSearchResults");
+        if (results && results.style.display !== "none") {
+          sortContainer(results, sortState);
+        }
+      }
+
+      function updateEloBtnUI() {
+        if (!eloSortBtn) return;
+
+        if (sortState === 0) {
+          eloSortBtn.textContent = "Elo";
+          eloSortBtn.classList.add("is-neutral");
+        } else if (sortState === 1) {
+          eloSortBtn.textContent = "Elo ▲";
+          eloSortBtn.classList.remove("is-neutral");
+        } else {
+          eloSortBtn.textContent = "Elo ▼";
+          eloSortBtn.classList.remove("is-neutral");
+        }
+      }
+
+      if (eloSortBtn) {
+        // initialize button to greyed-out neutral state
+        sortState = 0;
+        updateEloBtnUI();
+
+        eloSortBtn.addEventListener("click", () => {
+          sortState = (sortState + 1) % 3;
+          updateEloBtnUI();
+          applyCurrentSort();
+        });
+
+        // initial sort alphabetically
+        applyCurrentSort();
+      }
     })();
   </script>
 

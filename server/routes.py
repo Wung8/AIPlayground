@@ -102,7 +102,49 @@ def play(slug):
 
     return render_template("play.html", env=env, bots=bots, my_bots=my_bots, form=form, num_players=env["num_players"])
 
-from flask import jsonify
+@app.route("/bot_search/<slug>", methods=["GET"])
+def bot_search(slug):
+    env = get_env(slug) or (ENVIRONMENTS[0] if ENVIRONMENTS else None)
+    if not env:
+        return jsonify({"results": []}), 404
+
+    q = (request.args.get("q") or "").strip()
+    if not q:
+        return jsonify({"results": []})
+
+    # search bots in this environment by whether their .py file contains the substring
+    bots = Bot.query.filter_by(environment=slug).all()
+
+    q_low = q.lower()
+    out = []
+
+    for b in bots:
+        path = os.path.join(
+            app.root_path,
+            "data",
+            "user_uploads",
+            str(b.creator.username),
+            slug,
+            b.name + ".py"
+        )
+
+        try:
+            if not os.path.exists(path):
+                continue
+
+            with open(path, "r", encoding="utf-8", errors="ignore") as f:
+                txt = f.read()
+
+            if q_low in txt.lower():
+                out.append({
+                    "name": b.name,
+                    "elo": b.elo,
+                    "by": b.creator.username,
+                })
+        except Exception:
+            continue
+
+    return jsonify({"results": out})
 
 @app.route("/delete_bot/<int:bot_id>", methods=["POST"])
 @login_required
