@@ -3,6 +3,10 @@
 {% set active = "environments" %}
 {% set title = "Play - " ~ env.title %}
 
+{% block styles %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/play.css') }}">
+{% endblock %}
+
 {% block content %}
   <div class="play-shell">
     {% include "_play_sidebar.html" %}
@@ -89,6 +93,64 @@
           if (btn) btn.textContent = "Elo: Any";
         });
       }
+
+      // player selection highlighting + bot-to-field fill
+      const playerInputs = Array.from(document.querySelectorAll(".play-input"));
+      let activePlayerIdx = 0;
+
+      function ensureHighlightStyles() {
+        if (document.getElementById("playerHighlightStyle")) return;
+        const style = document.createElement("style");
+        style.id = "playerHighlightStyle";
+        style.textContent = `
+          .play-input.is-active-player{
+            outline: 2px solid rgba(255, 255, 255, 0.35);
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.10);
+          }
+        `;
+        document.head.appendChild(style);
+      }
+
+      function setActivePlayer(idx) {
+        if (!playerInputs.length) return;
+        activePlayerIdx = ((idx % playerInputs.length) + playerInputs.length) % playerInputs.length;
+
+        playerInputs.forEach((inp, i) => {
+          inp.classList.toggle("is-active-player", i === activePlayerIdx);
+        });
+
+        const active = playerInputs[activePlayerIdx];
+        if (active) active.focus({ preventScroll: true });
+      }
+
+      ensureHighlightStyles();
+      setActivePlayer(0);
+
+      playerInputs.forEach((inp, idx) => {
+        inp.addEventListener("focus", () => setActivePlayer(idx));
+        inp.addEventListener("click", () => setActivePlayer(idx));
+      });
+
+      function fillActivePlayer(name) {
+        if (!playerInputs.length) return;
+        const active = playerInputs[activePlayerIdx];
+        if (!active) return;
+
+        active.value = name;
+
+        // progress to next, loop back after last
+        setActivePlayer(activePlayerIdx + 1);
+      }
+
+      document.addEventListener("click", (e) => {
+        const btnRow = e.target.closest(".bot-row-btn");
+        if (!btnRow) return;
+
+        const botName = btnRow.dataset.bot || "";
+        if (!botName) return;
+
+        fillActivePlayer(botName);
+      });
     })();
   </script>
 
@@ -126,5 +188,5 @@
         alert(data.message || "Delete failed.");
       }
     });
-    </script>
+  </script>
 {% endblock %}

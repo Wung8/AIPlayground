@@ -1,0 +1,87 @@
+.profile {
+  padding: 26px 34px;
+  display: grid;
+  justify-items: center;
+}
+
+.profile-wrap { width: min(980px, calc(100vw - 64px)); }
+
+.profile-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 22px;
+  padding: 8px 0 26px;
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.10);
+}
+
+.profile-name {
+  font-size: 22px;
+  color: rgba(255,255,255,0.86);
+  margin-top: 6px;
+}
+
+.profile-rank {
+  font-size: 18px;
+  color: rgba(255,255,255,0.55);
+  margin-top: 22px;
+}
+
+.profile-list {
+  max-width: 980px;
+  margin-left: 120px;
+  display: grid;
+  gap: 18px;
+}
+
+.profile-card {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 0.7fr;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 26px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.pc-title {
+  font-size: 30px;
+  font-weight: 700;
+  color: rgba(210,176,106,0.92);
+  margin-bottom: 6px;
+}
+
+.pc-diff {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 16px;
+  color: rgba(255,255,255,0.55);
+}
+
+.pc-stars { color: rgba(210,176,106,0.70); letter-spacing: 1px; }
+
+.pc-bot {
+  font-size: 24px;
+  color: rgba(255,255,255,0.72);
+}
+
+.pc-edit {
+  margin-left: 14px;
+  font-size: 16px;
+  color: rgba(255,255,255,0.25);
+  text-decoration: none;
+}
+
+.pc-elo, .pc-rank {
+  font-size: 18px;
+  color: rgba(255,255,255,0.55);
+  text-align: right;
+}
+
+.pc-rank { margin-top: 18px; }

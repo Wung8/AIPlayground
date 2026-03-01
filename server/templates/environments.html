@@ -8,6 +8,10 @@
   {{ "★" * n }}{{ "☆" * (5 - n) }}
 {%- endmacro %}
 
+{% block styles %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/environments.css') }}">
+{% endblock %}
+
 {% block content %}
   <div class="content">
     {% include "_sidebar.html" %}  

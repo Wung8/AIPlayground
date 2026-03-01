@@ -3,6 +3,10 @@
 {% set active = "home" %}
 {% set title = "AI Playground" %}
 
+{% block styles %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+
 {% block content %}
   <div class="home">
     <div class="home-hero">

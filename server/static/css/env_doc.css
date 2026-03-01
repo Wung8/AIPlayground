@@ -1,0 +1,125 @@
+.doc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-top: 6px;
+  padding-left: var(--docPadLeft);
+}
+
+.back-link {
+  display: inline-block;
+  font-size: 18px;
+  color: rgba(210, 176, 106, 0.70);
+  margin-bottom: 10px;
+  text-decoration: none;
+}
+
+.doc-title-row { display: flex; align-items: baseline; gap: 18px; }
+
+.doc-title {
+  font-size: 40px;
+  font-weight: 700;
+  color: rgba(210,176,106,0.92);
+}
+
+.doc-title-muted {
+  font-size: 28px;
+  color: rgba(255,255,255,0.70);
+}
+
+.doc-diff {
+  margin-top: 6px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.doc-diff-label { font-size: 18px; color: rgba(255,255,255,0.55); }
+.doc-stars { font-size: 18px; color: rgba(210,176,106,0.70); letter-spacing: 1px; }
+
+.doc-gh {
+  margin-top: 14px;
+  font-size: 20px;
+  color: rgba(255,255,255,0.25);
+  text-decoration: none;
+}
+
+.doc-canvas-wrap {
+  margin-top: 18px;
+  display: grid;
+  justify-items: center;
+  padding-left: var(--docPadLeft);
+}
+
+.doc-canvas {
+  width: 760px;
+  height: 380px;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.10);
+}
+
+.doc-play-wrap {
+  margin-top: 14px;
+  padding-left: var(--docPadLeft);
+  display: flex;
+  justify-content: center;
+}
+
+.doc-play-btn {
+  display: inline-block;
+  padding: 12px 22px;
+  font-size: 18px;
+  border-radius: 6px;
+  background: rgba(160, 210, 255, 0.85);
+  color: rgba(0, 0, 0, 0.65);
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.40);
+}
+
+.doc-play-btn:hover { background: rgba(160, 210, 255, 0.95); }
+
+.doc-desc {
+  margin-top: 26px;
+  padding-left: var(--docPadLeft);
+}
+
+.doc-desc-h {
+  font-size: 40px;
+  color: rgba(255,255,255,0.88);
+  margin-bottom: 12px;
+}
+
+.doc-desc-p {
+  font-size: 18px;
+  color: rgba(255,255,255,0.62);
+  max-width: 900px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.doc-sections {
+  margin-top: 22px;
+  display: grid;
+  gap: 16px;
+  max-width: 900px;
+  padding-left: var(--docPadLeft);
+}
+
+.doc-block {
+  border: 1px solid rgba(255,255,255,0.10);
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.05);
+}
+
+.doc-h {
+  font-size: 22px;
+  color: rgba(255,255,255,0.82);
+  margin-bottom: 8px;
+}
+
+.doc-ul {
+  margin: 0;
+  padding-left: 20px;
+  color: rgba(255,255,255,0.62);
+  font-size: 18px;
+}
