@@ -14,7 +14,18 @@
     <main class="play-main">
       <div class="play-main-head">
         <a class="play-back" href="{{ url_for('environments', slug=env.slug) }}">Back</a>
-        <div class="play-title">{{ env.title }}</div>
+
+        <div class="play-main-row">
+          <div class="play-title">{{ env.title }}</div>
+
+          <div class="play-difficulty">
+            <button class="play-diff-btn" data-diff="easy">Easy</button>
+            <button class="play-diff-btn" data-diff="medium">Med</button>
+            <button class="play-diff-btn" data-diff="hard">Hard</button>
+          </div>
+
+          <div></div> <!-- empty right spacer -->
+        </div>
       </div>
 
       <div class="play-stage">

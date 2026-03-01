@@ -1,11 +1,37 @@
 // static/play.js
 // IMPORTANT: Must be loaded with <script type="module">
 
+const ENV = window.__ENV_SLUG__;
+
+let difficulty = "medium";
+
 const socket = io();
+
+const diffButtons = document.querySelectorAll(".play-diff-btn");
+
+function setDifficulty(diff) {
+  difficulty = diff;
+
+  diffButtons.forEach(btn => {
+    btn.classList.toggle("is-active", btn.dataset.diff === diff);
+  });
+  reset();
+}
+
+diffButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    setDifficulty(btn.dataset.diff);
+  });
+});
+
+// default highlight
+setDifficulty("medium");
 
 const resetBtn = document.getElementById("btnReset");
 
-resetBtn.addEventListener("click", () => {
+resetBtn.addEventListener("click", () => {reset()});
+
+function reset() {
   const inputs = document.querySelectorAll(".play-input");
 
   const players = [];
@@ -15,10 +41,11 @@ resetBtn.addEventListener("click", () => {
   });
 
   socket.emit("reset_game", {
-    env_slug: window.__ENV_SLUG__,
+    env_slug: ENV,
+    difficulty: difficulty,
     players: players
   });
-});
+}
 
 socket.on("bot_error", (data) => {
   showBotError(data.message);
@@ -46,8 +73,6 @@ function showBotError(message) {
 
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
-
-const ENV = window.__ENV_SLUG__ || "slimevolleyball";
 
 const keys = {};
 let draw = null;
@@ -122,7 +147,8 @@ function gameLoop(currentTime) {
 
 socket.on("connect", () => {
   socket.emit("join_env", {
-    env_slug: ENV
+    env_slug: ENV,
+    difficulty: difficulty
   });
 });
 
@@ -143,16 +169,6 @@ socket.on("state", (state) => {
   }
 });
 
-/* =============================
-   UI Controls
-============================= */
-
-const btnReset = document.getElementById("btnReset");
-if (btnReset) {
-  btnReset.addEventListener("click", () => {
-    socket.emit("reset", { env_slug: ENV });
-  });
-}
 
 const chkDebug = document.getElementById("chkDebug");
 if (chkDebug) {

@@ -8,8 +8,18 @@ class MazeEnv:
     framerate=20
     resolution = 800, 400
 
-    def __init__(self, size=(32, 16)):
-        self.size = size
+    difficulty_settings = {
+        "easy": (16, 8),
+        "medium": (32, 16),
+        "hard": (64, 32)
+    }
+
+    def __init__(self, size=(32, 16), difficulty=None, **kwargs):
+        if difficulty:
+            self.size = self.difficulty_settings[difficulty]
+        else:
+            self.size = size
+        
         self.grid = None
         self.player = None
         self.goal = None
@@ -148,7 +158,7 @@ class MazeEnv:
         self.last_frame = this_frame
 
 if __name__ == "__main__":      
-    env = MazeEnv()
+    env = MazeEnv(difficulty="hard")
     env.reset()
     while True:
         actions = [0,0]

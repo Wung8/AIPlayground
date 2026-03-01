@@ -191,10 +191,11 @@ def contact():
 @socketio.on("join_env")
 def handle_connect(data):
     slug = data.get("env_slug")
+    difficulty = data.get("difficulty")
     agents = ["human" for i in range(4)]
 
     if slug in ENV_REGISTRY:
-        games[request.sid] = [ENV_REGISTRY[slug](), agents]
+        games[request.sid] = [ENV_REGISTRY[slug](difficulty=difficulty), agents]
     else:
         print("Unknown environment:", slug)
         return
@@ -232,7 +233,7 @@ def handle_input(data):
         else:
             inp = inputs.get(pnum)
             actions[pnum] = agent.getAction(inp)
-        
+            
     _, _, done = game.step(
         actions=actions, 
         keyboard=data['action'], 
@@ -271,9 +272,11 @@ def load_bot(bot, slug):
 @socketio.on("reset_game")
 def handle_reset(data):
     slug = data.get("env_slug")
+    difficulty = data.get("difficulty")
+    print(slug, difficulty)
 
     if slug in ENV_REGISTRY:
-        game = ENV_REGISTRY[slug]()
+        game = ENV_REGISTRY[slug](difficulty=difficulty)
     else:
         print("Unknown environment:", slug)
         return
@@ -292,7 +295,6 @@ def handle_reset(data):
         else:
             agents.append("human")
     
-    print(agents)
     game.reset()
     games[request.sid] = [game, agents]
 

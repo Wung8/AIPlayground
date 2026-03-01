@@ -1,16 +1,50 @@
 import numpy as np
 import heapq
+import random
 
 class SliderPuzzleFunctionality:
 
-    def __init__(self):
+    def __init__(self, difficulty="medium", **kwargs):
         self.grid = None
-        self.solved_grid = [ 1,  2,  3,  4,  5,
-                             6,  7,  8,  9, 10,
-                             11, 12, 13, 14, 15,
-                             16, 17, 18, 19, 20,
-                             21, 22, 23, 24,  0 ]
-        self.move_mapping = ["up", "down", "left", "right"]
+
+        match difficulty:
+            case "easy":
+                self.N = 3
+                self.solved_grid = [ 1,  2,  3,
+                                     4,  5,  6,
+                                     7,  8,  0 ]
+            case "medium":
+                self.N = 4
+                self.solved_grid = [ 1,  2,  3,  4,
+                                     5,  6,  7,  8,
+                                     9,  10, 11, 12,
+                                     13, 14, 15, 0 ]
+            case "hard":
+                self.N = 5
+                self.solved_grid = [ 1,  2,  3,  4,  5,
+                                     6,  7,  8,  9, 10,
+                                     11, 12, 13, 14, 15,
+                                     16, 17, 18, 19, 20,
+                                     21, 22, 23, 24,  0 ]
+    
+    def reset(self):
+        self.grid = self.solved_grid[:]
+
+        while True:
+            random.shuffle(self.grid)
+            if self.is_solvable(self.grid):
+                break
+
+    def is_solvable(self, grid):
+        arr = [x for x in grid if x != 0]
+        inversions = 0
+        
+        for i in range(len(arr)):
+            for j in range(i + 1, len(arr)):
+                if arr[i] > arr[j]:
+                    inversions += 1
+
+        return inversions % 2 == 0
 
     def is_solved(self, grid):
         return grid == self.solved_grid
@@ -19,38 +53,21 @@ class SliderPuzzleFunctionality:
         neighbors = [None for i in range(4)] # up down left right
         dirs = ((1,0), (-1,0), (0,1), (0,-1))
         hole = grid.index(0)
-        r, c = divmod(hole, 5)
+        r, c = divmod(hole, self.N)
 
         for n, (dr, dc) in enumerate(dirs):
             nr, nc = r + dr, c + dc
 
-            if 0 <= nr < 5 and 0 <= nc < 5:
-                swap_idx = nr * 5 + nc
+            if 0 <= nr < self.N and 0 <= nc < self.N:
+                swap_idx = nr * self.N + nc
                 new_grid = grid[:]
                 new_grid[hole], new_grid[swap_idx] = new_grid[swap_idx], new_grid[hole]
                 neighbors[n] = new_grid
 
         return neighbors
 
-    def getInputs(self):
-        return {
-            "p1": {
-                "grid": self.grid[:],
-            }
-        }
-    
-    def getState(self):
-        return {
-            "grid": self.grid[:],
-            "moving_tile": self.moving_tile,
-            "animation_tick": self.animation_tick,
-            "animation": self.animation,
-            "solved": self.is_solved(self.grid)
-        }
 
 class Agent:
-    func = SliderPuzzleFunctionality()
-
     def __init__(self):
         self.path = None
 
@@ -108,6 +125,10 @@ class Agent:
         grid = tuple(grid)
 
         if not self.path or self.path[0][1] != grid:
+            difficulty_mapping = {
+                9: "easy", 16: "medium", 25: "hard"
+            }
+            self.func = SliderPuzzleFunctionality(difficulty=difficulty_mapping[len(grid)])
             self.grid = grid[:]
             self.path = self.pathFind(grid)
 

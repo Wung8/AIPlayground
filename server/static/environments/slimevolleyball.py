@@ -13,7 +13,7 @@ class SlimeVolleyballEnv:
     num_players = 2
     resolution = 800, 400
 
-    def __init__(self, render_mode="none"):
+    def __init__(self, render_mode="none", **kwargs):
         self.render_mode = render_mode
         self.score = [0,0]
         self.last_frame = time.time()

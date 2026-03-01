@@ -1,24 +1,29 @@
 export default function draw(ctx, state) {
-    const N = 5;
+    const canvasWidth = 800;
+    const canvasHeight = 400;
 
-    // Fit board into 400px height cleanly
-    const TILE_SIZE = 60;
+    const grid = state.grid;
+    const N = Math.sqrt(grid.length);   // ← dynamic board size
+
     const PADDING = 8;
+
+    // Compute tile size so board always fits inside canvas
+    const maxBoardSize = Math.min(canvasHeight, canvasWidth);
+    const TILE_SIZE = Math.floor(
+        (maxBoardSize - (N + 1) * PADDING) / N
+    );
+
     const BOARD_SIZE = N * TILE_SIZE + (N + 1) * PADDING;
 
-    const offsetX = (800 - BOARD_SIZE) / 2;
-    const offsetY = (400 - BOARD_SIZE) / 2;
+    const offsetX = (canvasWidth - BOARD_SIZE) / 2;
+    const offsetY = (canvasHeight - BOARD_SIZE) / 2;
 
-    ctx.clearRect(0, 0, 800, 400);
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-    // Background
-    //ctx.fillStyle = "rgb(75,55,50)";
-    //ctx.fillRect(0, 0, 800, 400);
-
+    // Board background
     ctx.fillStyle = "rgb(120,80,40)";
     ctx.fillRect(offsetX, offsetY, BOARD_SIZE, BOARD_SIZE);
 
-    const grid = state.grid;
     const hole = grid.indexOf(0);
 
     for (let i = 0; i < N; i++) {
@@ -38,8 +43,11 @@ export default function draw(ctx, state) {
                 const t = state.animation_tick / state.animation;
                 const dist = (TILE_SIZE + PADDING) * (t * t);
 
-                offset_x = -(tileIndex % 5 - hole % 5) * dist;
-                offset_y = -(Math.floor(tileIndex / 5) - Math.floor(hole / 5)) * dist;
+                const holeRow = Math.floor(hole / N);
+                const holeCol = hole % N;
+
+                offset_x = -(j - holeCol) * dist;
+                offset_y = -(i - holeRow) * dist;
             }
 
             const x = offsetX + PADDING + j * (TILE_SIZE + PADDING) + offset_x;
@@ -57,7 +65,7 @@ export default function draw(ctx, state) {
 
                 // Bevel highlight
                 ctx.strokeStyle = "rgb(200,150,100)";
-                ctx.lineWidth = 3;
+                ctx.lineWidth = Math.max(2, TILE_SIZE * 0.05);
                 ctx.beginPath();
                 ctx.moveTo(x, y + TILE_SIZE);
                 ctx.lineTo(x, y);
@@ -77,9 +85,8 @@ export default function draw(ctx, state) {
                 ctx.font = `${TILE_SIZE * 0.45}px Arial`;
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
-                ctx.fillText(value, x + TILE_SIZE / 2 - 2, y + TILE_SIZE / 2 + 2);
+                ctx.fillText(value, x + TILE_SIZE / 2, y + TILE_SIZE / 2);
             }
         }
     }
-
 }

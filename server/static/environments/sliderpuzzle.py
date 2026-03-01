@@ -10,28 +10,36 @@ class SliderPuzzleEnv:
 
     frames = 5
 
-    def __init__(self):
+    def __init__(self, difficulty="medium", **kwargs):
         self.grid = None
-        self.solved_grid = [ 1,  2,  3,  4,  5,
-                             6,  7,  8,  9, 10,
-                             11, 12, 13, 14, 15,
-                             16, 17, 18, 19, 20,
-                             21, 22, 23, 24,  0 ]
+
+        match difficulty:
+            case "easy":
+                self.N = 3
+                self.solved_grid = [ 1,  2,  3,
+                                     4,  5,  6,
+                                     7,  8,  0 ]
+            case "medium":
+                self.N = 4
+                self.solved_grid = [ 1,  2,  3,  4,
+                                     5,  6,  7,  8,
+                                     9,  10, 11, 12,
+                                     13, 14, 15, 0 ]
+            case "hard":
+                self.N = 5
+                self.solved_grid = [ 1,  2,  3,  4,  5,
+                                     6,  7,  8,  9, 10,
+                                     11, 12, 13, 14, 15,
+                                     16, 17, 18, 19, 20,
+                                     21, 22, 23, 24,  0 ]
     
     def reset(self):
         self.grid = self.solved_grid[:]
 
-        for i in range(100):
-            nbrs = [nbr for nbr in self.get_neighbors(self.grid) if nbr]
-            self.grid = random.choice(nbrs)
-
-
-        '''
         while True:
             random.shuffle(self.grid)
             if self.is_solvable(self.grid):
                 break
-        '''
         
         self.prev_keys = {}
 
@@ -60,13 +68,13 @@ class SliderPuzzleEnv:
         neighbors = [None for i in range(4)] # up down left right
         dirs = ((1,0), (-1,0), (0,1), (0,-1))
         hole = grid.index(0)
-        r, c = divmod(hole, 5)
+        r, c = divmod(hole, self.N)
 
         for n, (dr, dc) in enumerate(dirs):
             nr, nc = r + dr, c + dc
 
-            if 0 <= nr < 5 and 0 <= nc < 5:
-                swap_idx = nr * 5 + nc
+            if 0 <= nr < self.N and 0 <= nc < self.N:
+                swap_idx = nr * self.N + nc
                 new_grid = grid[:]
                 new_grid[hole], new_grid[swap_idx] = new_grid[swap_idx], new_grid[hole]
                 neighbors[n] = new_grid
@@ -137,7 +145,7 @@ class SliderPuzzleEnv:
 
     def display(self):
         grid = self.grid
-        N = 5
+        N = self.N
         TILE_SIZE = 120
         PADDING = 10
         BOARD_SIZE = N * TILE_SIZE + (N + 1) * PADDING
@@ -153,8 +161,8 @@ class SliderPuzzleEnv:
                 hole = self.grid.index(0)
                 if tile == self.moving_tile:
                     dist = int((TILE_SIZE + PADDING) * (self.animation_tick / self.animation)**2)
-                    offset_x = -(tile%5 - hole%5) * dist
-                    offset_y = -(tile//5 - hole//5) * dist
+                    offset_x = -(tile%N - hole%N) * dist
+                    offset_y = -(tile//N - hole//N) * dist
                 else:
                     offset_x, offset_y = 0, 0
 
@@ -196,7 +204,7 @@ class SliderPuzzleEnv:
 
 if __name__ == "__main__":
                 
-    env = SliderPuzzleEnv()
+    env = SliderPuzzleEnv(difficulty="easy")
     env.reset()
     while True:
         keyboard = {}

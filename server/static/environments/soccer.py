@@ -28,7 +28,7 @@ class SoccerEnv:
     num_players = 4
     resolution = 900, 600
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.score = [0,0]
         # Set up pymunk space
         self.reward_scaling = 10

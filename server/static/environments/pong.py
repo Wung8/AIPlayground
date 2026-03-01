@@ -33,7 +33,7 @@ XXX  XXXXXXX  XXXXXXX  XXXX  X
         "details": (255,255,255)
     }
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.player1 = None
         self.player2 = None
         self.ball = None

@@ -7,7 +7,7 @@ class SudokuEnv:
     framerate = 20
     resolution = 800, 800
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.grid = None
         self.original = None
         self.cursor = [0, 0]
