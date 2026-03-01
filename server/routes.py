@@ -272,12 +272,10 @@ def load_bot(bot, slug):
 def handle_reset(data):
     slug = data.get("env_slug")
 
-    # Recreate environment
-    if slug == "soccer":
-        game = SoccerEnv()
-    elif slug == "slimevolleyball":
-        game = SlimeVolleyballEnv()
+    if slug in ENV_REGISTRY:
+        game = ENV_REGISTRY[slug]()
     else:
+        print("Unknown environment:", slug)
         return
 
     agents = []
@@ -294,6 +292,7 @@ def handle_reset(data):
         else:
             agents.append("human")
     
+    print(agents)
     game.reset()
     games[request.sid] = [game, agents]
 

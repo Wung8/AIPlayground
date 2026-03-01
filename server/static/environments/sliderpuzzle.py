@@ -20,11 +20,18 @@ class SliderPuzzleEnv:
     
     def reset(self):
         self.grid = self.solved_grid[:]
-        
+
+        for i in range(100):
+            nbrs = [nbr for nbr in self.get_neighbors(self.grid) if nbr]
+            self.grid = random.choice(nbrs)
+
+
+        '''
         while True:
             random.shuffle(self.grid)
             if self.is_solvable(self.grid):
                 break
+        '''
         
         self.prev_keys = {}
 
@@ -110,7 +117,7 @@ class SliderPuzzleEnv:
         if self.animation_tick:
             self.animation_tick -= 1
 
-        return self.grid, 0, done
+        return self.grid, 0, 0
 
     def create_wood_texture(self, size):
         base = np.zeros((size, size, 3), dtype=np.uint8)

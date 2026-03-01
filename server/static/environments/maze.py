@@ -73,10 +73,14 @@ class MazeEnv:
         action = actions[f"p1"]
         if action == "keyboard":
             action = [0,0]
-            if keyboard.get('w'): action[1] -= 1
-            if keyboard.get('a'): action[0] -= 1
-            if keyboard.get('s'): action[1] += 1
-            if keyboard.get('d'): action[0] += 1
+            if keyboard.get('w'): action[1] = -1
+            if keyboard.get('a'): action[0] = -1
+            if keyboard.get('s'): action[1] = 1
+            if keyboard.get('d'): action[0] = 1
+            if keyboard.get('ArrowUp'): action[1] = -1
+            if keyboard.get('ArrowLeft'): action[0] = -1
+            if keyboard.get('ArrowDown'): action[1] = 1
+            if keyboard.get('ArrowRight'): action[0] = 1
         new_pos = self.player[:]
         new_pos[0] += action[0]
         if self.grid[*new_pos] == 0:
