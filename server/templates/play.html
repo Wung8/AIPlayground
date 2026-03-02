@@ -17,12 +17,16 @@
 
         <div class="play-main-row">
           <div class="play-title">{{ env.title }}</div>
-
-          <div class="play-difficulty">
-            <button class="play-diff-btn" data-diff="easy">Easy</button>
-            <button class="play-diff-btn" data-diff="medium">Med</button>
-            <button class="play-diff-btn" data-diff="hard">Hard</button>
-          </div>
+          
+          {% if has_difficulty_setting %}
+            <div class="play-difficulty">
+              <button class="play-diff-btn" data-diff="easy">Easy</button>
+              <button class="play-diff-btn" data-diff="medium">Med</button>
+              <button class="play-diff-btn" data-diff="hard">Hard</button>
+            </div>
+          {% else %}
+            <div></div>
+          {% endif %}
 
           <div></div> <!-- empty right spacer -->
         </div>

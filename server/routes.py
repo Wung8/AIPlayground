@@ -100,7 +100,8 @@ def play(slug):
     else:
         my_bots = []
 
-    return render_template("play.html", env=env, bots=bots, my_bots=my_bots, form=form, num_players=env["num_players"])
+    return render_template("play.html", env=env, bots=bots, my_bots=my_bots, form=form, 
+                           num_players=env["num_players"], has_difficulty_setting=env["has_difficulty_setting"])
 
 @app.route("/bot_search/<slug>", methods=["GET"])
 def bot_search(slug):

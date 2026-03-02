@@ -4,6 +4,7 @@ ENVIRONMENTS = [
     {
         "slug": "slimevolleyball",
         "title": "Slime Volleyball",
+        "has_difficulty_setting": False,
         "num_players": 2,
         "difficulty": 3,
         "description": "Classic slime volleyball environment.",
@@ -16,8 +17,9 @@ ENVIRONMENTS = [
     {
         "slug": "soccer",
         "title": "Soccer",
+        "has_difficulty_setting": False,
         "num_players": 4,
-        "difficulty": 4,
+        "difficulty": 5,
         "description": "Play 2v2 soccer.",
         "docSections": [
             {"title": "Goal", "items": ["reach the exit", "avoid traps"]},
@@ -27,6 +29,7 @@ ENVIRONMENTS = [
     {
         "slug": "maze",
         "title": "Maze",
+        "has_difficulty_setting": True,
         "num_players": 1,
         "difficulty": 2,
         "description": "Navigate a maze to reach the goal.",
@@ -38,6 +41,7 @@ ENVIRONMENTS = [
     {
         "slug": "pong",
         "title": "Pong",
+        "has_difficulty_setting": False,
         "num_players": 2,
         "difficulty": 1,
         "description": "Pong decsription.",
@@ -49,20 +53,34 @@ ENVIRONMENTS = [
     {
         "slug": "sliderpuzzle",
         "title": "Slider Puzzle",
+        "has_difficulty_setting": True,
         "num_players": 1,
-        "difficulty": 3,
+        "difficulty": 4,
         "description": "Slider Puzzle decsription.",
         "docSections": [
             {"title": "Goal", "items": ["reach the exit", "avoid traps"]},
         ],
         "image": {"kind": "placeholder", "value": "maze"},
     },
+    # {
+    #     "slug": "sudoku",
+    #     "title": "Sudoku",
+    #     "has_difficulty_setting": False,
+    #     "num_players": 1,
+    #     "difficulty": 4,
+    #     "description": "Sudoku decsription.",
+    #     "docSections": [
+    #         {"title": "Goal", "items": ["reach the exit", "avoid traps"]},
+    #     ],
+    #     "image": {"kind": "placeholder", "value": "maze"},
+    # },
     {
-        "slug": "sudoku",
-        "title": "Sudoku",
-        "num_players": 1,
-        "difficulty": 4,
-        "description": "Sudoku decsription.",
+        "slug": "tictactoe",
+        "title": "Tic Tac Toe",
+        "has_difficulty_setting": False,
+        "num_players": 2,
+        "difficulty": 2,
+        "description": "TTT decsription.",
         "docSections": [
             {"title": "Goal", "items": ["reach the exit", "avoid traps"]},
         ],
