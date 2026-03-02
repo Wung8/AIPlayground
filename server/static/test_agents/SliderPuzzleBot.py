@@ -26,25 +26,8 @@ class SliderPuzzleFunctionality:
                                      11, 12, 13, 14, 15,
                                      16, 17, 18, 19, 20,
                                      21, 22, 23, 24,  0 ]
-    
-    def reset(self):
-        self.grid = self.solved_grid[:]
-
-        while True:
-            random.shuffle(self.grid)
-            if self.is_solvable(self.grid):
-                break
-
-    def is_solvable(self, grid):
-        arr = [x for x in grid if x != 0]
-        inversions = 0
         
-        for i in range(len(arr)):
-            for j in range(i + 1, len(arr)):
-                if arr[i] > arr[j]:
-                    inversions += 1
-
-        return inversions % 2 == 0
+        self.move_mapping = ["up", "down", "left", "right"]
 
     def is_solved(self, grid):
         return grid == self.solved_grid
@@ -94,14 +77,16 @@ class Agent:
         cost_so_far[grid] = 0
 
         while frontier:
-            curr = heapq.heappop(frontier)
+            _, curr = heapq.heappop(frontier)
 
-            if self.func.is_solved(curr):
+            if self.func.is_solved(list(curr)):
                 break
             
             for n, nbr in enumerate(self.func.get_neighbors(list(curr))):
+                if not nbr:
+                    continue
                 nbr = tuple(nbr)
-                cost = cost_so_far[tuple(nbr)] + 1
+                cost = cost_so_far[tuple(curr)] + 1
                 if nbr not in cost_so_far or cost < cost_so_far[nbr]:
                     cost_so_far[nbr] = cost
                     priority = cost + self.heuristic(nbr)
@@ -115,6 +100,7 @@ class Agent:
         while came_from[curr] is not None:
             prev, move = came_from[curr]
             path.append((move, prev))
+            curr = prev
 
         path = path[::-1]
         return path
@@ -132,8 +118,11 @@ class Agent:
             self.grid = grid[:]
             self.path = self.pathFind(grid)
 
-        move, _ = self.path.pop(0)
-        return self.func.move_mapping.index(move)
+        if self.path:
+            move, _ = self.path.pop(0)
+            return [self.func.move_mapping.index(move) + 1]
+        else:
+            return [0]
         
 
         
