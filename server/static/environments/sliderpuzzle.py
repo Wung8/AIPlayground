@@ -59,7 +59,11 @@ class SliderPuzzleEnv:
                 if arr[i] > arr[j]:
                     inversions += 1
 
-        return inversions % 2 == 0
+        N = int(len(grid)**0.5)
+        if N % 2 == 1:
+            return inversions % 2 == 0
+        else:
+            return (inversions + N-grid.index(0)//N) % 2 == 1
 
     def is_solved(self, grid):
         return grid == self.solved_grid
