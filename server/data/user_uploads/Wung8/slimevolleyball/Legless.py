@@ -1,4 +1,6 @@
 import math
+from enum import IntEnum
+
 
 class Agent:
     def getAction(self, inputs):

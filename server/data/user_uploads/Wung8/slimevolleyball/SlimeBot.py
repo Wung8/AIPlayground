@@ -37,7 +37,7 @@ class Agent:
             action[0] = -1
 
         jump_threshold = 20
-        if not flag and your_position[0] - ball_position[0] < jump_threshold:
+        if not flag and abs(your_position[0] - ball_position[0]) < jump_threshold:
             action[1] = 1
         
         return action
