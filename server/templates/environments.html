@@ -1,4 +1,3 @@
-<!-- backend/templates/environments.html -->
 {% extends "base.html" %}
 {% set active = "environments" %}
 {% set title = "Environments" %}
@@ -13,26 +12,31 @@
 {% endblock %}
 
 {% block content %}
-  <div class="content">
-    {% include "_sidebar.html" %}  
-    
-    <main class="main panel">
-      <div class="panel-pad">
-        <div class="panel-title">Environments</div>
+  <div class="content env-page">
+    {% include "_sidebar.html" %}
+
+    <main class="main env-main">
+      <div class="env-wrap">
+        <div class="env-page-title">Environments</div>
+
         <div class="env-list">
           {% for e in environments %}
             <div class="env-card">
               <div class="env-card-left">
                 <a class="env-h2" href="{{ url_for('play', slug=e.slug) }}">{{ e.title }}</a>
+
                 <div class="env-diff">
                   <span class="env-diff-label">Difficulty:</span>
                   <span class="env-stars">{{ stars(e.difficulty) }}</span>
                 </div>
+
                 <div class="env-desc">{{ e.description }}</div>
+
                 <a class="env-doc-link" href="{{ url_for('env_doc', slug=e.slug) }}">documentation</a>
               </div>
+
               <div class="env-card-right">
-                <a class="env-img" href="{{ url_for('play', slug=e.slug) }}"></a>
+                <a class="env-img" href="{{ url_for('play', slug=e.slug) }}" aria-label="Play {{ e.title }}"></a>
               </div>
             </div>
           {% endfor %}
