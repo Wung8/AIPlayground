@@ -65,7 +65,7 @@ class MazeEnv:
     def getInputs(self):
         return {
             "p1": {
-                "grid": self.grid,
+                "grid": self.grid.tolist(),
                 "your_position": self.player
             }
         }
@@ -136,7 +136,6 @@ class MazeEnv:
         img[*self.goal] = self.colors['goal']
         if tuple(self.player) == tuple(self.goal):
             img[*self.player] = self.colors['complete']
-        img = img.transpose(1,0,2)
 
         '''
         mapping = {
