@@ -21,6 +21,9 @@ export default function draw(ctx, state) {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
     // Board background
+    ctx.fillStyle = "rgb(30,30,30)";
+    ctx.fillRect(0, 0, 800, 400);
+
     ctx.fillStyle = "rgb(120,80,40)";
     ctx.fillRect(offsetX, offsetY, BOARD_SIZE, BOARD_SIZE);
 
