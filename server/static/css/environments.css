@@ -53,7 +53,7 @@
 }
 
 .env-stars{
-  color: rgba(210,176,106,0.70);
+  color: var(--brown);
   letter-spacing: 1px;
 }
 
