@@ -11,9 +11,7 @@ from server import app, socketio, db, bcrypt
 from server.forms import LoginForm, RegistrationForm, UploadAgentForm
 from server.models import User, Bot
 
-from server.data.environments import ENVIRONMENTS, get_env
-from server.static.environments.slimevolleyball import SlimeVolleyballEnv  # assume you moved logic here
-from server.static.environments.soccer import SoccerEnv
+from server.environment_registry import ENVIRONMENTS, get_env, ENV_REGISTRY, render_env_doc_html
 
 from server.environment_registry import ENV_REGISTRY
 
@@ -40,7 +38,14 @@ def env_doc(slug):
     env = get_env(slug) or (ENVIRONMENTS[0] if ENVIRONMENTS else None)
     if not env:
         return "missing env", 404
-    return render_template("env_doc.html", env=env, environments=ENVIRONMENTS)
+
+    env_doc_html = render_env_doc_html(env["slug"])
+    return render_template(
+        "env_doc.html",
+        env=env,
+        environments=ENVIRONMENTS,
+        env_doc_html=env_doc_html,
+    )
 
 @app.route("/play/<slug>", methods=["GET", "POST"])
 def play(slug):
