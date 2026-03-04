@@ -123,3 +123,62 @@
   color: rgba(255,255,255,0.62);
   font-size: 18px;
 }
+
+
+
+/* markdown docs container */
+.env-md {
+  --md-h1: 22px;
+  --md-h2: 18px;
+  --md-h3: 16px;
+  --md-text: 14px;
+
+  --md-h-color: rgba(255, 255, 255, 0.92);
+  --md-text-color: rgba(255, 255, 255, 0.72);
+  --md-rule: rgba(255, 255, 255, 0.12);
+
+  color: var(--md-text-color);
+  font-size: var(--md-text);
+  line-height: 1.6;
+}
+
+.env-md h1,
+.env-md h2,
+.env-md h3,
+.env-md h4 {
+  color: var(--md-h-color);
+  margin: 18px 0 10px;
+  font-weight: 650;
+}
+
+.env-md h1 { font-size: var(--md-h1); }
+.env-md h2 { font-size: var(--md-h2); }
+.env-md h3 { font-size: var(--md-h3); }
+
+.env-md p { margin: 10px 0; }
+
+.env-md ul,
+.env-md ol {
+  margin: 10px 0 14px 22px;
+}
+
+.env-md li { margin: 6px 0; }
+
+.env-md hr {
+  border: none;
+  border-top: 1px solid var(--md-rule);
+  margin: 16px 0;
+}
+
+.env-md code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.95em;
+}
+
+.env-md pre {
+  overflow: auto;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--md-rule);
+  background: rgba(0, 0, 0, 0.18);
+}
