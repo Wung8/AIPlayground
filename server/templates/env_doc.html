@@ -40,12 +40,12 @@
       <div class="doc-play-wrap">
         <a class="doc-play-btn" href="{{ url_for('play', slug=env.slug) }}">Play now</a>
       </div>
-
-      <div class="doc-desc">
-        <div class="doc-desc-h">Description</div>
-        <div class="doc-desc-p">{{ env.description }}</div>
-      </div>
-
+      {% if env_doc_html %}
+        <div class="doc-desc">
+          <div class="doc-desc-h">Environment Docs</div>
+          <div class="doc-desc-p">{{ env_doc_html }}</div>
+        </div>
+      {% endif %}
       {% set blocks = env.docSections or [] %}
       {% if blocks|length %}
         <div class="doc-sections">
