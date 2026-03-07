@@ -35,7 +35,7 @@
 
   /* sidebar text */
   --side-title: rgba(255,255,255,0.55);
-  --side-title-inactive: rgba(255,255,255,0.40);
+  --side-title-inactive: rgba(255,255,255,0.30);
   --side-item: rgba(255,255,255,0.40);
   --side-item-small: rgba(255,255,255,0.35);
 
@@ -180,7 +180,7 @@ body{
   height: 110vh;
   overflow: auto;
 
-  padding: 18px 14px;
+  padding: 30px 14px;
 }
 
 /* gold bars inside the sidebar */
@@ -219,23 +219,41 @@ body{
   margin-right: 10px;
 }
 
-/* divider between sections */
+/* divider between sections (shorter line) */
 .side-section + .side-section{
-  border-top: 2px solid var(--side-title-inactive);
+  position: relative;
   padding-top: 18px;
   margin-top: 18px;
 }
 
+.side-section + .side-section::before{
+  content:"";
+  position: absolute;
+  top: 0;
+  right: 5px;
+  width: 90%;
+  max-width: 300px;
+  height: 3px;
+  background: var(--side-title-inactive);
+  opacity: 0.9;
+}
+
 .side-title{
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 22px;
+  font-weight: 500;
   color: var(--side-title);
-  margin-bottom: 10px;
+  margin: 10px;
+  margin-left: 20px;
+}
+
+.side-title.inactive {
+  color: var(--side-title-inactive);
 }
 
 .side-item{
   display: block;
   padding: 4px 0;
+  margin-left: 10px;
   font-size: 19px;
   color: var(--side-item);
   text-decoration: none;

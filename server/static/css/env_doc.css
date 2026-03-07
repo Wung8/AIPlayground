@@ -50,12 +50,13 @@
   justify-items: center;
   padding-left: var(--docPadLeft);
 }
-
-.doc-canvas {
+.doc-canvas{
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  aspect-ratio: 996 / 497;
   width: 760px;
-  height: 380px;
-  background: #fff;
-  border: 1px solid rgba(0,0,0,0.10);
+  height: auto;
 }
 
 .doc-play-wrap {
@@ -128,10 +129,10 @@
 
 /* markdown docs container */
 .env-md {
-  --md-h1: 22px;
-  --md-h2: 18px;
-  --md-h3: 16px;
-  --md-text: 14px;
+  --md-h1: 24px;
+  --md-h2: 22px;
+  --md-h3: 20px;
+  --md-text: 18px;
 
   --md-h-color: rgba(255, 255, 255, 0.92);
   --md-text-color: rgba(255, 255, 255, 0.72);

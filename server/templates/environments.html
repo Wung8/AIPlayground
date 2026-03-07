@@ -7,6 +7,11 @@
   {{ "★" * n }}{{ "☆" * (5 - n) }}
 {%- endmacro %}
 
+{# uses static/thumbnails/<slug>.png (ex: slimevolleyball.png, soccer.png) #}
+{% macro thumb(slug) -%}
+  {{ url_for('static', filename='thumbnails/' ~ slug ~ '.png') }}
+{%- endmacro %}
+
 {% block styles %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/environments.css') }}">
 {% endblock %}
@@ -36,7 +41,12 @@
               </div>
 
               <div class="env-card-right">
-                <a class="env-img" href="{{ url_for('play', slug=e.slug) }}" aria-label="Play {{ e.title }}"></a>
+                <a
+                  class="env-img"
+                  href="{{ url_for('play', slug=e.slug) }}"
+                  aria-label="Play {{ e.title }}"
+                  style="background-image: url('{{ thumb(e.slug) }}');"
+                ></a>
               </div>
             </div>
           {% endfor %}
