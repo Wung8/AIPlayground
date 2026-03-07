@@ -10,7 +10,7 @@
     <div class="side-title">Environments</div>
     {% for e in environments %}
       <a
-        class="side-item small {{ 'is-active' if e.slug == selected_slug else '' }}"
+        class="side-item small"
         href="{{ url_for('env_doc', slug=e.slug) }}"
       >
         {{ e.title }}
