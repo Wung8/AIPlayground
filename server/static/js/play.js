@@ -159,9 +159,6 @@ function reset() {
     playerInputs.forEach((inp, i) => {
       inp.classList.toggle("is-active-player", i === activePlayerIdx);
     });
-
-    const active = playerInputs[activePlayerIdx];
-    if (active) active.focus({ preventScroll: true });
   }
 
   function fillActivePlayer(name) {
