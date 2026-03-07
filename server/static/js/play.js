@@ -137,13 +137,6 @@ function reset() {
         box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.10);
       }
 
-      .play-search-results{
-        margin-top: 10px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
-
       .play-sort-pill.is-neutral{
         opacity: 0.55;
       }
@@ -190,37 +183,22 @@ function reset() {
 })();
 
 /* =============================
-   UI: search results under bar
+   UI: search + sort bot list
 ============================= */
 
-(function initFileContainsSearch() {
+(function initBotSearchAndSort() {
   const searchInput = document.getElementById("botSearch");
   const browseList = document.getElementById("browseList");
+  const eloSortBtn = document.getElementById("sortByElo");
 
-  function ensureResultsContainer() {
-    if (!searchInput) return null;
-    const searchBlock = searchInput.closest(".play-search");
-    if (!searchBlock) return null;
-
-    let results = document.getElementById("botSearchResults");
-    if (results) return results;
-
-    results = document.createElement("div");
-    results.id = "botSearchResults";
-    results.className = "play-search-results";
-    results.style.display = "none";
-
-    const searchRow = searchBlock.querySelector(".play-search-row");
-    if (searchRow && searchRow.parentNode) {
-      searchRow.parentNode.insertBefore(results, searchRow.nextSibling);
-    } else {
-      searchBlock.appendChild(results);
-    }
-
-    return results;
-  }
+  if (!browseList) return;
 
   let sortState = 0; // 0=alpha, 1=elo desc, 2=elo asc
+  let allRows = [];
+
+  function getRows() {
+    return Array.from(browseList.querySelectorAll(".bot-row"));
+  }
 
   function getBotNameFromRow(row) {
     const el = row.querySelector(".bot-name");
@@ -243,12 +221,8 @@ function reset() {
     return Number.isFinite(n) ? n : 0;
   }
 
-  function sortContainer(container, mode) {
-    if (!container) return;
-    const rows = Array.from(container.querySelectorAll(".bot-row"));
-    if (!rows.length) return;
-
-    rows.sort((a, b) => {
+  function sortRows(rows, mode) {
+    return rows.slice().sort((a, b) => {
       if (mode === 0) {
         return getBotNameFromRow(a).localeCompare(getBotNameFromRow(b));
       }
@@ -257,20 +231,8 @@ function reset() {
       }
       return getBotEloFromRow(a) - getBotEloFromRow(b);
     });
-
-    rows.forEach(r => container.appendChild(r));
   }
 
-  function applyCurrentSort(maybeResultsContainer) {
-    sortContainer(browseList, sortState);
-
-    const results = maybeResultsContainer || document.getElementById("botSearchResults");
-    if (results && results.style.display !== "none") {
-      sortContainer(results, sortState);
-    }
-  }
-
-  const eloSortBtn = document.getElementById("sortByElo");
   function updateEloBtnUI() {
     if (!eloSortBtn) return;
 
@@ -286,63 +248,42 @@ function reset() {
     }
   }
 
-  if (eloSortBtn) {
-    sortState = 0;
-    updateEloBtnUI();
-    applyCurrentSort();
+  function renderRows(rows) {
+    browseList.innerHTML = "";
+    rows.forEach(row => browseList.appendChild(row));
+  }
 
+  function applyFiltersAndSort() {
+    const query = searchInput ? searchInput.value.trim().toLowerCase() : "";
+
+    let filteredRows = allRows.filter(row => {
+      if (!query) return true;
+      return getBotNameFromRow(row).includes(query);
+    });
+
+    filteredRows = sortRows(filteredRows, sortState);
+    renderRows(filteredRows);
+  }
+
+  function snapshotRows() {
+    allRows = getRows();
+  }
+
+  snapshotRows();
+  updateEloBtnUI();
+  applyFiltersAndSort();
+
+  if (eloSortBtn) {
     eloSortBtn.addEventListener("click", () => {
       sortState = (sortState + 1) % 3;
       updateEloBtnUI();
-      applyCurrentSort();
+      applyFiltersAndSort();
     });
-  }
-
-  let searchTimer = null;
-
-  async function runFileSearch(q) {
-    const results = ensureResultsContainer();
-    if (!results) return;
-
-    const query = (q || "").trim();
-    if (!query) {
-      results.innerHTML = "";
-      results.style.display = "none";
-      return;
-    }
-
-    try {
-      const slug = ENV || "";
-      const res = await fetch(`/bot_search/${encodeURIComponent(slug)}?q=${encodeURIComponent(query)}`, {
-        headers: { "X-Requested-With": "XMLHttpRequest" }
-      });
-      const data = await res.json();
-
-      const items = Array.isArray(data.results) ? data.results : [];
-      results.innerHTML = items.map((b) => {
-        return `
-          <button class="bot-row bot-row-btn" type="button" data-bot="${escapeHtml(b.name)}">
-            <div class="bot-name">${escapeHtml(b.name)}</div>
-            <div class="bot-meta">
-              <div class="bot-elo">elo: ${escapeHtml(b.elo)}</div>
-              <div class="bot-by">by: ${escapeHtml(b.by)}</div>
-            </div>
-          </button>
-        `;
-      }).join("");
-
-      results.style.display = "flex";
-      applyCurrentSort(results);
-    } catch (e) {
-      results.innerHTML = "";
-      results.style.display = "none";
-    }
   }
 
   if (searchInput) {
     searchInput.addEventListener("input", () => {
-      clearTimeout(searchTimer);
-      searchTimer = setTimeout(() => runFileSearch(searchInput.value), 180);
+      applyFiltersAndSort();
     });
   }
 })();
