@@ -1,6 +1,3 @@
-
-# Maze
-
 ## Overview
 
 Mazes are a great introduction to graph-based pathfinding algorithms, as the entire graph is visualized and the state space is relatively small. 

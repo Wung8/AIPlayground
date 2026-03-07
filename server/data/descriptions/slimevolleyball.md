@@ -1,5 +1,3 @@
-# Slime Volleyball
-
 ## Overview
 
 A competitive two-player physics-based game. Players must hit the ball over the net so it lands on the opponents side, and prevent the opponent from doing the same to them. Keep the ball on your side for too long and you lose the point\! The first player to reach six points is the winner.
@@ -50,11 +48,11 @@ Each sub-dictionary contains two keys: "position" and "velocity".
 
 Each key (position and velocity) corresponds to a list of two elements: `[x, y]`.  
 
-```
+```python
 inputs = {
   you: {
-    "position": [x_pos, y_pos],
-    "velocity": [x_velocity, y]
+    "position": [x, y],
+    "velocity": [x, y]
   },
   opponent: {
     "position": [x, y],
@@ -66,35 +64,6 @@ inputs = {
   }
 }
 ```
-
-For "you":
-
-inputs\[“you”\]
-
-* \[“position”\]  
-  * \[0\]: your x position  
-  * \[1\]: your y position  
-* \[“velocity”\]  
-  * \[0\]: your x velocity  
-  * \[1\]: your y velocity
-
-inputs\[“opponent”\]
-
-* \[“position”\]  
-  * \[0\]: opponent x position  
-  * \[1\]: opponent y position  
-* \[“velocity”\]  
-  * \[0\]: opponent x velocity  
-  * \[1\]: opponent y velocity
-
-inputs\[“ball”\]
-
-* \[“position”\]  
-  * \[0\]: ball x position  
-  * \[1\]: ball y position  
-* \[“velocity”\]  
-  * \[0\]: ball x velocity  
-  * \[1\]: ball y velocity
 
 
 ## End Condition

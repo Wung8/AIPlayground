@@ -1,5 +1,4 @@
-
-# Pong
+## Overview
 
 One of the first computer games ever made, players control their paddle by moving it up and down across the screen to hit a ball back and forth. If you get the ball past the opponent's paddle, you score a point. The first player to reach 9 points wins.
 

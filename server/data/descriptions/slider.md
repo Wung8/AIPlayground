@@ -1,6 +1,3 @@
-
-# Slider Puzzle 
-
 ## Overview
 
 The Sliding Puzzle is a classic logic game/puzzle made up of a 5x5 grid containing 24 numbered tiles and one empty space, with other sized variants. The goal is to arrange the tiles such that they are in order, with the blank in the bottom right. Tiles cannot move freely and can only be moved into the blank. 

@@ -1,6 +1,3 @@
-
-# Tic Tac Toe
-
 ## Overview
 
 A simple two-player strategy game played on a 3x3 grid, where players take turns marking an empty tile on the grid. The goal is to be the first to place three of your marks in a row: horizontally, vertically, or diagonally. If all nine squares are filled and no one has three marks in a row, the game ends in a draw.
