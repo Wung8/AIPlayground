@@ -198,6 +198,7 @@ def login():
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
 
+    # register submit
     if register_form.submit.data and register_form.validate_on_submit():
         pw_hash = bcrypt.generate_password_hash(register_form.password.data).decode("utf-8")
         user = User(
