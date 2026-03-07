@@ -1,6 +1,7 @@
 import importlib.util
 import sys
 import os
+import re
 
 from flask import render_template, request, redirect, url_for, flash, jsonify
 from flask_socketio import emit
@@ -181,6 +182,7 @@ def delete_bot(bot_id):
 
     return jsonify({"success": True})
 
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     # prefixes prevent collisions since both forms share field names like "email", "password", "submit"
@@ -196,13 +198,16 @@ def login():
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
 
-    # register submit
     if register_form.submit.data and register_form.validate_on_submit():
         pw_hash = bcrypt.generate_password_hash(register_form.password.data).decode("utf-8")
-        user = User(username=register_form.username.data, email=register_form.email.data, password=pw_hash)
+        user = User(
+            username=register_form.username.data,
+            email=register_form.email.data,
+            password=pw_hash
+        )
         db.session.add(user)
         db.session.commit()
-        flash(f'Your account has been created! You are now able to log in', 'success')
+        flash("Your account has been created! You are now able to log in", "success")
         return redirect(url_for("login"))
 
     return render_template(
