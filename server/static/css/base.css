@@ -34,10 +34,10 @@
   --text-mid: rgba(255,255,255,0.55);
 
   /* sidebar text */
-  --side-title: rgba(255,255,255,0.55);
-  --side-title-inactive: rgba(255,255,255,0.30);
-  --side-item: rgba(255,255,255,0.40);
-  --side-item-small: rgba(255,255,255,0.35);
+  --side-title: rgba(255,255,255,0.65);
+  --side-title-inactive: rgba(255,255,255,0.55);
+  --side-item: rgba(255,255,255,0.55);
+  --side-item-small: rgba(255,255,255,0.55);
 
   /* layout */
   --sidebarW: 320px;
