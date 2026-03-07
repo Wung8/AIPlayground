@@ -8,12 +8,17 @@
   {{ "★" * n }}{{ "☆" * (5 - n) }}
 {%- endmacro %}
 
+{# uses static/thumbnails/<slug>.png (ex: slimevolleyball.png, soccer.png) #}
+{% macro thumb(slug) -%}
+  {{ url_for('static', filename='thumbnails/' ~ slug ~ '.png') }}
+{%- endmacro %}
+
 {% block styles %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/env_doc.css') }}">
 {% endblock %}
 
 {% block content %}
-  <div class="content">
+  <div class="content env-page">
     {% include "_sidebar.html" %}  
     
     <main class="main">
@@ -34,35 +39,23 @@
       </div>
 
       <div class="doc-canvas-wrap">
-        <div class="doc-canvas"></div>
+        <div
+          class="doc-canvas"
+          style="background-image: url('{{ thumb(env.slug) }}');"
+          aria-label="{{ env.title }} thumbnail"
+        ></div>
       </div>
 
       <div class="doc-play-wrap">
         <a class="doc-play-btn" href="{{ url_for('play', slug=env.slug) }}">Play now</a>
       </div>
+
       {% if env_doc_html %}
         <div class="doc-desc">
-          <div class="doc-desc-h">Environment Docs</div>
           <div class="doc-desc-p">{{ env_doc_html }}</div>
         </div>
       {% endif %}
-      {% set blocks = env.docSections or [] %}
-      {% if blocks|length %}
-        <div class="doc-sections">
-          {% for s in blocks %}
-            {% if (s["title"] or "")|trim|lower != "user documentation" %}
-              <div class="doc-block">
-                <div class="doc-h">{{ s["title"] }}</div>
-                <ul class="doc-ul">
-                  {% for it in (s["items"] or []) %}
-                    <li>{{ it }}</li>
-                  {% endfor %}
-                </ul>
-              </div>
-            {% endif %}
-          {% endfor %}
-        </div>
-      {% endif %}
+
     </main>
   </div>
 {% endblock %}
