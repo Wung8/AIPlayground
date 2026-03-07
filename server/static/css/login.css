@@ -63,6 +63,12 @@
   outline: none;
 }
 
+.auth-error {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #d97b7b;
+}
+
 .auth-remember {
   font-size: 16px;
   color: rgba(255,255,255,0.6);
