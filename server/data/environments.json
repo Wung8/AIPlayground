@@ -59,17 +59,5 @@
       { "title": "Goal", "items": ["reach the exit", "avoid traps"] }
     ],
     "image": { "kind": "placeholder", "value": "maze" }
-  },
-  {
-    "slug": "sudoku",
-    "title": "Sudoku",
-    "num_players": 1,
-    "has_difficulty_setting": false,
-    "difficulty": 4,
-    "description": "Sudoku decsription.",
-    "docSections": [
-      { "title": "Goal", "items": ["reach the exit", "avoid traps"] }
-    ],
-    "image": { "kind": "placeholder", "value": "maze" }
   }
 ]
