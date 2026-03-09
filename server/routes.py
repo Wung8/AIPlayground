@@ -10,10 +10,10 @@ from werkzeug.utils import secure_filename
 from server import app, socketio, db, bcrypt
 from server.forms import LoginForm, RegistrationForm, UploadAgentForm
 from server.models import User, Bot
+from server.botrunner import BotRunner
 
 from server.environment_registry import ENVIRONMENTS, get_env, ENV_REGISTRY, render_env_doc_html
 
-from server.environment_registry import ENV_REGISTRY
 
 
 # store one game per client (later: one per env per client)
@@ -255,6 +255,12 @@ def handle_connect(data):
 @socketio.on("disconnect")
 def handle_disconnect():
     if request.sid in games:
+        game, agents = games[request.sid]
+
+        for agent in agents:
+            if hasattr(agent, "close"):
+                agent.close()
+
         del games[request.sid]
     print("Client disconnected")
 
@@ -319,6 +325,15 @@ def load_bot(bot, slug):
 
 @socketio.on("reset_game")
 def handle_reset(data):
+    if request.sid in games:
+        old_game, old_agents = games[request.sid]
+
+        for agent in old_agents:
+            if hasattr(agent, "close"):
+                agent.close()
+
+        del games[request.sid]
+        
     slug = data.get("env_slug")
     difficulty = data.get("difficulty")
     print(slug, difficulty)
@@ -336,8 +351,8 @@ def handle_reset(data):
         if name and name.lower() != "human":
             bot = Bot.query.filter_by(name=name).first()
             if bot:
-                agent = load_bot(bot, slug)
-                agents.append(agent)
+                runner = BotRunner(bot, slug)
+                agents.append(runner)
             else:
                 emit("bot_error", {"message": f"P{i+1} bot '{name}' not found"})
         else:
