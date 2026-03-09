@@ -8,6 +8,7 @@ import queue
 from server import app
 
 class BotRunner:
+    default_action = [0 for i in range(10)]
 
     def __init__(self, bot, slug):
         path = os.path.join(
@@ -64,17 +65,17 @@ class BotRunner:
                 line = q.get(timeout=timeout)
             except queue.Empty:
                 print("getAction timed out")
-                return None
+                return self.default_action
 
             if not line:
-                return None
+                return self.default_action
 
             return json.loads(line)
 
         except Exception as e:
             print("botrunner.py error:", e)
 
-        return None
+        return self.default_action
 
     def close(self):
         if self.proc:
