@@ -224,9 +224,17 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-@app.route("/profile", methods=["GET", "POST"])
+@app.route("/profile")
+@login_required
 def profile():
-    return render_template("profile.html")
+    bots = (
+        Bot.query
+        .filter_by(user_id=current_user.id)
+        .order_by(Bot.date_posted.desc())
+        .all()
+    )
+
+    return render_template("profile.html", bots=bots)
 
 # placeholders for navbar links
 @app.route("/github")
