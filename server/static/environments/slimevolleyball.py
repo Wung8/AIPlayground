@@ -83,6 +83,9 @@ class SlimeVolleyballEnv:
 
     def step(self, actions, keyboard={}, display=True, is_skip=False):
         self.timestep += 1
+        if self.timestep < 20:
+            return self.getInputs(), 0, 0
+
         ball_side = 2*int(self.ball.pos[0] > self.screen_size[0]/2) - 1
         
         # process skip frames

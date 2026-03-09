@@ -2,6 +2,8 @@ import subprocess
 import json
 import os
 import select
+import threading
+import queue
 
 from server import app
 
@@ -40,12 +42,29 @@ class BotRunner:
             text=True
         )
 
+        buffer = [0 for i in range(10)]
+        buffer_idx = 0
+
     def getAction(self, inputs, timeout=0.1):
+        def read_stdout(q):
+            try:
+                line = self.proc.stdout.readline()
+                q.put(line)
+            except Exception as e:
+                q.put(None)
+
         try:
             self.proc.stdin.write(json.dumps(inputs) + "\n")
             self.proc.stdin.flush()
 
-            line = self.proc.stdout.readline()
+            q = queue.Queue()
+            t = threading.Thread(target=read_stdout, args=(q,))
+            t.start()
+            try:
+                line = q.get(timeout=timeout)
+            except queue.Empty:
+                print("getAction timed out")
+                return None
 
             if not line:
                 return None
