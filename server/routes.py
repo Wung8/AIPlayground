@@ -20,6 +20,13 @@ from server.environment_registry import ENV_REGISTRY
 # store one game per client (later: one per env per client)
 games = {}
 
+def format_environment_name(slug):
+    env = get_env(slug)
+    if env and env.get("title"):
+        return env["title"]
+
+    return slug.title()
+
 # pages
 @app.route("/")
 def home():
@@ -234,7 +241,18 @@ def profile():
         .all()
     )
 
-    return render_template("profile.html", bots=bots)
+    bot_cards = []
+    for bot in bots:
+        bot_cards.append({
+            "id": bot.id,
+            "name": bot.name,
+            "elo": bot.elo,
+            "date_posted": bot.date_posted,
+            "environment": bot.environment,
+            "environment_display": format_environment_name(bot.environment),
+        })
+
+    return render_template("profile.html", bots=bot_cards)
 
 # placeholders for navbar links
 @app.route("/github")
