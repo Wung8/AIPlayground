@@ -1,4 +1,3 @@
-// static/js/play.js
 // IMPORTANT: Must be loaded with <script type="module">
 
 function getEnvSlug() {
@@ -322,7 +321,9 @@ document.addEventListener("click", async function (e) {
   const data = await res.json();
 
   if (data.success) {
-    row.remove();
+    const url = new URL(window.location.href);
+    url.searchParams.set("tab", "mine");
+    window.location.href = url.toString();
   } else {
     alert(data.message || "Delete failed.");
   }
