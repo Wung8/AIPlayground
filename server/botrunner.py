@@ -26,8 +26,11 @@ class BotRunner:
                 "--cpus=0.25",
                 "--pids-limit=64",
                 "--read-only",
+                "--tmpfs", "/tmp:size=16m",
+                "--tmpfs /run:size=16m",
                 "--cap-drop=ALL",
                 "--security-opt=no-new-privileges",
+                "--user", "1000:1000",
                 "-i",
                 "-v", f"{path}:/bot/bot.py:ro",
                 "bot_runner"
@@ -37,7 +40,7 @@ class BotRunner:
             text=True
         )
 
-    def getAction(self, inputs, timeout=0.5):
+    def getAction(self, inputs, timeout=0.1):
         try:
             self.proc.stdin.write(json.dumps(inputs) + "\n")
             self.proc.stdin.flush()

@@ -11,6 +11,7 @@ from server import app, socketio, db, bcrypt
 from server.forms import LoginForm, RegistrationForm, UploadAgentForm
 from server.models import User, Bot
 from server.botrunner import BotRunner
+from server.check_bot import check_bot
 
 from server.environment_registry import ENVIRONMENTS, get_env, ENV_REGISTRY, render_env_doc_html
 
@@ -72,6 +73,7 @@ def play(slug):
                 return redirect(url_for("play", slug=slug, tab="mine"))
 
             f = form.agent_file.data
+
             filename = secure_filename(f.filename or "")
             if not filename.endswith(".py"):
                 flash("Only .py files are allowed.", "danger")
@@ -80,6 +82,14 @@ def play(slug):
             if Bot.query.filter_by(name=filename[:-3]).first() or filename[:-3].lower() == "human":
                 flash("That filename is already in use.", "danger")
                 return redirect(url_for("play", slug=slug, tab="mine"))
+            
+            file_str = f.read().decode("utf-8")
+            passed, msg = check_bot(file_str)
+            if not passed:
+                flash(msg)
+                return redirect(url_for("play", slug=slug, tab="mine"))
+            
+            f.stream.seek(0)
 
             bot = Bot(
                 name=filename[:-3],
@@ -333,7 +343,7 @@ def handle_reset(data):
                 agent.close()
 
         del games[request.sid]
-        
+
     slug = data.get("env_slug")
     difficulty = data.get("difficulty")
     print(slug, difficulty)
