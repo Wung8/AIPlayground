@@ -22,7 +22,7 @@
           {% for bot in bots %}
             <div class="profile-card">
               <div class="pc-left">
-                <div class="pc-title">{{ bot.environment_display }}</div>
+                <div class="pc-title">{{ bot.name }}</div>
                 <div class="pc-diff">
                   <span class="pc-diff-label">Uploaded:</span>
                   <span class="pc-stars">{{ bot.date_posted.strftime("%b %d, %Y") }}</span>
@@ -30,7 +30,7 @@
               </div>
 
               <div class="pc-mid">
-                <div class="pc-bot">{{ bot.name }}</div>
+                <div class="pc-bot">{{ bot.environment_display }}</div>
               </div>
 
               <div class="pc-right">
