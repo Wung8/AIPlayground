@@ -3,7 +3,9 @@ import ast
 WHITELISTED_IMPORTS = {
     "math",
     "random",
-    "numpy"
+    "numpy",
+    "enum",
+    "heapq",
 }
 
 BANNED_FUNCTIONS = {
@@ -20,7 +22,18 @@ BANNED_FUNCTIONS = {
     "setattr",
     "delattr",
     "__import__",
+    "__builtins__",
+    "__package__",
+    "__doc__",
+    "__loader__",
+    "__spec__",
+    "__annotations__",
+    "__build_class__",
+    "__debug__",
+    "__loader__",
     "object",
+    "help",
+    "memoryview"
 }
 
 class SecurityError(Exception):
@@ -56,20 +69,8 @@ class SecureVisitor(ast.NodeVisitor):
 
         self.generic_visit(node)
 
-    def visit_FunctionDef(self, node):
-        # Allow __init__ etc.
-        self.generic_visit(node)
 
-    def visit_ClassDef(self, node):
-        self.generic_visit(node)
-    
-    def visit_Attribute(self, node):
-        if node.attr.startswith("__"):
-            raise SecurityError("Dunder attributes not allowed")
-        self.generic_visit(node)
-
-
-def validate_code(source_code: str):
+def check_bot(source_code: str):
     try:
         tree = ast.parse(source_code)
         SecureVisitor().visit(tree)

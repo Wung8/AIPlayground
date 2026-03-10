@@ -31,6 +31,10 @@ const resetBtn = document.getElementById("btnReset");
 
 resetBtn.addEventListener("click", () => {reset()});
 
+socket.on("refresh_page", function() {
+    location.reload();
+});
+
 function reset() {
   const inputs = document.querySelectorAll(".play-input");
 

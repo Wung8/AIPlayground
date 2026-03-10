@@ -11,8 +11,11 @@ from werkzeug.utils import secure_filename
 from server import app, socketio, db, bcrypt
 from server.forms import LoginForm, RegistrationForm, UploadAgentForm
 from server.models import User, Bot
+from server.botrunner import BotRunner
+from server.check_bot import check_bot
 
 from server.environment_registry import ENVIRONMENTS, get_env, ENV_REGISTRY, render_env_doc_html
+
 
 
 # store one game per client (later: one per env per client)
@@ -88,6 +91,7 @@ def play(slug):
                 return redirect(url_for("play", slug=slug, tab="mine"))
 
             f = form.agent_file.data
+
             filename = secure_filename(f.filename or "")
             if not filename.endswith(".py"):
                 flash("Only .py files are allowed.", "danger")
@@ -96,6 +100,14 @@ def play(slug):
             if Bot.query.filter_by(name=filename[:-3]).first() or filename[:-3].lower() == "human":
                 flash("That filename is already in use.", "danger")
                 return redirect(url_for("play", slug=slug, tab="mine"))
+            
+            file_str = f.read().decode("utf-8")
+            passed, msg = check_bot(file_str)
+            if not passed:
+                flash(msg)
+                return redirect(url_for("play", slug=slug, tab="mine"))
+            
+            f.stream.seek(0)
 
             bot = Bot(
                 name=filename[:-3],
@@ -342,6 +354,12 @@ def handle_connect(data):
 @socketio.on("disconnect")
 def handle_disconnect():
     if request.sid in games:
+        game, agents = games[request.sid]
+
+        for agent in agents:
+            if hasattr(agent, "close"):
+                agent.close()
+
         del games[request.sid]
     print("Client disconnected")
 
@@ -355,6 +373,7 @@ def handle_input(data):
     """
     game, agents = games.get(request.sid)
     if not game:
+        socketio.emit("refresh_page", room=request.sid)
         return
 
     actions = {}
@@ -408,9 +427,17 @@ def load_bot(bot, slug):
 
 @socketio.on("reset_game")
 def handle_reset(data):
+    if request.sid in games:
+        old_game, old_agents = games[request.sid]
+
+        for agent in old_agents:
+            if hasattr(agent, "close"):
+                agent.close()
+
+        del games[request.sid]
+
     slug = data.get("env_slug")
     difficulty = data.get("difficulty")
-    print(slug, difficulty)
 
     if slug in ENV_REGISTRY:
         game = ENV_REGISTRY[slug](difficulty=difficulty)
@@ -425,8 +452,8 @@ def handle_reset(data):
         if name and name.lower() != "human":
             bot = Bot.query.filter_by(name=name).first()
             if bot:
-                agent = load_bot(bot, slug)
-                agents.append(agent)
+                runner = BotRunner(bot, slug)
+                agents.append(runner)
             else:
                 emit("bot_error", {"message": f"P{i+1} bot '{name}' not found"})
         else:
