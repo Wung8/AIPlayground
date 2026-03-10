@@ -336,10 +336,17 @@ document.addEventListener("click", async function (e) {
 (function initAutoUpload() {
   const uploadInput = document.getElementById("botUploadInput");
   const uploadForm = document.getElementById("botUploadForm");
+  const uploadTrigger = document.getElementById("botUploadTrigger");
 
-  if (!uploadInput || !uploadForm) return;
+  if (!uploadInput || !uploadForm || !uploadTrigger) return;
 
-  uploadInput.addEventListener("change", () => {
+  uploadTrigger.addEventListener("click", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    uploadInput.click();
+  });
+
+  uploadInput.addEventListener("change", function () {
     if (!uploadInput.files || !uploadInput.files.length) return;
 
     if (typeof uploadForm.requestSubmit === "function") {
