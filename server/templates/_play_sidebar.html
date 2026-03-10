@@ -97,10 +97,14 @@
                 <div class="play-mine-note">Maximum of 3 bots allowed per environment</div>
             {% else %}
                 <div class="play-mine-note">Upload Bot</div>
-                <form method="POST" action="" enctype="multipart/form-data">
-                {{ form.hidden_tag() }}
-                {{ form.agent_file(class="play-upload-input") }}
-                {{ form.submit(class="play-upload-btn") }}
+                <form
+                    method="POST"
+                    action="{{ url_for('play', slug=env.slug, tab='mine') }}"
+                    enctype="multipart/form-data"
+                    id="botUploadForm"
+                >
+                    {{ form.hidden_tag() }}
+                    {{ form.agent_file(class="play-upload-input", id="botUploadInput") }}
                 </form>
             {% endif %}
             {% else %}

@@ -330,6 +330,28 @@ document.addEventListener("click", async function (e) {
 });
 
 /* =============================
+   UI: auto upload on file choose
+============================= */
+
+(function initAutoUpload() {
+  const uploadInput = document.getElementById("botUploadInput");
+  const uploadForm = document.getElementById("botUploadForm");
+
+  if (!uploadInput || !uploadForm) return;
+
+  uploadInput.addEventListener("change", () => {
+    if (!uploadInput.files || !uploadInput.files.length) return;
+
+    if (typeof uploadForm.requestSubmit === "function") {
+      uploadForm.requestSubmit();
+    } else {
+      uploadForm.submit();
+    }
+  });
+})();
+
+
+/* =============================
    Bot error banner
 ============================= */
 
