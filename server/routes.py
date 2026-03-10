@@ -347,7 +347,6 @@ def handle_reset(data):
 
     slug = data.get("env_slug")
     difficulty = data.get("difficulty")
-    print(slug, difficulty)
 
     if slug in ENV_REGISTRY:
         game = ENV_REGISTRY[slug](difficulty=difficulty)

@@ -46,6 +46,20 @@ class BotRunner:
             text=True 
         )
 
+        def read_stdout(q):
+            while True:
+                try:
+                    line = self.proc.stdout.readline()
+                    if not line and self.proc.poll() is not None:
+                        break
+                    q.put(line)
+                except Exception as e:
+                    q.put(None)
+
+        self.read_queue = queue.Queue()
+        self.read_thread = threading.Thread(target=read_stdout, args=(self.read_queue,), daemon=True)
+        self.read_thread.start()
+
         self.buffer = [0 for i in range(20)]
         self.buffer_idx = 0
 
@@ -54,23 +68,13 @@ class BotRunner:
             return self.default_action
         timeout = 0.05 * len(self.buffer) - sum(self.buffer)
 
-        def read_stdout(q):
-            try:
-                line = self.proc.stdout.readline()
-                q.put(line)
-            except Exception as e:
-                q.put(None)
-
         try:
             self.proc.stdin.write(json.dumps(inputs) + "\n")
             self.proc.stdin.flush()
             curr_time = time.time()
 
-            q = queue.Queue()
-            t = threading.Thread(target=read_stdout, args=(q,), daemon=True)
-            t.start()
             try:
-                line = q.get(timeout=timeout)
+                line = self.read_queue.get(timeout=timeout)
             except queue.Empty:
                 self.buffer[self.buffer_idx] = 999
                 self.proc.terminate()

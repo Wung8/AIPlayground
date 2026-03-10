@@ -13,7 +13,7 @@ __myvar__ = 0 # should be safe
 
 class Agent:
     def getAction(self, inputs):
-        #while True: a = 0   # needs to timeout
+        while True: a = 0   # needs to timeout
         your_position = inputs["your_position"]
         opponent_position = inputs["opponent_position"]
         ball_position = inputs["ball_position"]
