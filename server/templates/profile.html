@@ -31,7 +31,7 @@
             aria-label="Change profile photo"
             style="background: none; border: 0; padding: 0; cursor: pointer;"
           >
-            {% if current_user.image_file and current_user.image_file != "default.jpg" %}
+            {% if current_user.image_file %}
               <img
                 src="{{ url_for('profile_photo', filename=current_user.image_file) }}"
                 alt="profile photo"
