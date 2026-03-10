@@ -284,6 +284,7 @@ def handle_input(data):
     """
     game, agents = games.get(request.sid)
     if not game:
+        socketio.emit("refresh_page", room=request.sid)
         return
 
     actions = {}

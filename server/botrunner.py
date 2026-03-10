@@ -4,6 +4,8 @@ import os
 import select
 import threading
 import queue
+import sys
+import time
 
 from server import app
 
@@ -30,7 +32,7 @@ class BotRunner:
                 "--pids-limit=64",
                 "--read-only",
                 "--tmpfs", "/tmp:size=16m",
-                "--tmpfs /run:size=16m",
+                "--tmpfs", "/run:size=16m",
                 "--cap-drop=ALL",
                 "--security-opt=no-new-privileges",
                 "--user", "1000:1000",
@@ -40,13 +42,18 @@ class BotRunner:
             ],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
-            text=True
+            stderr=subprocess.PIPE,
+            text=True 
         )
 
-        buffer = [0 for i in range(10)]
-        buffer_idx = 0
+        self.buffer = [0 for i in range(20)]
+        self.buffer_idx = 0
 
-    def getAction(self, inputs, timeout=0.1):
+    def getAction(self, inputs):
+        if 999 in self.buffer or self.proc.poll() is not None:
+            return self.default_action
+        timeout = 0.05 * len(self.buffer) - sum(self.buffer)
+
         def read_stdout(q):
             try:
                 line = self.proc.stdout.readline()
@@ -57,15 +64,22 @@ class BotRunner:
         try:
             self.proc.stdin.write(json.dumps(inputs) + "\n")
             self.proc.stdin.flush()
+            curr_time = time.time()
 
             q = queue.Queue()
-            t = threading.Thread(target=read_stdout, args=(q,))
+            t = threading.Thread(target=read_stdout, args=(q,), daemon=True)
             t.start()
             try:
                 line = q.get(timeout=timeout)
             except queue.Empty:
-                print("getAction timed out")
+                self.buffer[self.buffer_idx] = 999
+                self.proc.terminate()
+                self.proc.wait()
                 return self.default_action
+            
+            time_used = curr_time - time.time()
+            self.buffer[self.buffer_idx] = time_used
+            self.buffer_idx = self.buffer_idx + 1 if self.buffer_idx < len(self.buffer) - 1 else 0
 
             if not line:
                 return self.default_action
@@ -76,6 +90,7 @@ class BotRunner:
             print("botrunner.py error:", e)
 
         return self.default_action
+
 
     def close(self):
         if self.proc:

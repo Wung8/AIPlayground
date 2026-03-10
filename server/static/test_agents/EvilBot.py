@@ -9,6 +9,7 @@ __myvar__ = 0 # should be safe
 
 while True: a = 0   # timeouts, even here
 
+#a2 = ["a"*i for i  in range(10**100)]
 
 class Agent:
     def getAction(self, inputs):

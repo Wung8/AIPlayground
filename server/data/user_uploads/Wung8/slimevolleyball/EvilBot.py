@@ -7,11 +7,13 @@ __myvar__ = 0 # should be safe
 #import os  # no banned imports
 #__import__("os")   # no banned functions
 
-while True: a = 0   # timeouts, even here
+#while True: a = 0   # timeouts, even here
 
+#a2 = ["a"*i for i  in range(10**100)]
 
 class Agent:
     def getAction(self, inputs):
+        #while True: a = 0   # needs to timeout
         your_position = inputs["your_position"]
         opponent_position = inputs["opponent_position"]
         ball_position = inputs["ball_position"]
