@@ -3,7 +3,7 @@ import sys
 import os
 import re
 
-from flask import render_template, request, redirect, url_for, flash, jsonify
+from flask import render_template, request, redirect, url_for, flash, jsonify, send_from_directory
 from flask_socketio import emit
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
@@ -14,11 +14,10 @@ from server.models import User, Bot
 
 from server.environment_registry import ENVIRONMENTS, get_env, ENV_REGISTRY, render_env_doc_html
 
-from server.environment_registry import ENV_REGISTRY
-
 
 # store one game per client (later: one per env per client)
 games = {}
+
 
 def format_environment_name(slug):
     env = get_env(slug)
@@ -27,10 +26,17 @@ def format_environment_name(slug):
 
     return slug.title()
 
+
+def allowed_profile_photo(filename):
+    ext = os.path.splitext(filename or "")[1].lower()
+    return ext == ".png"
+
+
 # pages
 @app.route("/")
 def home():
     return render_template("home.html")
+
 
 @app.route("/environments")
 def environments():
@@ -40,6 +46,7 @@ def environments():
         environments=ENVIRONMENTS,
         selected_slug=selected_slug,
     )
+
 
 @app.route("/doc/<slug>")
 def env_doc(slug):
@@ -54,6 +61,7 @@ def env_doc(slug):
         environments=ENVIRONMENTS,
         env_doc_html=env_doc_html,
     )
+
 
 @app.route("/play/<slug>", methods=["GET", "POST"])
 def play(slug):
@@ -113,8 +121,16 @@ def play(slug):
     else:
         my_bots = []
 
-    return render_template("play.html", env=env, bots=bots, my_bots=my_bots, form=form, 
-                           num_players=env["num_players"], has_difficulty_setting=env["has_difficulty_setting"])
+    return render_template(
+        "play.html",
+        env=env,
+        bots=bots,
+        my_bots=my_bots,
+        form=form,
+        num_players=env["num_players"],
+        has_difficulty_setting=env["has_difficulty_setting"]
+    )
+
 
 @app.route("/bot_search/<slug>", methods=["GET"])
 def bot_search(slug):
@@ -160,6 +176,7 @@ def bot_search(slug):
 
     return jsonify({"results": out})
 
+
 @app.route("/delete_bot/<int:bot_id>", methods=["POST"])
 @login_required
 def delete_bot(bot_id):
@@ -203,7 +220,7 @@ def login():
             login_user(user, remember=login_form.remember.data)
             return redirect(url_for("home"))
         else:
-            flash('Login Unsuccessful. Please check email and password', 'danger')
+            flash("Login Unsuccessful. Please check email and password", "danger")
 
     # register submit
     if register_form.submit.data and register_form.validate_on_submit():
@@ -226,10 +243,12 @@ def login():
         register_form=register_form,
     )
 
+
 @app.route("/logout")
 def logout():
     logout_user()
-    return redirect(url_for('login'))
+    return redirect(url_for("login"))
+
 
 @app.route("/profile")
 @login_required
@@ -254,14 +273,50 @@ def profile():
 
     return render_template("profile.html", bots=bot_cards)
 
+
+@app.route("/profile/upload_photo", methods=["POST"])
+@login_required
+def upload_profile_photo():
+    f = request.files.get("profile_photo")
+    if not f or not f.filename:
+        flash("Please choose a .png file.", "warning")
+        return redirect(url_for("profile"))
+
+    if not allowed_profile_photo(f.filename):
+        flash("Profile photo must be a .png file.", "danger")
+        return redirect(url_for("profile"))
+
+    photos_dir = os.path.join(app.root_path, "data", "profile_photos")
+    os.makedirs(photos_dir, exist_ok=True)
+
+    filename = secure_filename(f"{current_user.username}.png")
+    path = os.path.join(photos_dir, filename)
+
+    f.save(path)
+
+    current_user.image_file = filename
+    db.session.commit()
+
+    flash("Profile photo updated.", "success")
+    return redirect(url_for("profile"))
+
+
+@app.route("/profile_photos/<filename>")
+def profile_photo(filename):
+    photos_dir = os.path.join(app.root_path, "data", "profile_photos")
+    return send_from_directory(photos_dir, filename)
+
+
 # placeholders for navbar links
 @app.route("/github")
 def github():
     return "github placeholder"
 
+
 @app.route("/discord")
 def discord():
     return "discord placeholder"
+
 
 @app.route("/contact")
 def contact():
@@ -306,17 +361,17 @@ def handle_input(data):
     inputs = game.getInputs()
     for n, agent in enumerate(agents):
         pnum = f"p{n+1}"
-        if pnum not in inputs: 
+        if pnum not in inputs:
             continue
         if agent == "human":
             actions[pnum] = "keyboard"
         else:
             inp = inputs.get(pnum)
             actions[pnum] = agent.getAction(inp)
-            
+
     _, _, done = game.step(
-        actions=actions, 
-        keyboard=data['action'], 
+        actions=actions,
+        keyboard=data["action"],
         display=False
     )
     state = game.getState()
@@ -325,6 +380,7 @@ def handle_input(data):
 
     if done:
         game.reset()
+
 
 def load_bot(bot, slug):
     path = os.path.join(
@@ -348,6 +404,7 @@ def load_bot(bot, slug):
     spec.loader.exec_module(module)
 
     return module.Agent()
+
 
 @socketio.on("reset_game")
 def handle_reset(data):
@@ -374,7 +431,7 @@ def handle_reset(data):
                 emit("bot_error", {"message": f"P{i+1} bot '{name}' not found"})
         else:
             agents.append("human")
-    
+
     game.reset()
     games[request.sid] = [game, agents]
 
