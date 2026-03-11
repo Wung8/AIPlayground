@@ -69,7 +69,11 @@ class BotRunner:
         print(sum(self.buffer))
         if 999 in self.buffer or self.proc.poll() is not None:
             if not self.timed_out_save:
-                print("bot timed out", self.proc.poll())
+                print("bot timed out")
+                if self.proc.poll() is not None:
+                    print(self.proc.poll())
+                    err = self.proc.stderr.read()
+                    print("Bot error:", err)
             self.timed_out_save = True
             return self.default_action
         timeout = 0.1 * len(self.buffer) - sum(self.buffer)
