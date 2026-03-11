@@ -371,10 +371,12 @@ def handle_input(data):
         "action": 0/1/2/3
     }
     """
-    game, agents = games.get(request.sid)
-    if not game:
+    result = games.get(request.sid)
+    if not result:
         socketio.emit("refresh_page", room=request.sid)
         return
+    
+    game, agents = result
 
     actions = {}
     inputs = game.getInputs()
