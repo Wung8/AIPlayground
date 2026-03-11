@@ -69,10 +69,10 @@ class BotRunner:
         print(sum(self.buffer))
         if 999 in self.buffer or self.proc.poll() is not None:
             if not self.timed_out_save:
-                print("bot timed out")
+                print("bot timed out", self.proc.poll())
             self.timed_out_save = True
             return self.default_action
-        timeout = 0.05 * len(self.buffer) - sum(self.buffer)
+        timeout = 0.1 * len(self.buffer) - sum(self.buffer)
 
         try:
             self.proc.stdin.write(json.dumps(inputs) + "\n")
