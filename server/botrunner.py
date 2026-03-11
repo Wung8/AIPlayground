@@ -76,6 +76,7 @@ class BotRunner:
             try:
                 line = self.read_queue.get(timeout=timeout)
             except queue.Empty:
+                print("bot timed out")
                 self.buffer[self.buffer_idx] = 999
                 self.proc.terminate()
                 self.proc.wait()
