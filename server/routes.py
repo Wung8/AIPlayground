@@ -389,7 +389,7 @@ def handle_input(data):
         else:
             inp = inputs.get(pnum)
             actions[pnum] = agent.getAction(inp)
-            if not isinstance(actions, list):
+            if not isinstance(actions[pnum], (list, tuple)):
                 print("BOT ACTION:", actions[pnum])
 
     _, _, done = game.step(
