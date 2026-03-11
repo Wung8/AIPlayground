@@ -2,6 +2,7 @@ import importlib.util
 import sys
 import os
 import re
+import time
 
 from flask import render_template, request, redirect, url_for, flash, jsonify, send_from_directory
 from flask_socketio import emit
@@ -362,7 +363,7 @@ def handle_disconnect():
 
         del games[request.sid]
     print("Client disconnected")
-
+t = time.time()
 
 @socketio.on("input")
 def handle_input(data):
@@ -371,6 +372,7 @@ def handle_input(data):
         "action": 0/1/2/3
     }
     """
+    print(time.time()-t)
     result = games.get(request.sid)
     if not result:
         socketio.emit("refresh_page", room=request.sid)
