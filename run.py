@@ -3,6 +3,7 @@ from server import app, socketio
 
 if __name__ == "__main__":
     try:
+        print("starting up website")
         socketio.run(app, debug=True)
     except KeyboardInterrupt: # auto close docker containers
         for sid, (game, agents) in app.routes.games.items():
