@@ -389,6 +389,7 @@ def handle_input(data):
         else:
             inp = inputs.get(pnum)
             actions[pnum] = agent.getAction(inp)
+            print("BOT ACTION:", actions[pnum])
 
     _, _, done = game.step(
         actions=actions,
