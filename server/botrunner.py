@@ -77,7 +77,6 @@ class BotRunner:
         self.timed_out_save = False
 
     def getAction(self, inputs):
-        print("hi")
         if 999 in self.buffer or self.proc.poll() is not None:
             if not self.timed_out_save:
                 if self.proc.poll() is not None:
