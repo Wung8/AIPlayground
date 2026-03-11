@@ -10,6 +10,7 @@ const ENV = getEnvSlug();
 
 let difficulty = "medium";
 const socket = io();
+let waitingForState = false;
 
 function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => (
@@ -48,6 +49,8 @@ if (resetBtn) {
 }
 
 function reset() {
+  waitingForState = true;
+
   const inputs = document.querySelectorAll(".play-input");
   const players = [];
 
@@ -437,10 +440,14 @@ function gameLoop(currentTime) {
       lastTime = currentTime;
     }
 
-    socket.emit("input", {
-      action: keys,
-      env_slug: ENV,
-    });
+    if (!waitingForState) {
+      socket.emit("input", {
+        action: keys,
+        env_slug: ENV,
+      });
+
+      waitingForState = true;
+    }
 
     lastTime += frameDuration;
   }
@@ -460,6 +467,8 @@ socket.on("connect", () => {
 ============================= */
 
 socket.on("state", (state) => {
+  waitingForState = false;
+
   if (!draw) return;
 
   draw(ctx, state);

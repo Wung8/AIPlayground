@@ -464,6 +464,10 @@ def handle_reset(data):
     game.reset()
     games[request.sid] = [game, agents]
 
+    state = game.getState()
+
+    emit("state", state)
+
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)

@@ -59,7 +59,7 @@ class BotRunner:
         self.read_queue = queue.Queue()
         self.read_thread = threading.Thread(target=read_stdout, args=(self.read_queue,), daemon=True)
         self.read_thread.start()
-
+        '''
         def read_stderr(q):
             while True:
                 line = self.proc.stderr.readline()
@@ -69,6 +69,7 @@ class BotRunner:
 
         self.err_queue = queue.Queue()
         threading.Thread(target=read_stderr, args=(self.err_queue,), daemon=True).start()
+        '''
 
         self.buffer = [0 for i in range(20)]
         self.buffer_idx = 0
@@ -76,18 +77,14 @@ class BotRunner:
         self.timed_out_save = False
 
     def getAction(self, inputs):
-        print(sum(self.buffer))
         if 999 in self.buffer or self.proc.poll() is not None:
             if not self.timed_out_save:
-                print("bot timed out")
                 if self.proc.poll() is not None:
-                    print("bot error:", self.proc.poll())
-                    while True:
-                        try:
-                            line = self.err_queue.get(0)
-                            print(line)
-                        except queue.Empty:
-                            break
+                    err = self.proc.stderr.read()
+                    if err:
+                        print("BOT STDERR:", err)
+                else:
+                    print("bot timed out")
             self.timed_out_save = True
             return self.default_action
         timeout = 0.1 * len(self.buffer) - sum(self.buffer)
@@ -112,7 +109,7 @@ class BotRunner:
 
             if not line:
                 return self.default_action
-
+            
             return json.loads(line)
 
         except Exception as e:

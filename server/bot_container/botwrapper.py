@@ -24,8 +24,8 @@ def error(msg, e=None):
     out = {"error": msg}
     if e:
         out["trace"] = traceback.format_exc()
-    print(json.dumps(out))
-    sys.stdout.flush()
+    print(json.dumps(out), file=sys.stderr)
+    sys.stderr.flush()
 
 
 def main():
