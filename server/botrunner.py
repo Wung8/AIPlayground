@@ -77,6 +77,7 @@ class BotRunner:
         self.timed_out_save = False
 
     def getAction(self, inputs):
+        print("hi")
         if 999 in self.buffer or self.proc.poll() is not None:
             if not self.timed_out_save:
                 if self.proc.poll() is not None:
@@ -98,9 +99,12 @@ class BotRunner:
                 line = self.read_queue.get(timeout=timeout)
             except queue.Empty:
                 print("bot timed out")
+                try:
+                    self.proc.wait(timeout=1)
+                except subprocess.TimeoutExpired:
+                    self.proc.kill()
+
                 self.buffer[self.buffer_idx] = 999
-                self.proc.terminate()
-                self.proc.wait()
                 return self.default_action
             
             time_used = time.time() - curr_time
