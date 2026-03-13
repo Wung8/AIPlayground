@@ -1,15 +1,18 @@
-.play-shell {
-  min-height: calc(100vh - var(--topH));
-  display: grid;
-  grid-template-columns: 420px 1fr;
-  gap: 0;
+.play-left {
+  position: fixed;
+  top: var(--topH);
+  left: 0;
+  width: 420px;
+  height: calc(100vh - var(--topH));
+  padding: 18px;
 }
 
-/* _play_sidebar.html */
-.play-left { padding: 18px; }
+.play-main {
+  margin-left: 420px;
+}
 
 .play-left-card {
-  height: calc(100vh - var(--topH) - 36px);
+  height: calc(100vh - var(--topH) - 18px);
   background: rgba(255,255,255,0.10);
   border: 1px solid rgba(255,255,255,0.10);
   padding: 20px 18px;

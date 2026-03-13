@@ -138,16 +138,6 @@ body{
 
 .nav-link:hover{ color: rgba(200, 220, 224, 0.95); }
 
-/* shared app layout shell */
-.content{
-  flex: 1;
-  display: grid;
-  grid-template-columns: var(--sidebarW) 1fr;
-  gap: 0;
-  min-height: calc(100vh - var(--topH));
-  background: var(--page-bg);
-}
-
 /* scale ONLY the environments list page */
 .content.env-page{
   zoom: var(--ui-scale);
@@ -173,14 +163,28 @@ body{
     var(--page-bg) 100%
   );
 
-  position: sticky;
+  position: fixed;
   top: var(--topH);
-  align-self: start;
-
-  height: 110vh;
-  overflow: auto;
-
+  left: 0;
+  width: var(--sidebarW);
+  height: 100%;
+  overflow: hidden;
   padding: 30px 14px;
+}
+
+.content{
+  flex: 1;
+  display: block;
+  min-height: calc(100vh - var(--topH));
+  background: var(--page-bg);
+}
+
+.main{
+  margin-left: var(--sidebarW);
+  padding: 24px 26px;
+  position: relative;
+  overflow: visible;
+  background: var(--page-bg);
 }
 
 /* gold bars inside the sidebar */
@@ -269,13 +273,6 @@ body{
 
 .side-item.is-active{ color: rgba(255,255,255,0.86); }
 
-/* shared main */
-.main{
-  padding: 24px 26px;
-  position: relative;
-  overflow: auto;
-  background: var(--page-bg);
-}
 
 /* global flash toasts */
 .flash-wrap{
