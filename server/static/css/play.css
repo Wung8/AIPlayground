@@ -241,7 +241,36 @@
   overflow: auto;
 }
 
+
+.play-human-reset {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.34);
+  font-family: inherit;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+}
+
+.play-human-reset:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(210,176,106,0.35);
+  color: rgba(255,255,255,0.82);
+}
+
+.play-human-reset:focus-visible {
+  outline: 1px solid rgba(210,176,106,0.45);
+  outline-offset: 2px;
+}
+
 /* bot rows */
+
 .bot-row {
   height: 54px;
   display: grid;
@@ -252,6 +281,8 @@
   margin-bottom: 12px;
   background: rgba(0,0,0,0.12);
   border: 1px solid rgba(255,255,255,0.08);
+  cursor: pointer;
+  transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
 }
 
 .bot-select-btn {
@@ -261,7 +292,20 @@
   align-items: center;
   width: 100%;
   min-width: 0;
-  cursor: pointer;
+}
+
+.bot-row:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(210,176,106,0.35);
+  box-shadow: 0 0 0 1px rgba(210,176,106,0.12);
+}
+
+.bot-row:hover .bot-name {
+  color: rgba(255,255,255,0.82);
+}
+
+.bot-row:hover .bot-meta {
+  color: rgba(255,255,255,0.48);
 }
 
 .bot-name {

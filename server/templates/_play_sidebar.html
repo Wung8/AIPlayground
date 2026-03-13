@@ -13,6 +13,15 @@
             type="text" 
             value="Human"
         />
+        <button
+          type="button"
+          class="play-human-reset"
+          data-player-index="{{ i }}"
+          title="Set back to Human"
+          aria-label="Set player {{ i + 1 }} back to Human"
+        >
+          ×
+        </button>
         </div>
     {% endfor %}
 
