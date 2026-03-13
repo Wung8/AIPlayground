@@ -13,6 +13,15 @@
             type="text" 
             value="Human"
         />
+        <button
+          type="button"
+          class="play-human-reset"
+          data-player-index="{{ i }}"
+          title="Set back to Human"
+          aria-label="Set player {{ i + 1 }} back to Human"
+        >
+          ×
+        </button>
         </div>
     {% endfor %}
 
@@ -96,15 +105,15 @@
             {% if my_bots|length == 3 %}
                 <div class="play-mine-note">Maximum of 3 bots allowed per environment</div>
             {% else %}
-                <div class="play-mine-note">Upload Bot</div>
                 <form
-                    method="POST"
-                    action="{{ url_for('play', slug=env.slug, tab='mine') }}"
-                    enctype="multipart/form-data"
-                    id="botUploadForm"
+                method="POST"
+                action="{{ url_for('play', slug=env.slug, tab='mine') }}"
+                enctype="multipart/form-data"
+                id="botUploadForm"
                 >
-                    {{ form.hidden_tag() }}
-                    {{ form.agent_file(class="play-upload-input", id="botUploadInput") }}
+                {{ form.hidden_tag() }}
+                {{ form.agent_file(class="play-upload-input", id="botUploadInput") }}
+                <button type="button" class="play-upload-trigger" id="botUploadTrigger">Upload Bot</button>
                 </form>
             {% endif %}
             {% else %}
