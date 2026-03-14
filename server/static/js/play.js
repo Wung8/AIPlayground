@@ -447,9 +447,9 @@ function gameLoop(currentTime) {
       });
 
       waitingForState = true;
+      lastTime += frameDuration;
     }
 
-    lastTime += frameDuration;
   }
 
   requestAnimationFrame(gameLoop);
