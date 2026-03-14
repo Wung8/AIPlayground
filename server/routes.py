@@ -226,6 +226,7 @@ def login():
         if user and bcrypt.check_password_hash(user.password, login_form.password.data):
             print("good")
             login_user(user, remember=login_form.remember.data)
+            print("logged in")
             return redirect(url_for("home"))
         else:
             print("bad")
