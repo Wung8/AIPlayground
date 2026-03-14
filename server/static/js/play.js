@@ -129,6 +129,7 @@ function reset() {
 
 (function initPlayerSelection() {
   const playerInputs = Array.from(document.querySelectorAll(".play-input"));
+  const resetButtons = Array.from(document.querySelectorAll(".play-human-reset"));
   let activePlayerIdx = 0;
 
   function ensureHighlightStyles() {
@@ -167,12 +168,27 @@ function reset() {
     setActivePlayer(activePlayerIdx + 1);
   }
 
+  function setPlayerToHuman(idx) {
+    const input = playerInputs[idx];
+    if (!input) return;
+
+    input.value = "Human";
+    setActivePlayer(idx);
+  }
+
   ensureHighlightStyles();
   setActivePlayer(0);
 
   playerInputs.forEach((inp, idx) => {
     inp.addEventListener("focus", () => setActivePlayer(idx));
     inp.addEventListener("click", () => setActivePlayer(idx));
+  });
+
+  resetButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = Number(btn.dataset.playerIndex);
+      setPlayerToHuman(idx);
+    });
   });
 
   document.addEventListener("click", (e) => {
@@ -341,10 +357,17 @@ document.addEventListener("click", async function (e) {
 (function initAutoUpload() {
   const uploadInput = document.getElementById("botUploadInput");
   const uploadForm = document.getElementById("botUploadForm");
+  const uploadTrigger = document.getElementById("botUploadTrigger");
 
-  if (!uploadInput || !uploadForm) return;
+  if (!uploadInput || !uploadForm || !uploadTrigger) return;
 
-  uploadInput.addEventListener("change", () => {
+  uploadTrigger.addEventListener("click", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    uploadInput.click();
+  });
+
+  uploadInput.addEventListener("change", function () {
     if (!uploadInput.files || !uploadInput.files.length) return;
 
     if (typeof uploadForm.requestSubmit === "function") {
