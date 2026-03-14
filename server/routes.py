@@ -371,7 +371,6 @@ def handle_input(data):
         "action": 0/1/2/3
     }
     """
-    t = time.time()
     result = games.get(request.sid)
     if not result:
         socketio.emit("refresh_page", room=request.sid)
@@ -401,7 +400,6 @@ def handle_input(data):
     state = game.getState()
 
     emit("state", state)
-    print(time.time() - t)
 
     if done:
         game.reset()
