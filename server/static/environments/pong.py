@@ -89,6 +89,7 @@ XXX  XXXXXXX  XXXXXXX  XXXX  X
             self.counter -= 1
             return 0, 0, 0
 
+        velocities = [0, 0]
         for i in range(2):
             action = actions[f"p{i+1}"]
             if action == "keyboard":
@@ -102,6 +103,7 @@ XXX  XXXXXXX  XXXXXXX  XXXX  X
                     if keyboard.get(key):
                         idx = keyset.index(key)
                         action[0] += (idx-0.5) * 2
+                        velocities[i] = action[0] * self.paddle_speed
             player = [self.player1, self.player2][i]
             player[1] += action[0] * self.paddle_speed
             if player[1] < 0 + self.paddle_height//2:
@@ -117,6 +119,7 @@ XXX  XXXXXXX  XXXXXXX  XXXX  X
             if 0 >= dx > -self.paddle_width:
                 dy = self.ball[1] - self.player1[1]
                 if abs(dy) <= self.paddle_height//2+1:
+                    dy += velocities[0] * 2
                     self.ball_vel[1] = dy / self.paddle_height
                     self.ball_vel[0] = (1-self.ball_vel[1]**2)**0.5
                     self.ball_speed += 0.25
@@ -125,6 +128,7 @@ XXX  XXXXXXX  XXXXXXX  XXXX  X
             if 0 >= dx > -self.paddle_width:
                 dy = self.ball[1] - self.player2[1]
                 if abs(dy) <= self.paddle_height//2+1:
+                    dy += velocities[1] * 2
                     self.ball_vel[1] = dy / self.paddle_height
                     self.ball_vel[0] = -(1-self.ball_vel[1]**2)**0.5
                     self.ball_speed += 0.25
