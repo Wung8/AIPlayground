@@ -174,9 +174,9 @@ class SlimeVolleyballEnv:
         # bounce off net
         if abs(self.ball.pos[0]-self.screen_size[0]/2) <= self.net_width+self.ball.radius and self.ball.pos[1] >= self.net_level-self.ball.radius:
             # if ball is going up then it hit the side
-            if self.ball.vel[1] > 0: side = self.screen_size[0]/2 - self.net_width
+            if self.ball.vel[0] > 0: side = self.screen_size[0]/2 - self.net_width
             else: side = self.screen_size[0]/2 + self.net_width
-            if self.ball.vel[1] < 0:
+            if self.ball.vel[1] < 0 and (self.ball.pos[1] - self.net_level) < abs(self.ball.pos[0] - side):
                 self.ball.vel[0] = -self.ball.vel[0]
                 self.ball.pos[0] = side + [-1,1][side>self.screen_size[0]/2] * self.ball.radius
             else:
