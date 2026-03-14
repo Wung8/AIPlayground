@@ -9,7 +9,9 @@ function getEnvSlug() {
 const ENV = getEnvSlug();
 
 let difficulty = "medium";
-const socket = io();
+const socket = io({
+  transports: ["websocket"]
+});
 let waitingForState = false;
 
 function escapeHtml(s) {
