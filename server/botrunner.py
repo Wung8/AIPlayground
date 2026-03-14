@@ -1,13 +1,14 @@
+import importlib.util
 import subprocess
 import json
 import os
-import select
 import threading
 import queue
 import sys
 import time
 
 from server import app
+
 
 class BotRunner:
     default_action = [0 for i in range(10)]
@@ -87,7 +88,7 @@ class BotRunner:
                     print("bot timed out")
             self.timed_out_save = True
             return self.default_action
-        timeout = 0.1 * len(self.buffer) - sum(self.buffer)
+        timeout = max(0.1, 0.1 * len(self.buffer) - sum(self.buffer))
 
         try:
             self.proc.stdin.write(json.dumps(inputs) + "\n")

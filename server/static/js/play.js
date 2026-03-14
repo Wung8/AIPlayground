@@ -457,7 +457,8 @@ function gameLoop(currentTime) {
 socket.on("connect", () => {
   socket.emit("join_env", {
     env_slug: ENV,
-    difficulty: difficulty
+    difficulty: difficulty,
+    players: players
   });
 });
 
