@@ -432,12 +432,12 @@ document.addEventListener("keyup", (e) => {
 ============================= */
 
 let lastTime = 0;
-const fps = 60;
+const fps = 15;
 const frameDuration = 1000 / fps;
 
 function gameLoop(currentTime) {
   if (currentTime - lastTime >= frameDuration) {
-
+    waitingForState = false;
     if (!waitingForState) {
       console.log(currentTime - lastTime)
       socket.emit("input", {
