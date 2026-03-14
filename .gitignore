@@ -8,10 +8,3 @@ venv/
 node_modules/
 dist/
 dist-ssr/
-
-# Instance folder
-instance/
-
-# User generated files
-server/data/profile_photos/
-server/data/user_uploads/
