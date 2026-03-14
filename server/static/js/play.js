@@ -433,7 +433,7 @@ document.addEventListener("keyup", (e) => {
 
 let lastTime = 0;
 const maxAllowedTime = 1000;
-const fps = 60;
+const fps = 20;
 const frameDuration = 1000 / fps;
 
 function gameLoop(currentTime) {
