@@ -209,7 +209,7 @@ if __name__ == "__main__":
 
     player1 = "keyboard"
 
-    #from YourPyScript import YourAgentClass as player1
+    #from YourPyScript import Agent as player1
                 
     game = SliderPuzzleEnv(difficulty="easy") # easy, medium, hard
     game.reset()

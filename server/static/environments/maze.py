@@ -162,7 +162,7 @@ if __name__ == "__main__":
 
     player1 = "keyboard"
 
-    #from YourPyScript import YourAgentClass as player1
+    #from YourPyScript import Agent as player1
                 
     game = MazeEnv(difficulty="easy") # easy, medium, hard
     game.reset()
