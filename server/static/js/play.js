@@ -446,7 +446,7 @@ function gameLoop(currentTime) {
       });
 
       waitingForState = true;
-      //lastTime = currentTime;
+      lastTime = currentTime;
     }
 
   }
