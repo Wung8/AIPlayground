@@ -439,7 +439,7 @@ function gameLoop(currentTime) {
   if (currentTime - lastTime >= frameDuration) {
     waitingForState = false;
     if (!waitingForState) {
-      console.log(currentTime - lastTime)
+      //console.log(currentTime - lastTime)
       socket.emit("input", {
         action: keys,
         env_slug: ENV,
