@@ -436,9 +436,6 @@ const frameDuration = 1000 / fps;
 
 function gameLoop(currentTime) {
   if (currentTime - lastTime >= frameDuration) {
-    if (currentTime - lastTime > maxAllowedTime) {
-      lastTime = currentTime;
-    }
 
     if (!waitingForState) {
       socket.emit("input", {
@@ -447,7 +444,7 @@ function gameLoop(currentTime) {
       });
 
       waitingForState = true;
-      lastTime += frameDuration;
+      lastTime = currentTime;
     }
 
   }
