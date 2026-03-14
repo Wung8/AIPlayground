@@ -221,6 +221,7 @@ def login():
 
     # login submit
     if login_form.submit.data and login_form.validate_on_submit():
+        print("recieved submit")
         user = User.query.filter_by(email=login_form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, login_form.password.data):
             login_user(user, remember=login_form.remember.data)
