@@ -332,13 +332,13 @@ def contact():
 @socketio.on("join_env")
 def handle_connect(data):
     GameRunner(request.sid, data) # auto places itself in games
-    print("{request.sid} connected")
+    print(f"{request.sid} connected")
 
 @socketio.on("disconnect")
 def handle_disconnect():
     games[request.sid].close()
     del games[request.sid]
-    print("{request.sid} disconnected")
+    print(f"{request.sid} disconnected")
 
 
 @socketio.on("input")
