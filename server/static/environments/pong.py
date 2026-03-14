@@ -1,6 +1,5 @@
 import numpy as np
 import cv2, math, time, random
-import keyboard as k
 from colorsys import hsv_to_rgb
 
 class PongEnv:
@@ -242,23 +241,41 @@ XXX  XXXXXXX  XXXXXXX  XXXX  X
         img = img.repeat(self.scale,axis=0).repeat(self.scale,axis=1)
         
         cv2.imshow('img', img)
-        
-        this_frame = time.time()
-        cv2.waitKey(max(int(1000/self.framerate-(this_frame-self.last_frame)), 20))
-        self.last_frame = this_frame
+        cv2.waitKey(1)
+
 
 if __name__ == "__main__":   
-    env = PongEnv()
-    env.reset()
-    while True:
-        actions1, actions2 = [0], [0]
-        if k.is_pressed('w'): actions1[0] -= 1
-        if k.is_pressed('s'): actions1[0] += 1
-        if k.is_pressed('o'): actions2[0] -= 1
-        if k.is_pressed('l'): actions2[0] += 1
-        if k.is_pressed('r'): env.reset()
-        env.step({"p1":actions1, "p2":actions2})
-        env.display()
+    import keyboard as k
+    import time
 
-        #if done:
-        #    env.reset()
+    player1 = "keyboard"
+    player2 = "keyboard"
+
+    #from YourPyScript import YourAgentClass as player1
+    #from YourPyScript import YourAgentClass as player2
+
+    game = PongEnv()
+    game.reset()
+
+    if player1 != "keyboard": player1 = player1()
+    if player2 != "keyboard": player2 = player2()
+    while True:
+        inputs = game.getInputs()
+        actions1 = [0]
+        actions2 = [0]
+
+        if player1 == "keyboard":
+            if k.is_pressed('w'): actions1[0] -= 1
+            if k.is_pressed('s'): actions1[0] += 1
+        else:
+            actions1 = player1.getAction(inputs["p1"])
+        if player2 == "keyboard":
+            if k.is_pressed('up'): actions2[0] -= 1
+            if k.is_pressed('down'): actions2[0] += 1
+        else:
+            actions2 = player2.getAction(inputs["p2"])
+        game.step({"p1":actions1, "p2":actions2})
+        game.display()
+
+        time.sleep(1/20)
+

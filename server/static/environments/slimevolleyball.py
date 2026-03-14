@@ -270,15 +270,11 @@ class SlimeVolleyballEnv:
         img = cv2.circle(img, turn_int(self.ball.pos), self.ball.radius, self.colors['ball'], thickness=-1)
 
         cv2.imshow('img', img)
-        this_frame = time.time()
-        cv2.waitKey(max(int(1000/self.framerate-(this_frame-self.last_frame)), 20))
-        self.last_frame = this_frame
+        cv2.waitKey(1)
 
     def close(self):
         if self.render_mode == "human":
             cv2.destroyWindow("img")
-
-    
 
     
 
@@ -318,47 +314,45 @@ class Ball:
         self.vel = [0,0]
 
 
-def update_usr1():
-    global usr1, u1p
-    usr1 = [0, 0]
-    if k.is_pressed('w') and u1p: usr1[1] = 1
-    elif k.is_pressed('d'): usr1[0] = 1
-    elif k.is_pressed('a'): usr1[0] = -1
-    if k.is_pressed('w'): u1p = False
-    else: u1p = True
-    usr1 = {"type":"player",
-            "action":usr1}
-
-def update_usr2():
-    global usr2, u2p
-    if k.is_pressed('up') and u2p: usr2 = 3
-    elif k.is_pressed('right'): usr2 = 2
-    elif k.is_pressed('left'): usr2 = 1
-    else: usr2 = 0
-    if k.is_pressed('up'): u2p = False
-    else: u2p = True
-    usr2 = {"type":"player",
-            "action":usr2}
-
-
 if __name__ == '__main__':
-    env = SlimeVolleyballEnv()
-    obs = env.reset()
+    import keyboard as k
+    import time
 
-    env.score = [0,0]
-    c = 0
-    frame = 1/20
+    player1 = "keyboard"
+    player2 = "keyboard"
+
+    #from YourPyScript import YourAgentClass as player1
+    #from YourPyScript import YourAgentClass as player2
+
+    game = SlimeVolleyballEnv()
+    game.reset()
+
+    if player1 != "keyboard": player1 = player1()
+    if player2 != "keyboard": player2 = player2()
     while True:
-        c += 1
-        update_usr1()
-        update_usr2()
-        obs, r, done = env.step({"p1":usr1, "p2":usr2}, display=True)
-        #obs, r, done = env.step([usr1, p2_action], display=True)
+        inputs = game.getInputs()
+        actions1 = [0,0]
+        actions2 = [0,0]
+
+        if player1 == "keyboard":
+            if k.is_pressed('a'): actions1[0] -= 1
+            if k.is_pressed('d'): actions1[0] += 1
+            if k.is_pressed('w'): actions1[1] += 1
+        else:
+            actions1 = player1.getAction(inputs["p1"])
+        if player2 == "keyboard":
+            if k.is_pressed('left'): actions2[0] -= 1
+            if k.is_pressed('right'): actions2[0] += 1
+            if k.is_pressed('up'): actions2[1] += 1
+        else:
+            actions2 = player2.getAction(inputs["p2"])
+        _, _, done = game.step({"p1":actions1, "p2":actions2})
+        game.display()
+
+        time.sleep(1/20)
 
         if done:
-            print(env.score)
-            time.sleep(0.5)
-            env.reset()
+            game.reset()
         
 
 
