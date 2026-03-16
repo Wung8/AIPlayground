@@ -271,7 +271,7 @@ def profile():
         bot_cards.append({
             "id": bot.id,
             "name": bot.name,
-            "elo": bot.elo,
+            "metric": bot.metric,
             "date_posted": bot.date_posted,
             "environment": bot.environment,
             "environment_display": format_environment_name(bot.environment),
