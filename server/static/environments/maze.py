@@ -59,6 +59,7 @@ class MazeEnv:
         
         self.player = [1,1]
         self.goal = (2*self.size[0]-1, 2*self.size[1]-1)
+        self.tick = 0
 
         self.last_frame = time.time()
 
@@ -80,6 +81,7 @@ class MazeEnv:
         return state
 
     def step(self, actions, keyboard={}, display=False):
+        self.tick += 1
         action = actions[f"p1"]
         if action == "keyboard":
             action = [0,0]
@@ -101,8 +103,8 @@ class MazeEnv:
             self.player = new_pos
         
         done = tuple(self.player) == tuple(self.goal)
-
-        return self.getInputs(), 0, done
+        time = self.tick * 0.05 
+        return self.getInputs(), time, done
     
     def posToGrid(self, pos):
         return int(2*pos[0]+1), int(2*pos[1]+1)
