@@ -2,6 +2,7 @@
   {
     "slug": "slimevolleyball",
     "title": "Slime Volleyball",
+    "metric": "elo",
     "num_players": 2,
     "has_difficulty_setting": false,
     "difficulty": 3,
@@ -15,6 +16,7 @@
   {
     "slug": "soccer",
     "title": "Soccer",
+    "metric": "elo",
     "num_players": 4,
     "has_difficulty_setting": false,
     "difficulty": 4,
@@ -27,6 +29,7 @@
   {
     "slug": "maze",
     "title": "Maze",
+    "metric": "time",
     "num_players": 1,
     "has_difficulty_setting": true,
     "difficulty": 2,
@@ -39,6 +42,7 @@
   {
     "slug": "pong",
     "title": "Pong",
+    "metric": "elo",
     "num_players": 2,
     "has_difficulty_setting": false,
     "difficulty": 1,
@@ -51,6 +55,7 @@
   {
     "slug": "sliderpuzzle",
     "title": "Slider Puzzle",
+    "metric": "time",
     "num_players": 1,
     "has_difficulty_setting": true,
     "difficulty": 3,

@@ -1,6 +1,5 @@
 import numpy as np
 import cv2, math, time, random
-import keyboard as k
 from colorsys import hsv_to_rgb
 
 class PongEnv:
@@ -89,6 +88,7 @@ XXX  XXXXXXX  XXXXXXX  XXXX  X
             self.counter -= 1
             return 0, 0, 0
 
+        velocities = [0, 0]
         for i in range(2):
             action = actions[f"p{i+1}"]
             if action == "keyboard":
@@ -102,6 +102,7 @@ XXX  XXXXXXX  XXXXXXX  XXXX  X
                     if keyboard.get(key):
                         idx = keyset.index(key)
                         action[0] += (idx-0.5) * 2
+                        velocities[i] = action[0] * self.paddle_speed
             player = [self.player1, self.player2][i]
             player[1] += action[0] * self.paddle_speed
             if player[1] < 0 + self.paddle_height//2:
@@ -117,6 +118,7 @@ XXX  XXXXXXX  XXXXXXX  XXXX  X
             if 0 >= dx > -self.paddle_width:
                 dy = self.ball[1] - self.player1[1]
                 if abs(dy) <= self.paddle_height//2+1:
+                    dy += velocities[0] * 2
                     self.ball_vel[1] = dy / self.paddle_height
                     self.ball_vel[0] = (1-self.ball_vel[1]**2)**0.5
                     self.ball_speed += 0.25
@@ -125,6 +127,7 @@ XXX  XXXXXXX  XXXXXXX  XXXX  X
             if 0 >= dx > -self.paddle_width:
                 dy = self.ball[1] - self.player2[1]
                 if abs(dy) <= self.paddle_height//2+1:
+                    dy += velocities[1] * 2
                     self.ball_vel[1] = dy / self.paddle_height
                     self.ball_vel[0] = -(1-self.ball_vel[1]**2)**0.5
                     self.ball_speed += 0.25
@@ -238,23 +241,41 @@ XXX  XXXXXXX  XXXXXXX  XXXX  X
         img = img.repeat(self.scale,axis=0).repeat(self.scale,axis=1)
         
         cv2.imshow('img', img)
-        
-        this_frame = time.time()
-        cv2.waitKey(max(int(1000/self.framerate-(this_frame-self.last_frame)), 20))
-        self.last_frame = this_frame
+        cv2.waitKey(1)
+
 
 if __name__ == "__main__":   
-    env = PongEnv()
-    env.reset()
-    while True:
-        actions1, actions2 = [0], [0]
-        if k.is_pressed('w'): actions1[0] -= 1
-        if k.is_pressed('s'): actions1[0] += 1
-        if k.is_pressed('o'): actions2[0] -= 1
-        if k.is_pressed('l'): actions2[0] += 1
-        if k.is_pressed('r'): env.reset()
-        env.step({"p1":actions1, "p2":actions2})
-        env.display()
+    import keyboard as k
+    import time
 
-        #if done:
-        #    env.reset()
+    player1 = "keyboard"
+    player2 = "keyboard"
+
+    #from YourPyScript import Agent as player1
+    #from YourPyScript import Agent as player2
+
+    game = PongEnv()
+    game.reset()
+
+    if player1 != "keyboard": player1 = player1()
+    if player2 != "keyboard": player2 = player2()
+    while True:
+        inputs = game.getInputs()
+        actions1 = [0]
+        actions2 = [0]
+
+        if player1 == "keyboard":
+            if k.is_pressed('w'): actions1[0] -= 1
+            if k.is_pressed('s'): actions1[0] += 1
+        else:
+            actions1 = player1.getAction(inputs["p1"])
+        if player2 == "keyboard":
+            if k.is_pressed('up'): actions2[0] -= 1
+            if k.is_pressed('down'): actions2[0] += 1
+        else:
+            actions2 = player2.getAction(inputs["p2"])
+        game.step({"p1":actions1, "p2":actions2})
+        game.display()
+
+        time.sleep(1/20)
+

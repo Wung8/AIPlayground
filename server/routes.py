@@ -1,8 +1,4 @@
-import importlib.util
-import sys
 import os
-import re
-import time
 
 from flask import render_template, request, redirect, url_for, flash, jsonify, send_from_directory
 from flask_socketio import emit
@@ -12,15 +8,12 @@ from werkzeug.utils import secure_filename
 from server import app, socketio, db, bcrypt
 from server.forms import LoginForm, RegistrationForm, UploadAgentForm
 from server.models import User, Bot
-from server.botrunner import BotRunner
 from server.check_bot import check_bot
 
 from server.environment_registry import ENVIRONMENTS, get_env, ENV_REGISTRY, render_env_doc_html
+from server.gamerunner import GameRunner
 
-
-
-# store one game per client (later: one per env per client)
-games = {}
+from server import games
 
 
 def format_environment_name(slug):
@@ -338,137 +331,31 @@ def contact():
 
 @socketio.on("join_env")
 def handle_connect(data):
-    slug = data.get("env_slug")
-    difficulty = data.get("difficulty")
-    agents = ["human" for i in range(4)]
-
-    if slug in ENV_REGISTRY:
-        games[request.sid] = [ENV_REGISTRY[slug](difficulty=difficulty), agents]
-    else:
-        print("Unknown environment:", slug)
-        return
-
-    games[request.sid][0].reset()
-    print(f"{request.sid} joined {slug}")
-
+    GameRunner(request.sid, data) # auto places itself in games
+    print(f"{request.sid} connected")
 
 @socketio.on("disconnect")
 def handle_disconnect():
-    if request.sid in games:
-        game, agents = games[request.sid]
+    games[request.sid].close()
+    del games[request.sid]
+    print(f"{request.sid} disconnected")
 
-        for agent in agents:
-            if hasattr(agent, "close"):
-                agent.close()
-
-        del games[request.sid]
-    print("Client disconnected")
 
 @socketio.on("input")
 def handle_input(data):
-    """
-    data = {
-        "action": 0/1/2/3
-    }
-    """
-    result = games.get(request.sid)
-    if not result:
-        socketio.emit("refresh_page", room=request.sid)
+    gamerunner = games.get(request.sid)
+    if not gamerunner:
+        socketio.emit("refresh_page", to=request.sid)
         return
-    
-    game, agents = result
-
-    actions = {}
-    inputs = game.getInputs()
-    for n, agent in enumerate(agents):
-        pnum = f"p{n+1}"
-        if pnum not in inputs:
-            continue
-        if agent == "human":
-            actions[pnum] = "keyboard"
-        else:
-            inp = inputs.get(pnum)
-            actions[pnum] = agent.getAction(inp)
-            if not isinstance(actions[pnum], (list, tuple)):
-                print("BOT ACTION:", actions[pnum])
-
-    _, _, done = game.step(
-        actions=actions,
-        keyboard=data["action"],
-        display=False
-    )
-    state = game.getState()
-
-    emit("state", state)
-
-    if done:
-        game.reset()
-
-
-def load_bot(bot, slug):
-    path = os.path.join(
-        app.root_path,
-        "data",
-        "user_uploads",
-        str(bot.creator.username),
-        slug,
-        bot.name + ".py"
-    )
-
-    if not os.path.exists(path):
-        print("Bot file missing:", path)
-        return None
-
-    module_name = f"bot_{bot.id}"
-
-    spec = importlib.util.spec_from_file_location(module_name, path)
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[module_name] = module
-    spec.loader.exec_module(module)
-
-    return module.Agent()
+    gamerunner.set_client_data(data)
 
 
 @socketio.on("reset_game")
 def handle_reset(data):
     if request.sid in games:
-        old_game, old_agents = games[request.sid]
-
-        for agent in old_agents:
-            if hasattr(agent, "close"):
-                agent.close()
-
-        del games[request.sid]
-
-    slug = data.get("env_slug")
-    difficulty = data.get("difficulty")
-
-    if slug in ENV_REGISTRY:
-        game = ENV_REGISTRY[slug](difficulty=difficulty)
-    else:
-        print("Unknown environment:", slug)
-        return
-
-    agents = []
-
-    player_names = data.get("players", [])
-    for i, name in enumerate(player_names):
-        if name and name.lower() != "human":
-            bot = Bot.query.filter_by(name=name).first()
-            if bot:
-                runner = BotRunner(bot, slug)
-                agents.append(runner)
-            else:
-                emit("bot_error", {"message": f"P{i+1} bot '{name}' not found"})
-        else:
-            agents.append("human")
-
-    game.reset()
-    games[request.sid] = [game, agents]
-
-    state = game.getState()
-
-    emit("state", state)
+        games[request.sid].close()
+    
+    GameRunner(request.sid, data)
 
 
 if __name__ == "__main__":

@@ -59,6 +59,7 @@ class MazeEnv:
         
         self.player = [1,1]
         self.goal = (2*self.size[0]-1, 2*self.size[1]-1)
+        self.tick = 0
 
         self.last_frame = time.time()
 
@@ -80,6 +81,7 @@ class MazeEnv:
         return state
 
     def step(self, actions, keyboard={}, display=False):
+        self.tick += 1
         action = actions[f"p1"]
         if action == "keyboard":
             action = [0,0]
@@ -101,8 +103,8 @@ class MazeEnv:
             self.player = new_pos
         
         done = tuple(self.player) == tuple(self.goal)
-
-        return self.getInputs(), 0, done
+        time = self.tick * 0.05 
+        return self.getInputs(), time, done
     
     def posToGrid(self, pos):
         return int(2*pos[0]+1), int(2*pos[1]+1)
@@ -137,6 +139,8 @@ class MazeEnv:
         if tuple(self.player) == tuple(self.goal):
             img[*self.player] = self.colors['complete']
 
+        img = img.transpose(1,0,2)
+
         '''
         mapping = {
             0: "  ",
@@ -147,27 +151,39 @@ class MazeEnv:
             print(s)
         '''
 
-        scale = 10
+        scale = 160 / self.size[0]
         img = img.repeat(scale,axis=0).repeat(scale,axis=1)
         
-        cv2.imshow('img', img)
-        
-        this_frame = time.time()
-        cv2.waitKey(max(int(1000/self.framerate-(this_frame-self.last_frame)), 20))
-        self.last_frame = this_frame
+        cv2.imshow('img', img)        
+        cv2.waitKey(1)
 
-if __name__ == "__main__":      
-    env = MazeEnv(difficulty="hard")
-    env.reset()
+
+if __name__ == "__main__":
+    import keyboard as k
+    import time
+
+    player1 = "keyboard"
+
+    #from YourPyScript import Agent as player1
+                
+    game = MazeEnv(difficulty="easy") # easy, medium, hard
+    game.reset()
+
+    if player1 != "keyboard": player1 = player1()
+
     while True:
-        actions = [0,0]
-        if k.is_pressed('w'): actions[1] -= 1
-        if k.is_pressed('a'): actions[0] -= 1
-        if k.is_pressed('s'): actions[1] += 1
-        if k.is_pressed('d'): actions[0] += 1
-        if k.is_pressed('r'): env.reset()
-        inputs, r, done = env.step({"p1":actions})
-        env.display()
+        keys = {}
+        inputs = game.getInputs()
+        actions1 = [0]
+        
+        if player1 == "keyboard":
+            for key in "wasd":
+                if k.is_pressed(key): keys[key] = True
+            actions1 = "keyboard"
+        else:
+            actions1 = player1.getAction(inputs["p1"])
 
-        if done:
-            env.reset()
+        game.step({"p1":actions1}, keyboard=keys)
+        game.display()
+
+        time.sleep(1/20)

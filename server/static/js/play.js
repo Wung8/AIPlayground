@@ -9,7 +9,9 @@ function getEnvSlug() {
 const ENV = getEnvSlug();
 
 let difficulty = "medium";
-const socket = io();
+const socket = io({
+  transports: ["websocket"]
+});
 let waitingForState = false;
 
 function escapeHtml(s) {
@@ -453,26 +455,23 @@ document.addEventListener("keyup", (e) => {
 ============================= */
 
 let lastTime = 0;
-const maxAllowedTime = 1000;
 const fps = 20;
 const frameDuration = 1000 / fps;
 
 function gameLoop(currentTime) {
   if (currentTime - lastTime >= frameDuration) {
-    if (currentTime - lastTime > maxAllowedTime) {
-      lastTime = currentTime;
-    }
-
+    waitingForState = false;
     if (!waitingForState) {
+      //console.log(currentTime - lastTime)
       socket.emit("input", {
         action: keys,
         env_slug: ENV,
       });
 
       waitingForState = true;
+      lastTime = currentTime;
     }
 
-    lastTime += frameDuration;
   }
 
   requestAnimationFrame(gameLoop);
@@ -481,7 +480,8 @@ function gameLoop(currentTime) {
 socket.on("connect", () => {
   socket.emit("join_env", {
     env_slug: ENV,
-    difficulty: difficulty
+    difficulty: difficulty,
+    players: players
   });
 });
 
