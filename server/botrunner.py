@@ -75,18 +75,18 @@ class BotRunner:
         self.buffer = [0 for i in range(20)]
         self.buffer_idx = 0
 
-        self.timed_out_save = False
+        self.is_disconnected = False
 
     def getAction(self, inputs):
         if 999 in self.buffer or self.proc.poll() is not None:
-            if not self.timed_out_save:
+            if not self.is_disconnected:
                 if self.proc.poll() is not None:
                     err = self.proc.stderr.read()
                     if err:
                         print("BOT STDERR:", err)
                 else:
                     print("bot timed out")
-            self.timed_out_save = True
+            self.is_disconnected = True
             return self.default_action
         timeout = max(0.1, 0.1 * len(self.buffer) - sum(self.buffer))
 
