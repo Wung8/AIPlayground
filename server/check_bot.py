@@ -6,6 +6,7 @@ WHITELISTED_IMPORTS = {
     "numpy",
     "enum",
     "heapq",
+    "time",
 }
 
 BANNED_FUNCTIONS = {

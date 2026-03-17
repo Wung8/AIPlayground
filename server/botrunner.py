@@ -63,7 +63,7 @@ class BotRunner:
         self.read_queue = queue.Queue()
         self.read_thread = threading.Thread(target=read_stdout, args=(self.read_queue,), daemon=True)
         self.read_thread.start()
-        '''
+        
         def read_stderr(q):
             while True:
                 line = self.proc.stderr.readline()
@@ -73,7 +73,6 @@ class BotRunner:
 
         self.err_queue = queue.Queue()
         threading.Thread(target=read_stderr, args=(self.err_queue,), daemon=True).start()
-        '''
 
         self.buffer = [0 for i in range(20)]
         self.buffer_idx = 0
@@ -126,5 +125,30 @@ class BotRunner:
 
 
     def close(self):
-        if self.proc:
-            subprocess.run(["docker", "rm", "-f", self.container_name])
+        if not self.proc:
+            return
+        
+        try:
+            self.proc.stdin.close()
+        except:
+            pass
+
+        try:
+            self.proc.stdout.close()
+        except:
+            pass
+
+        try:
+            self.proc.stderr.close()
+        except:
+            pass
+
+        try:
+            self.proc.kill()
+        except:
+            pass
+
+        try:
+            self.proc.wait(timeout=2)
+        except:
+            pass
