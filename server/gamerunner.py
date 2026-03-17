@@ -18,8 +18,11 @@ class GameRunner:
         # register this game
         games[sid] = self
 
+        self.sid = sid
         self.game = ENV_REGISTRY[slug](difficulty=difficulty)
         self.agents = []
+        self.disconnected_agents = []
+        self.player_names = player_names
 
         for i, name in enumerate(player_names):
             if name and name.lower() != "human":
@@ -29,13 +32,15 @@ class GameRunner:
                     self.agents.append(runner)
                 else:
                     socketio.emit(
-                        "bot_error",
-                        {"message": f"P{i+1} bot '{name}' not found"},
-                        to=sid
+                        "flash_message",
+                        {"message": f"Player{i+1} '{name}' not found"},
+                        to=self.sid
                     )
                     self.agents.append("human")
             else:
                 self.agents.append("human")
+
+            self.disconnected_agents.append(False)
 
         self.client_data = None
         self.stop_event = False
@@ -86,10 +91,22 @@ class GameRunner:
                     actions[pnum] = "keyboard"
                 else:
                     inp = inputs.get(pnum)
-                    actions[pnum] = agent.getAction(inp)
-                    if not isinstance(actions[pnum], (list, tuple)):
-                        print("ERROR WITH BOT ACTION:", actions[pnum])
+                    if agent.is_disconnected:
+                        if not self.disconnected_agents[n]:
+                            self.disconnected_agents[n] = True
+                            bot_name = self.player_names[n]
+                            reason = "timeout" if 999 in agent.buffer else "error"
+                            socketio.emit(
+                                "flash_message",
+                                {"message": f"Player{n+1} '{bot_name}' disconnected. Reason: {reason}"},
+                                to=sid
+                            )
                         actions[pnum] = [0]*20
+                    else:
+                        actions[pnum] = agent.getAction(inp)
+                        if not isinstance(actions[pnum], (list, tuple)):
+                            print("ERROR WITH BOT ACTION:", actions[pnum])
+                            actions[pnum] = [0]*20
 
             _, _, done = game.step(
                 actions=actions,

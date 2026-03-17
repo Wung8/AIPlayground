@@ -199,17 +199,17 @@ class SoccerEnv:
         toreturn = {}
 
         ball_info = {
-            "velocity":self.ball_body.velocity,
-            "position":self.ball_body.position
+            "velocity":tuple(self.ball_body.velocity),
+            "position":tuple(self.ball_body.position)
         }
         goal_info = {
             "blue":{
-                "post1": self.posts[0][:2],
-                "post2": self.posts[1][:2],
+                "post1": tuple(self.posts[0][:2]),
+                "post2": tuple(self.posts[1][:2]),
             },
             "red":{
-                "post1": self.posts[2][:2],
-                "post2": self.posts[3][:2],
+                "post1": tuple(self.posts[2][:2]),
+                "post2": tuple(self.posts[3][:2]),
             }
         }
 
@@ -423,8 +423,8 @@ class Player:
     def get_inputs(self):
         return {
             "team":self.shape.name,
-            "position":self.body.position,
-            "velocity":self.body.velocity,
+            "position":tuple(self.body.position),
+            "velocity":tuple(self.body.velocity),
             "kicking":self.shape.kicking
         }
         

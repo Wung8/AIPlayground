@@ -1,6 +1,7 @@
 import numpy as np
 import cv2, math, time, random
 from colorsys import hsv_to_rgb
+from copy import deepcopy
 
 class PongEnv:
     num_players = 2
@@ -52,15 +53,15 @@ XXX  XXXXXXX  XXXXXXX  XXXX  X
     def getInputs(self):
         return {
             "p1": {
-                "your_position": self.player1,
-                "opponent_position": self.player2,
-                "ball_position": self.ball,
+                "your_position": tuple(self.player1),
+                "opponent_position": tuple(self.player2),
+                "ball_position": tuple(self.ball),
                 "ball_velocity": (self.ball_vel[0]*self.ball_speed, self.ball_vel[1]*self.ball_speed)
             },
             "p2": {
-                "your_position": self.player2,
-                "opponent_position": self.player1,
-                "ball_position": self.ball,
+                "your_position": tuple(self.player2),
+                "opponent_position": tuple(self.player1),
+                "ball_position": tuple(self.ball),
                 "ball_velocity": (self.ball_vel[0]*self.ball_speed, self.ball_vel[1]*self.ball_speed)
             }
         }

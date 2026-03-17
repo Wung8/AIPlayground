@@ -316,7 +316,7 @@ def profile_photo(filename):
 # placeholders for navbar links
 @app.route("/github")
 def github():
-    return "github placeholder"
+    return redirect("https://github.com/Wung8/AIPlayground_Environments/tree/main/environments")
 
 
 @app.route("/discord")

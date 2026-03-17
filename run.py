@@ -1,18 +1,11 @@
-from server import app, socketio
-# import app, socketio
+from server import app, socketio, games
 
 if __name__ == "__main__":
-    try:
-        print("starting up website")
-        socketio.run(
-            app,
-            host="0.0.0.0",
-            port=5000,
-            debug=False,
-            use_reloader=False
-        )
-    except KeyboardInterrupt: # auto close docker containers
-        for sid, (game, agents) in app.routes.games.items():
-            for agent in agents:
-                if hasattr(agent, "close"):
-                    agent.close()
+    print("starting up website")
+    socketio.run(
+        app,
+        host="0.0.0.0",
+        port=5000,
+        debug=False,
+        use_reloader=False
+    )

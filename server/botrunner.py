@@ -6,6 +6,7 @@ import threading
 import queue
 import sys
 import time
+import uuid
 
 from server import app
 
@@ -23,9 +24,11 @@ class BotRunner:
             bot.name + ".py"
         )
 
+        self.container_name = f"bot_{uuid.uuid4().hex}"
         self.proc = subprocess.Popen(
             [
-                "docker", "run",
+                "docker", "run", 
+                "--name", self.container_name,
                 "--rm",
                 "--network=none",
                 "--memory=128m",
@@ -124,4 +127,4 @@ class BotRunner:
 
     def close(self):
         if self.proc:
-            self.proc.kill()
+            subprocess.run(["docker", "rm", "-f", self.container_name])

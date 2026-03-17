@@ -14,6 +14,40 @@ const socket = io({
 });
 let waitingForState = false;
 
+socket.on("flash_message", (data) => {
+  addFlashMessage(data.message, data.category || "warning");
+});
+
+function addFlashMessage(message, category="info") {
+  let container = document.querySelector(".flash-wrap");
+
+  // create container if none exists yet
+  if (!container) {
+    container = document.createElement("div");
+    container.className = "flash-wrap";
+    document.body.prepend(container);
+  }
+
+  const el = document.createElement("div");
+  el.className = `flash flash-${category}`;
+  el.textContent = message;
+
+  container.appendChild(el);
+
+  let removed = false;
+
+  const hide = () => {
+    if (removed) return;
+    removed = true;
+    el.classList.add("is-hiding");
+    el.addEventListener("transitionend", () => el.remove(), { once: true });
+    setTimeout(() => el.remove(), 600);
+  };
+
+  el.addEventListener("click", hide);
+  setTimeout(hide, 10000);
+}
+
 function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => (
     { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]

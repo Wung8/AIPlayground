@@ -25,4 +25,21 @@ login_manager.login_message_category = 'info'
 
 games = {}
 
+import signal
+import sys
+
+def shutdown_handler(sig, frame):
+    print("Shutting down...")
+
+    print(games)
+    for sid, game in games.items():
+        for agent in game.agents:
+            if hasattr(agent, "close"):
+                print("close")
+                agent.close()
+
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, shutdown_handler)
+
 from server import routes

@@ -89,7 +89,7 @@ class SliderPuzzleEnv:
     def getInputs(self):
         return {
             "p1": {
-                "grid": self.grid[:],
+                "grid": self.grid.copy(),
             }
         }
     

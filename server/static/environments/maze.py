@@ -2,6 +2,7 @@ import numpy as np
 import cv2, math, time, random
 import keyboard as k
 from colorsys import hsv_to_rgb
+from copy import deepcopy
 
 class MazeEnv:
     num_players = 1
@@ -66,8 +67,8 @@ class MazeEnv:
     def getInputs(self):
         return {
             "p1": {
-                "grid": self.grid.tolist(),
-                "your_position": self.player
+                "grid": deepcopy(self.grid.tolist()),
+                "your_position": tuple(self.player)
             }
         }
 
