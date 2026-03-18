@@ -338,11 +338,11 @@ def handle_connect(data):
     print(f"{request.sid} connected")
 
 @socketio.on("disconnect")
-def handle_disconnect(sid):
-    if sid in games:
-        games[sid].close()
-        del games[sid]
-    print(f"{sid} disconnected")
+def handle_disconnect(data):
+    if request.sid in games:
+        games[request.sid].close()
+        del games[request.sid]
+    print(f"{request.sid} disconnected")
 
 
 @socketio.on("input")
