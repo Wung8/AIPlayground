@@ -512,6 +512,13 @@ function gameLoop(currentTime) {
 }
 
 socket.on("connect", () => {
+  const inputs = document.querySelectorAll(".play-input");
+  const players = [];
+
+  inputs.forEach(input => {
+    players.push((input.value || "").trim());
+  });
+  
   socket.emit("join_env", {
     env_slug: ENV,
     difficulty: difficulty,

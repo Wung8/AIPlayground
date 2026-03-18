@@ -331,6 +331,9 @@ def contact():
 
 @socketio.on("join_env")
 def handle_connect(data):
+    if request.sid in games:
+        games[request.sid].close()
+        del games[request.sid]
     GameRunner(request.sid, data) # auto places itself in games
     print(f"{request.sid} connected")
 

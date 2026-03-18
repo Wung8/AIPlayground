@@ -12,9 +12,7 @@ app = Flask(__name__, static_folder="static", template_folder="templates")
 socketio = SocketIO(
     app, 
     cors_allowed_origins="*", 
-    ping_timeout=60,
-    ping_interval=25,
-    async_mode="gevent",
+    async_mode="threading",
     log_output=False)
 app.config['SECRET_KEY'] = 'eda3d099ac83aece683027cd3df45167'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
@@ -37,7 +35,6 @@ def shutdown_handler(sig, frame):
     for sid, game in games.items():
         for agent in game.agents:
             if hasattr(agent, "close"):
-                print("close")
                 agent.close()
 
     sys.exit(0)
