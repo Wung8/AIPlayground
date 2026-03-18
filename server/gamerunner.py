@@ -57,10 +57,10 @@ class GameRunner:
         self.client_data = data
 
     def close(self):
+        if self.stop_event:
+            return 
+        
         self.stop_event = True
-
-        if self.bg_task:
-            self.bg_task.join()
         
         for agent in self.agents:
             if hasattr(agent, "close"):
