@@ -91,7 +91,7 @@ class BotRunner:
                     print("bot timed out")
             self.is_disconnected = True
             return self.default_action
-        timeout = max(0.1, 0.1 * len(self.buffer) - sum(self.buffer))
+        timeout = max(0.07, 0.07 * len(self.buffer) - sum(self.buffer))
 
         try:
             self.proc.stdin.write(json.dumps(inputs) + "\n")
