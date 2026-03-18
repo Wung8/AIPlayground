@@ -12,7 +12,9 @@ app = Flask(__name__, static_folder="static", template_folder="templates")
 socketio = SocketIO(
     app, 
     cors_allowed_origins="*", 
-    async_mode="threading",
+    ping_timeout=60,
+    ping_interval=25,
+    async_mode="gevent",
     log_output=False)
 app.config['SECRET_KEY'] = 'eda3d099ac83aece683027cd3df45167'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
