@@ -21,7 +21,7 @@ __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
 def open_png(file):
-    return pygame.image.load(__location__ + f"\sprites\{file}.png")
+    return pygame.image.load(__location__ + f"/sprites/{file}.png")
 
 nontraversable_mask = (0,0,1,1,0,1,0,1)
 block_mask = (0,0,0,0,0,1,0,1)
