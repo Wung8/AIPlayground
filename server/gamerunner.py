@@ -1,5 +1,5 @@
 import time
-from server.environment_registry import ENV_REGISTRY
+from server.environment_registry import ENV_REGISTRY, ENVIRONMENTS
 from server.botrunner import BotRunner
 from server.models import Bot
 from server import games, socketio
@@ -20,6 +20,7 @@ class GameRunner:
 
         self.sid = sid
         self.game = ENV_REGISTRY[slug](difficulty=difficulty)
+
         self.agents = []
         self.disconnected_agents = []
         self.player_names = player_names
@@ -45,6 +46,11 @@ class GameRunner:
         self.client_data = None
         self.stop_event = False
 
+        self.fps = 20
+        for env in ENVIRONMENTS:
+            if env["slug"] == slug:
+                self.fps = env["fps"]
+
         # reset game
         self.game.reset()
 
@@ -68,7 +74,7 @@ class GameRunner:
 
     def gameloop(self, sid):
         while not self.stop_event:
-            socketio.sleep(1 / 20)  # 20 FPS
+            socketio.sleep(1 / self.fps)  # 20 FPS
 
             if self.client_data is None:
                 continue

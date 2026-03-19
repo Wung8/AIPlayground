@@ -3,6 +3,7 @@
     "slug": "slimevolleyball",
     "title": "Slime Volleyball",
     "metric": "elo",
+    "fps": 20,
     "num_players": 2,
     "has_difficulty_setting": false,
     "difficulty": 3,
@@ -17,6 +18,7 @@
     "slug": "soccer",
     "title": "Soccer",
     "metric": "elo",
+    "fps": 20,
     "num_players": 4,
     "has_difficulty_setting": false,
     "difficulty": 4,
@@ -30,6 +32,7 @@
     "slug": "maze",
     "title": "Maze",
     "metric": "time",
+    "fps": 20,
     "num_players": 1,
     "has_difficulty_setting": true,
     "difficulty": 2,
@@ -43,6 +46,7 @@
     "slug": "pong",
     "title": "Pong",
     "metric": "elo",
+    "fps": 20,
     "num_players": 2,
     "has_difficulty_setting": false,
     "difficulty": 1,
@@ -56,10 +60,25 @@
     "slug": "sliderpuzzle",
     "title": "Slider Puzzle",
     "metric": "time",
+    "fps": 20,
     "num_players": 1,
     "has_difficulty_setting": true,
     "difficulty": 3,
     "description": "Slider Puzzle decsription.",
+    "docSections": [
+      { "title": "Goal", "items": ["reach the exit", "avoid traps"] }
+    ],
+    "image": { "kind": "placeholder", "value": "maze" }
+  },
+  {
+    "slug": "crafter",
+    "title": "Crafter",
+    "metric": "score",
+    "fps": 10,
+    "num_players": 1,
+    "has_difficulty_setting": false,
+    "difficulty": 4,
+    "description": "Crafter Description.",
     "docSections": [
       { "title": "Goal", "items": ["reach the exit", "avoid traps"] }
     ],

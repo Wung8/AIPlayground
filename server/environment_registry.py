@@ -37,7 +37,6 @@ def load_environments():
 # keep this name so routes.py can keep using it
 ENVIRONMENTS = load_environments()
 
-
 def get_env(slug: str):
     s = (slug or "").strip().lower()
     for e in ENVIRONMENTS:
@@ -106,7 +105,6 @@ def _build_env_registry():
         module_path = f"server.static.environments.{env_name}"
         module = importlib.import_module(module_path)
 
-        # expected naming: "Slime Volleyball" -> "SlimeVolleyballEnv"
         class_name = (env_info.get("title", "").replace(" ", "") + "Env").strip()
         if not class_name:
             continue
