@@ -14,7 +14,7 @@ from server import app
 class BotRunner:
     default_action = [0 for i in range(10)]
 
-    def __init__(self, bot, slug):
+    def __init__(self, bot, slug, fps=20):
         path = os.path.join(
             app.root_path,
             "data",
@@ -24,6 +24,7 @@ class BotRunner:
             bot.name + ".py"
         )
 
+        self.ft = 1/fps
         self.container_name = f"bot_{uuid.uuid4().hex}"
         self.proc = subprocess.Popen(
             [
@@ -91,7 +92,7 @@ class BotRunner:
                     print("bot timed out")
             self.is_disconnected = True
             return self.default_action
-        timeout = max(0.07, 0.07 * len(self.buffer) - sum(self.buffer))
+        timeout = max(self.ft, self.ft * len(self.buffer) - sum(self.buffer))
 
         try:
             self.proc.stdin.write(json.dumps(inputs) + "\n")

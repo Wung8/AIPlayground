@@ -27,6 +27,7 @@ const files = {
     berry_bush: "berry_bush.png",
 
     player: "player.png",
+    player_sleep: "player_sleep.png",
     enemy: "bad_guy.png",
     enemy_attack: "bad_guy_attack.png",
     enemy_attack2: "bad_guy_attack_fin.png",
@@ -66,15 +67,12 @@ function load() {
         const img = new Image();
         img.src = `/static/sprites/crafter/${files[k]}`;
 
-        img.onload = () => {
-            count++;
-            if (count === total) loaded = true;
-        };
-
         img.onerror = () => console.error("missing", img.src);
 
         sprites[k] = img;
     }
+
+    loaded = true;
 }
 
 function drawNumber(ctx, n, x, y) {
@@ -134,7 +132,7 @@ export default function draw(ctx, state) {
 
     ctx.translate((800-400*9/12)/2, TILE);
     ctx.fillStyle = "rgb(40,40,40)";
-    ctx.fillRect(0, -TILE, 400*9/12, 400);
+    ctx.fillRect(0, -TILE, 400*10/12, 400);
 
     const tiles = state.tiles;
     const pre = state.pre_tick;
@@ -255,6 +253,13 @@ export default function draw(ctx, state) {
         // --- player on this row ---
         const p = state.player;
         if (p.y === y) {
+
+            let sprite = sprites.player;
+            if (state.sleep > 0) {
+                sprite = sprites.player_sleep;
+            }
+
+
             const px = p.x * TILE;
             const py = p.y * TILE;
 
@@ -264,17 +269,17 @@ export default function draw(ctx, state) {
                     const scale = TILE / 8;
                     const w = sprites.player.width * scale;
                     ctx.scale(-1, 1);
-                    drawBrightened(ctx, sprites.player, -px - w, py);
+                    drawBrightened(ctx, sprite, -px - w, py);
                     ctx.scale(1, 1);
                     ctx.restore();
                 } else {
-                    drawBrightened(ctx, sprites.player, px, py);
+                    drawBrightened(ctx, sprite, px, py);
                 }
             else
                 if (p.disp_dir[0] === -1) {
-                    drawFlipped(ctx, sprites.player, px, py);
+                    drawFlipped(ctx, sprite, px, py);
                 } else {
-                    drawSprite(ctx, sprites.player, px, py);
+                    drawSprite(ctx, sprite, px, py);
                 }
         }
     }
