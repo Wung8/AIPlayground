@@ -1,7 +1,6 @@
 import math, time, random
 import numpy as np
 import cv2
-import torch
 
 
 '''
