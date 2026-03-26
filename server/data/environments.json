@@ -36,7 +36,7 @@
     "num_players": 1,
     "has_difficulty_setting": true,
     "difficulty": 2,
-    "description": "Navigate a maze to reach the goal.",
+    "description": "Navigate through a maze to reach the goal.",
     "docSections": [
       { "title": "Goal", "items": ["reach the exit", "avoid traps"] }
     ],

@@ -14,31 +14,32 @@ When coding your slime volleyball agent, you can use the `action` list for movem
 
 The `action` list has two elements: horizontal movement (left/right) and jump.
 
-```
+```python
 action = [left/right, jump]
 ```
 
 For the first element (left/right):
 
-```
+```python
 -1: move left  
  0: no left/right movement
  1: move right
 ```
 
 For the second element (jump):
-```
+```python
  1: jump
  0: dont jump  
 ```
 
 Examples:
 
-```
-action = [-1, 0] // move straight left
-action = [0, 1] // jump in place
-```
+```python
+action = [0, 1] # jump
+action = [1, 0] # move right
+action = [0, 0] # stay in place
 
+```
 
 ## Inputs
 

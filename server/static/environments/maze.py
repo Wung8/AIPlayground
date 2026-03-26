@@ -68,7 +68,8 @@ class MazeEnv:
         return {
             "p1": {
                 "grid": deepcopy(self.grid.tolist()),
-                "your_position": tuple(self.player)
+                "your_position": tuple(self.player),
+                "goal_position": tuple(self.goal)
             }
         }
 

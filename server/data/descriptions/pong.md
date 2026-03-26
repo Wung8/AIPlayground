@@ -8,23 +8,15 @@ Pong is great for learning and developing AI with its simple inputs and actions.
 
 The `action` list has one element: vertical movement (up/down).
 
-```
-action = [up/down, jump]
-```
-
-For the first element (up/down):
-
-```
--1: move up 
- 0: no up/down movement
- 1: move down
+```python
+action = [up/down]
 ```
 
 Examples:
 
-```
-action = [-1, 0] // move up
-action = [0] // stay in place
+```python
+action = [-1] # move up
+action = [0] # stay in place
 ```
 
 
@@ -46,3 +38,7 @@ inputs = {
 ## End Condition
 
 The game ends either when a player reaches 9 points or the game has lasted 3 minutes, where the player with the most points will be declared the winner. If both players have the same amount of points, the game ends in a draw.
+
+## Additional Information
+
+The paddles both have a width of 3px, height of 25px, and move 5px per frame. Additionally, the ball speeds up slightly every time it hits a paddle.

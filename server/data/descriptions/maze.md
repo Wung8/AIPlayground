@@ -1,28 +1,46 @@
 ## Overview
 
-Mazes are a great introduction to graph-based pathfinding algorithms, as the entire graph is visualized and the state space is relatively small. 
+Navigate through the maze to get to the goal.
+
+Mazes are a great introduction to graph-based pathfinding algorithms, as the entire graph is visualized and the number of possible states is relatively small. 
 
 ## Actions
 
-\[ left/right, up/down \]
+The `action` list has two elements: horizontal movement (left/right) and vertical movement (up/down).
 
-action\[0\] (left/right)
+```python
+action = [left/right, up/down]
+```
 
-* \-1: left  
-* 0: /  
-* 1: right
+Examples:
 
-action\[1\] (up/down)
-
-* \-1: up  
-* 0: /  
-* 1: down
+```python
+action = [0, 1] # move down
+action = [1, 0] # move right
+action = [0, 0] # stay in place
+```
 
 ## Input
 
-\[ “grid”, “your\_position” \]
+The `inputs` dictionary contains three values: `your_position`, `goal_position`, and `grid`. 
+
+`your_position` and `goal_position` correspond to lists representing `[x, y]` coordinates. 
+
+`grid` corresponds to a list of lists representing tiles in the maze, with `0`s representing empty spaces while `1`s represent walls. Values can be indexed from grid using `grid[x][y]`
+
+Each value corresponds to a list of two elements: `[x, y]`.  
+
+```python
+inputs = {
+  "your_position": [x, y],
+  "goal_position": [x, y],
+  "grid": grid
+}
+```
 
 ## End Condition
+
+The game ends when the player reaches the goal, which is always located in the bottom right corner of the maze.
 
 ## Additional Information
 

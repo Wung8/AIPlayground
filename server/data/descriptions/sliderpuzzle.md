@@ -18,14 +18,22 @@ action\[0\] (up/down/left/right)
 
 ## Inputs
 
-\[ “grid” \]
 
-inputs\[“grid”\]
+The `inputs` dictionary contains one value: `grid`. 
+
+`grid` is a list of representing tiles in the puzzle in row-major order. A `0` represents the hole. Values from grid can be indexed, for example in the case of a 5x5:
 
 * \[0\]: value at row 0 column 0  
 * \[1\]: value at row 0 column 1  
 * . . .  
-* \[24\]: value at row 4 column 4 (in the case of a 5x5)
+* \[24\]: value at row 4 column 4
+
+```python
+inputs = {
+  "grid": grid
+}
+```
+
 
 ## End Condition
 
