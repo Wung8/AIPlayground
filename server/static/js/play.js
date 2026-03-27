@@ -87,6 +87,14 @@ function reset() {
 
     if (panes.browse) panes.browse.classList.toggle("is-active", name === "browse");
     if (panes.mine) panes.mine.classList.toggle("is-active", name === "mine");
+
+    const url = new URL(window.location.href);
+    if (name === "browse") {
+      url.searchParams.delete("tab");
+    } else {
+      url.searchParams.set("tab", name);
+    }
+    history.replaceState(null, "", url);
   }
 
   const params = new URLSearchParams(window.location.search);
