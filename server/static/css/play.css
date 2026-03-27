@@ -342,6 +342,20 @@
 
 .bot-delete-btn:hover { color: rgba(255,80,80,1); }
 
+.bot-row:has(.bot-delete-btn:hover){
+  background: rgba(0,0,0,0.12);
+  border-color: rgba(255,255,255,0.08);
+  box-shadow: none;
+}
+
+.bot-row:has(.bot-delete-btn:hover) .bot-name{
+  color: rgba(255,255,255,0.55);
+}
+
+.bot-row:has(.bot-delete-btn:hover) .bot-meta{
+  color: rgba(255,255,255,0.30);
+}
+
 .play-mine-note{
   font-size: 16px;
   color: rgba(255,255,255,0.40);
@@ -355,21 +369,23 @@
 
 
 .play-upload-trigger{
-  display: block;
-  width: fit-content;
-  margin: 6px auto 0;
-  padding: 8px 18px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.22);
   color: rgba(255,255,255,0.40);
   font-family: inherit;
   font-size: 16px;
   cursor: pointer;
 }
 
-.play-upload-trigger:hover{
-  background: rgba(255,255,255,0.07);
-  border-color: rgba(255,255,255,0.32);
+.bot-upload-main{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+
+.bot-upload-hint{
+  font-size: 12px;
+  color: rgba(255,255,255,0.25);
+  margin-bottom: 8px;
 }
 
 .play-upload-form{

@@ -87,6 +87,9 @@
         <!-- my bots tab -->
         <section class="play-pane" role="tabpanel" id="tab-mine" aria-labelledby="tabBtnMine">
 
+        {% if current_user.is_authenticated %}
+        <div class="bot-upload-hint">Click to upload a bot</div>
+        {% endif %}
         <div class="play-botlist" id="myBotsList">
             {% if current_user.is_authenticated %}
                 {% for slot_index in range(3) %}
@@ -116,14 +119,15 @@
                             {{ form.agent_file(class="play-upload-input") }}
 
                             <button type="button" class="bot-select-btn play-upload-trigger">
-                                <div class="bot-name">Upload Bot</div>
+                                <div class="bot-upload-main">
+                                    <div class="bot-name">Upload Bot</div>
+                                </div>
                                 <div class="bot-meta">
                                     <div class="bot-elo">{{env.metric}}: -</div>
                                     <div class="bot-by">by: {{ current_user.username }}</div>
                                 </div>
                             </button>
 
-                            <button class="bot-delete-btn" type="button">X</button>
                         </form>
                     {% endif %}
                 {% endfor %}
