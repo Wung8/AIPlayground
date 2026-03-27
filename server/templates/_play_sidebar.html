@@ -89,10 +89,9 @@
 
         <div class="play-botlist" id="myBotsList">
             {% if current_user.is_authenticated %}
-                {% set filled_count = my_bots|length %}
                 {% for slot_index in range(3) %}
-                    {% if slot_index < filled_count %}
-                        {% set b = my_bots[slot_index] %}
+                    {% set b = my_bot_slots[slot_index] %}
+                    {% if b and b.name %}
                         <div class="bot-row" data-bot="{{ b.name }}" data-id="{{ b.id }}" data-slot="{{ slot_index }}">
                             <button class="bot-select-btn" type="button" data-bot="{{ b.name }}">
                                 <div class="bot-name">{{ b.name }}</div>
@@ -110,13 +109,13 @@
                         action="{{ url_for('play', slug=env.slug, tab='mine') }}"
                         enctype="multipart/form-data"
                         class="bot-row bot-upload-row"
-                        id="botUploadForm{{ slot_index }}"
                         data-slot="{{ slot_index }}"
                         >
                             {{ form.hidden_tag() }}
-                            {{ form.agent_file(class="play-upload-input", id="botUploadInput" ~ slot_index) }}
+                            <input type="hidden" name="slot" value="{{ slot_index }}">
+                            {{ form.agent_file(class="play-upload-input") }}
 
-                            <button type="button" class="bot-select-btn play-upload-trigger" id="botUploadTrigger{{ slot_index }}">
+                            <button type="button" class="bot-select-btn play-upload-trigger">
                                 <div class="bot-name">Upload Bot</div>
                                 <div class="bot-meta">
                                     <div class="bot-elo">{{env.metric}}: -</div>

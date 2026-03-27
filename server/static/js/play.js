@@ -355,26 +355,27 @@ document.addEventListener("click", async function (e) {
 ============================= */
 
 (function initAutoUpload() {
-  const uploadInput = document.getElementById("botUploadInput");
-  const uploadForm = document.getElementById("botUploadForm");
-  const uploadTrigger = document.getElementById("botUploadTrigger");
+  document.querySelectorAll(".bot-upload-row").forEach(function (form) {
+    const uploadInput = form.querySelector(".play-upload-input");
+    const uploadTrigger = form.querySelector(".play-upload-trigger");
 
-  if (!uploadInput || !uploadForm || !uploadTrigger) return;
+    if (!uploadInput || !uploadTrigger) return;
 
-  uploadTrigger.addEventListener("click", function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    uploadInput.click();
-  });
+    uploadTrigger.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadInput.click();
+    });
 
-  uploadInput.addEventListener("change", function () {
-    if (!uploadInput.files || !uploadInput.files.length) return;
+    uploadInput.addEventListener("change", function () {
+      if (!uploadInput.files || !uploadInput.files.length) return;
 
-    if (typeof uploadForm.requestSubmit === "function") {
-      uploadForm.requestSubmit();
-    } else {
-      uploadForm.submit();
-    }
+      if (typeof form.requestSubmit === "function") {
+        form.requestSubmit();
+      } else {
+        form.submit();
+      }
+    });
   });
 })();
 
