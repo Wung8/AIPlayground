@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% set active = "learn" %}
+{% set title = "Learn" %}
+
+{% block styles %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/learn.css') }}">
+{% endblock %}
+
+{% block content %}
+  <div class="learn-page">
+    <div class="learn-title">Learn</div>
+
+    <div class="learn-sections">
+
+      <div class="learn-section">
+        <div class="learn-section-title">Slideshows</div>
+        <div class="learn-items">
+          <div class="learn-empty">No slideshows yet.</div>
+        </div>
+      </div>
+
+      <div class="learn-section">
+        <div class="learn-section-title">Lecture Recordings</div>
+        <div class="learn-items">
+          <div class="learn-empty">No recordings yet.</div>
+        </div>
+      </div>
+
+      <div class="learn-section">
+        <div class="learn-section-title">Text Guides</div>
+        <div class="learn-items">
+          <div class="learn-empty">No guides yet.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+{% endblock %}

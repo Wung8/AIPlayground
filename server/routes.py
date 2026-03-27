@@ -36,6 +36,11 @@ def home():
     return render_template("home.html")
 
 
+@app.route("/learn")
+def learn():
+    return render_template("learn.html")
+
+
 @app.route("/environments")
 def environments():
     selected_slug = request.args.get("slug") or (ENVIRONMENTS[0]["slug"] if ENVIRONMENTS else "")
