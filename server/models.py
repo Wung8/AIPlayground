@@ -21,11 +21,12 @@ class User(db.Model, UserMixin):
 
 class Bot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(30), unique=True, nullable=False)
-    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    name = db.Column(db.String(30), unique=True, nullable=True)
+    date_posted = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
     metric = db.Column(db.Float)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     environment = db.Column(db.String(30), nullable=False)
+    slot = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
         return f"Bot('{self.name}', '{self.environment}', '{self.user_id}', '{self.metric}', '{self.date_posted}')"

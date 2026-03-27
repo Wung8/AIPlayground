@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 from flask import render_template, request, redirect, url_for, flash, jsonify, send_from_directory
 from flask_socketio import emit
@@ -76,11 +77,22 @@ def play(slug):
             return redirect(url_for("play", slug=slug, tab="mine"))
 
         if form.validate_on_submit():
+            try:
+                slot = int(request.form.get("slot", -1))
+            except (TypeError, ValueError):
+                slot = -1
+
+            if slot not in (0, 1, 2):
+                flash("Invalid slot.", "danger")
+                return redirect(url_for("play", slug=slug, tab="mine"))
+
             user_dir = os.path.join(app.root_path, "data", "user_uploads", str(current_user.username), slug)
             os.makedirs(user_dir, exist_ok=True)
 
-            existing = [f for f in os.listdir(user_dir) if f.endswith(".py")]
-            if len(existing) >= 3:
+            existing_entry = Bot.query.filter_by(environment=environment, user_id=current_user.id, slot=slot).first()
+            active_count = Bot.query.filter_by(environment=environment, user_id=current_user.id).filter(Bot.name != None).count()
+
+            if not existing_entry and active_count >= 3:
                 flash("Maximum of 3 bots allowed per environment", "warning")
                 return redirect(url_for("play", slug=slug, tab="mine"))
 
@@ -94,21 +106,26 @@ def play(slug):
             if Bot.query.filter_by(name=filename[:-3]).first() or filename[:-3].lower() == "human":
                 flash("That filename is already in use.", "danger")
                 return redirect(url_for("play", slug=slug, tab="mine"))
-            
+
             file_str = f.read().decode("utf-8")
             passed, msg = check_bot(file_str)
             if not passed:
                 flash(msg)
                 return redirect(url_for("play", slug=slug, tab="mine"))
-            
+
             f.stream.seek(0)
 
-            bot = Bot(
-                name=filename[:-3],
-                user_id=current_user.id,
-                environment=environment
-            )
-            db.session.add(bot)
+            if existing_entry:
+                existing_entry.name = filename[:-3]
+                existing_entry.date_posted = datetime.utcnow()
+            else:
+                db.session.add(Bot(
+                    name=filename[:-3],
+                    user_id=current_user.id,
+                    environment=environment,
+                    slot=slot
+                ))
+
             db.session.commit()
 
             f.save(os.path.join(user_dir, filename))
@@ -123,15 +140,17 @@ def play(slug):
     bots = Bot.query.filter_by(environment=environment).all()
 
     if current_user.is_authenticated:
-        my_bots = Bot.query.filter_by(environment=environment).filter_by(user_id=current_user.id).all()
+        entries = Bot.query.filter_by(environment=environment, user_id=current_user.id).all()
+        slot_map = {b.slot: b for b in entries}
+        my_bot_slots = [slot_map.get(i) for i in range(3)]
     else:
-        my_bots = []
+        my_bot_slots = [None, None, None]
 
     return render_template(
         "play.html",
         env=env,
         bots=bots,
-        my_bots=my_bots,
+        my_bot_slots=my_bot_slots,
         form=form,
         num_players=env["num_players"],
         has_difficulty_setting=env["has_difficulty_setting"]
@@ -206,8 +225,8 @@ def delete_bot(bot_id):
     if os.path.exists(path):
         os.remove(path)
 
-    # delete db entry
-    db.session.delete(bot)
+    bot.name = None
+    bot.date_posted = None
     db.session.commit()
 
     return jsonify({"success": True})

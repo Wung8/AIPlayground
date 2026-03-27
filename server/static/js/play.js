@@ -121,6 +121,14 @@ function reset() {
 
     if (panes.browse) panes.browse.classList.toggle("is-active", name === "browse");
     if (panes.mine) panes.mine.classList.toggle("is-active", name === "mine");
+
+    const url = new URL(window.location.href);
+    if (name === "browse") {
+      url.searchParams.delete("tab");
+    } else {
+      url.searchParams.set("tab", name);
+    }
+    history.replaceState(null, "", url);
   }
 
   const params = new URLSearchParams(window.location.search);
@@ -389,26 +397,27 @@ document.addEventListener("click", async function (e) {
 ============================= */
 
 (function initAutoUpload() {
-  const uploadInput = document.getElementById("botUploadInput");
-  const uploadForm = document.getElementById("botUploadForm");
-  const uploadTrigger = document.getElementById("botUploadTrigger");
+  document.querySelectorAll(".bot-upload-row").forEach(function (form) {
+    const uploadInput = form.querySelector(".play-upload-input");
+    const uploadTrigger = form.querySelector(".play-upload-trigger");
 
-  if (!uploadInput || !uploadForm || !uploadTrigger) return;
+    if (!uploadInput || !uploadTrigger) return;
 
-  uploadTrigger.addEventListener("click", function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    uploadInput.click();
-  });
+    uploadTrigger.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadInput.click();
+    });
 
-  uploadInput.addEventListener("change", function () {
-    if (!uploadInput.files || !uploadInput.files.length) return;
+    uploadInput.addEventListener("change", function () {
+      if (!uploadInput.files || !uploadInput.files.length) return;
 
-    if (typeof uploadForm.requestSubmit === "function") {
-      uploadForm.requestSubmit();
-    } else {
-      uploadForm.submit();
-    }
+      if (typeof form.requestSubmit === "function") {
+        form.requestSubmit();
+      } else {
+        form.submit();
+      }
+    });
   });
 })();
 
