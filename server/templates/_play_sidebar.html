@@ -88,34 +88,46 @@
         <section class="play-pane" role="tabpanel" id="tab-mine" aria-labelledby="tabBtnMine">
 
         <div class="play-botlist" id="myBotsList">
-            {% for b in my_bots %}
-            <div class="bot-row" data-bot="{{ b.name }}" data-id="{{ b.id }}">
-                <button class="bot-select-btn" type="button" data-bot="{{ b.name }}">
-                <div class="bot-name">{{ b.name }}</div>
-                <div class="bot-meta">
-                    <div class="bot-elo">{{env.metric}}: {{ b.metric or '-' }}</div>
-                    <div class="bot-by">by: {{ b.creator.username }}</div>
-                </div>
-                </button>
-
-                <button class="bot-delete-btn" type="button">X</button>
-            </div>
-            {% endfor %}
             {% if current_user.is_authenticated %}
-            {% if my_bots|length == 3 %}
-                <div class="play-mine-note">Maximum of 3 bots allowed per environment</div>
-            {% else %}
-                <form
-                method="POST"
-                action="{{ url_for('play', slug=env.slug, tab='mine') }}"
-                enctype="multipart/form-data"
-                id="botUploadForm"
-                >
-                {{ form.hidden_tag() }}
-                {{ form.agent_file(class="play-upload-input", id="botUploadInput") }}
-                <button type="button" class="play-upload-trigger" id="botUploadTrigger">Upload Bot</button>
-                </form>
-            {% endif %}
+                {% set filled_count = my_bots|length %}
+                {% for slot_index in range(3) %}
+                    {% if slot_index < filled_count %}
+                        {% set b = my_bots[slot_index] %}
+                        <div class="bot-row" data-bot="{{ b.name }}" data-id="{{ b.id }}" data-slot="{{ slot_index }}">
+                            <button class="bot-select-btn" type="button" data-bot="{{ b.name }}">
+                                <div class="bot-name">{{ b.name }}</div>
+                                <div class="bot-meta">
+                                    <div class="bot-elo">{{env.metric}}: {{ b.metric or '-' }}</div>
+                                    <div class="bot-by">by: {{ b.creator.username }}</div>
+                                </div>
+                            </button>
+
+                            <button class="bot-delete-btn" type="button">X</button>
+                        </div>
+                    {% else %}
+                        <form
+                        method="POST"
+                        action="{{ url_for('play', slug=env.slug, tab='mine') }}"
+                        enctype="multipart/form-data"
+                        class="bot-row bot-upload-row"
+                        id="botUploadForm{{ slot_index }}"
+                        data-slot="{{ slot_index }}"
+                        >
+                            {{ form.hidden_tag() }}
+                            {{ form.agent_file(class="play-upload-input", id="botUploadInput" ~ slot_index) }}
+
+                            <button type="button" class="bot-select-btn play-upload-trigger" id="botUploadTrigger{{ slot_index }}">
+                                <div class="bot-name">Upload Bot</div>
+                                <div class="bot-meta">
+                                    <div class="bot-elo">{{env.metric}}: -</div>
+                                    <div class="bot-by">by: {{ current_user.username }}</div>
+                                </div>
+                            </button>
+
+                            <button class="bot-delete-btn" type="button">X</button>
+                        </form>
+                    {% endif %}
+                {% endfor %}
             {% else %}
             <div class="play-mine-note">Log in to upload your own bots!</div>
             {% endif %}
