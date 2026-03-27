@@ -1,7 +1,7 @@
 import pygame
 import numpy as np
 import random, math, os
-from noise import pnoise2
+from perlin_noise import PerlinNoise
 import keyboard as k
 import cv2
 
@@ -779,8 +779,8 @@ class CrafterEnv:
         
     def generate_noise(self):
         xpix, ypix = self.map_size
-        shift_x, shift_y = random.randint(0,10000), random.randint(0,10000)
-        return np.array([[pnoise2((i+shift_x)/xpix*6, (j+shift_y)/ypix*6, octaves=12)
+        noise = PerlinNoise(octaves=12, seed=random.randint(0,10000))
+        return np.array([[noise([i/ypix, j/xpix])
                           for j in range(xpix)] for i in range(ypix)])
 
     def generate_map(self):

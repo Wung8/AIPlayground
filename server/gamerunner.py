@@ -15,6 +15,8 @@ class GameRunner:
             print("Unknown environment:", slug)
             return
 
+        self.stop_event = False
+
         # register this game
         games[sid] = self
 
@@ -44,7 +46,6 @@ class GameRunner:
             self.disconnected_agents.append(False)
 
         self.client_data = None
-        self.stop_event = False
 
         self.fps = 20
         for env in ENVIRONMENTS:
