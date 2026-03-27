@@ -13,11 +13,17 @@
 
     <main class="play-main">
       <div class="play-main-head">
-        <a class="play-back" href="{{ url_for('environments', slug=env.slug) }}">Back</a>
+        <div class="play-back-row">
+          <a class="play-back" href="{{ url_for('environments', slug=env.slug) }}">Back</a>
+          <div class="play-top-links">
+            <a class="play-top-link" href="{{ url_for('env_doc', slug=env.slug) }}">Documentation</a>
+            <a class="play-top-link" href="{{ url_for('github') }}">Github</a>
+          </div>
+        </div>
 
         <div class="play-main-row">
           <div class="play-title">{{ env.title }}</div>
-          
+
           {% if has_difficulty_setting %}
             <div class="play-difficulty">
               <button class="play-diff-btn" data-diff="easy">Easy</button>
@@ -28,7 +34,7 @@
             <div></div>
           {% endif %}
 
-          <div></div> <!-- empty right spacer -->
+          <div></div>
         </div>
       </div>
 
