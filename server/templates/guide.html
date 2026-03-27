@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% set active = "learn" %}
+{% set title = guide.title %}
+
+{% block styles %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/environments.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/learn.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/env_doc.css') }}">
+{% endblock %}
+
+{% block content %}
+  <div class="content env-page">
+    {% include "_learn_sidebar.html" %}
+
+    <main class="main">
+      <div class="doc-header">
+        <div class="doc-left">
+          <a class="back-link" href="{{ url_for('learn') }}">Back</a>
+          <div class="doc-title-row">
+            <div class="doc-title">{{ guide.title }}</div>
+          </div>
+        </div>
+      </div>
+
+      {% if guide_html %}
+        <div class="doc-desc">
+          <div class="doc-desc-p env-md">{{ guide_html }}</div>
+        </div>
+      {% endif %}
+    </main>
+  </div>
+{% endblock %}

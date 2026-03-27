@@ -17,3 +17,6 @@ server/data/profile_photos/
 server/data/user_uploads/
 
 alembic/
+
+# local dev overrides
+run_dev.py

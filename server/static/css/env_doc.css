@@ -156,14 +156,24 @@
 .env-md h2 { font-size: var(--md-h2); }
 .env-md h3 { font-size: var(--md-h3); }
 
-.env-md p { margin: 10px 0; }
+.env-md p { margin: 14px 0; }
 
 .env-md ul,
 .env-md ol {
-  margin: 10px 0 14px 22px;
+  margin: 12px 0 18px 22px;
 }
 
-.env-md li { margin: 6px 0; }
+.env-md li { margin: 10px 0; }
+
+.env-md a {
+  color: rgba(120, 210, 220, 0.85);
+  text-decoration: none;
+}
+
+.env-md a:hover {
+  color: rgba(160, 230, 240, 1);
+  text-decoration: underline;
+}
 
 .env-md hr {
   border: none;

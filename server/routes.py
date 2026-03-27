@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 
 from flask import render_template, request, redirect, url_for, flash, jsonify, send_from_directory
+from markupsafe import Markup
 from flask_socketio import emit
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
@@ -12,6 +13,17 @@ from server.models import User, Bot
 from server.check_bot import check_bot
 
 from server.environment_registry import ENVIRONMENTS, get_env, ENV_REGISTRY, render_env_doc_html
+import markdown
+
+GUIDES = [
+    {"slug": "ide",          "title": "Setting Up an IDE"},
+    {"slug": "python",       "title": "Installing Python"},
+    {"slug": "dependencies", "title": "Installing Dependencies"},
+    {"slug": "first_bot",    "title": "Writing Your First Bot"},
+    {"slug": "uploading",    "title": "Uploading a Bot"},
+]
+
+GUIDES_DIR = os.path.join(os.path.dirname(__file__), "data", "guides")
 from server.gamerunner import GameRunner
 
 from server import games
@@ -38,7 +50,21 @@ def home():
 
 @app.route("/learn")
 def learn():
-    return render_template("learn.html")
+    return render_template("learn.html", guides=GUIDES)
+
+
+@app.route("/learn/guide/<slug>")
+def guide(slug):
+    guide_info = next((g for g in GUIDES if g["slug"] == slug), None)
+    if not guide_info:
+        return redirect(url_for("learn"))
+    path = os.path.join(GUIDES_DIR, f"{slug}.md")
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            guide_html = markdown.markdown(f.read(), extensions=["fenced_code"])
+    else:
+        guide_html = ""
+    return render_template("guide.html", guide=guide_info, guide_html=Markup(guide_html), guides=GUIDES, active_slug=slug)
 
 
 @app.route("/environments")

@@ -1,0 +1,16 @@
+<aside class="sidebar">
+  <div class="side-section">
+    <div class="side-title inactive">Slideshows</div>
+  </div>
+
+  <div class="side-section">
+    <div class="side-title inactive">Videos</div>
+  </div>
+
+  <div class="side-section">
+    <div class="side-title">Text Guides</div>
+    {% for guide in guides %}
+      <a class="side-item small{% if guide.slug == active_slug %} is-active{% endif %}" href="{{ url_for('guide', slug=guide.slug) }}">{{ guide.title }}</a>
+    {% endfor %}
+  </div>
+</aside>

@@ -3,36 +3,45 @@
 {% set title = "Learn" %}
 
 {% block styles %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/environments.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/learn.css') }}">
 {% endblock %}
 
 {% block content %}
-  <div class="learn-page">
-    <div class="learn-title">Learn</div>
+  <div class="content env-page">
+    {% include "_learn_sidebar.html" %}
 
-    <div class="learn-sections">
+    <main class="main env-main">
+      <div class="env-wrap">
+        <div class="env-page-title">Learn</div>
 
-      <div class="learn-section">
-        <div class="learn-section-title">Slideshows</div>
-        <div class="learn-items">
-          <div class="learn-empty">No slideshows yet.</div>
+        <div class="learn-sections">
+
+          <div class="learn-section">
+            <div class="learn-section-title">Slideshows</div>
+            <div class="learn-items">
+              <div class="learn-empty">No slideshows yet.</div>
+            </div>
+          </div>
+
+          <div class="learn-section">
+            <div class="learn-section-title">Videos</div>
+            <div class="learn-items">
+              <div class="learn-empty">No videos yet.</div>
+            </div>
+          </div>
+
+          <div class="learn-section">
+            <div class="learn-section-title">Text Guides</div>
+            <div class="learn-items">
+              {% for guide in guides %}
+                <a class="learn-guide-link" href="{{ url_for('guide', slug=guide.slug) }}">{{ guide.title }}</a>
+              {% endfor %}
+            </div>
+          </div>
+
         </div>
       </div>
-
-      <div class="learn-section">
-        <div class="learn-section-title">Lecture Recordings</div>
-        <div class="learn-items">
-          <div class="learn-empty">No recordings yet.</div>
-        </div>
-      </div>
-
-      <div class="learn-section">
-        <div class="learn-section-title">Text Guides</div>
-        <div class="learn-items">
-          <div class="learn-empty">No guides yet.</div>
-        </div>
-      </div>
-
-    </div>
+    </main>
   </div>
 {% endblock %}
