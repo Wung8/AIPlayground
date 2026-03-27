@@ -18,6 +18,15 @@
         <div class="learn-sections">
 
           <div class="learn-section">
+            <div class="learn-section-title">Text Guides</div>
+            <div class="learn-items">
+              {% for guide in guides %}
+                <a class="learn-guide-link" href="{{ url_for('guide', slug=guide.slug) }}">{{ guide.title }}</a>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="learn-section">
             <div class="learn-section-title">Slideshows</div>
             <div class="learn-items">
               <div class="learn-empty">No slideshows yet.</div>
@@ -28,15 +37,6 @@
             <div class="learn-section-title">Videos</div>
             <div class="learn-items">
               <div class="learn-empty">No videos yet.</div>
-            </div>
-          </div>
-
-          <div class="learn-section">
-            <div class="learn-section-title">Text Guides</div>
-            <div class="learn-items">
-              {% for guide in guides %}
-                <a class="learn-guide-link" href="{{ url_for('guide', slug=guide.slug) }}">{{ guide.title }}</a>
-              {% endfor %}
             </div>
           </div>
 
