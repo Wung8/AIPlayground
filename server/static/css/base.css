@@ -142,6 +142,7 @@ body{
 /* scale ONLY the environments list page */
 .content.env-page{
   zoom: var(--ui-scale);
+  min-height: calc((100vh - var(--topH)) / var(--ui-scale));
 }
 
 @supports not (zoom: 1){
