@@ -52,7 +52,8 @@
   --ui-scale: 0.9;
 
   /* typography */
-  --font-serif: ui-serif, Georgia, "Times New Roman", Times, serif;
+  --font-serif: 'Sora', sans-serif;
+  --font-mono: 'Inconsolata', monospace;
 }
 
 * { box-sizing: border-box; }

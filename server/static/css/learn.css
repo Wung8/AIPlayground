@@ -11,6 +11,7 @@
 
 .learn-section-title {
   font-size: 24px;
+  font-family: var(--font-mono);
   color: rgba(210,176,106,0.80);
   margin-bottom: 16px;
 }

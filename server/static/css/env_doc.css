@@ -19,6 +19,7 @@
 .doc-title {
   font-size: 40px;
   font-weight: 700;
+  font-family: var(--font-mono);
   color: rgba(210,176,106,0.92);
 }
 
@@ -147,6 +148,7 @@
 .env-md h2,
 .env-md h3,
 .env-md h4 {
+  font-family: var(--font-mono);
   color: var(--md-h-color);
   margin: 18px 0 10px;
   font-weight: 650;

@@ -12,6 +12,7 @@
 .env-page-title{
   font-size: 30px;
   font-weight: 700;
+  font-family: var(--font-mono);
   color: var(--text-strong);
   margin: 0 0 14px 0;
 }
@@ -35,6 +36,7 @@
   display: inline-block;
   font-size: 44px;
   font-weight: 700;
+  font-family: var(--font-mono);
   color: rgba(210,176,106,0.92);
   text-decoration: none;
   line-height: 1.05;
