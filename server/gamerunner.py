@@ -31,7 +31,12 @@ class GameRunner:
             if name and name.lower() != "human":
                 bot = Bot.query.filter_by(name=name).first()
                 if bot:
-                    runner = BotRunner(bot, slug)
+                    player_num = i + 1
+                    def make_debug_cb(pnum, session_id):
+                        def cb(msg):
+                            socketio.emit("bot_debug", {"player": pnum, "message": msg}, to=session_id)
+                        return cb
+                    runner = BotRunner(bot, slug, debug_callback=make_debug_cb(player_num, sid))
                     self.agents.append(runner)
                 else:
                     socketio.emit(

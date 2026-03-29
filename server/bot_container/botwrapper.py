@@ -5,6 +5,11 @@ import importlib.util
 
 BOT_PATH = "/bot/bot.py"
 
+# Save real stdout for protocol, redirect print() to stderr so bot scripts
+# can use print() for debug output without corrupting the JSON protocol
+_proto = sys.stdout
+sys.stdout = sys.stderr
+
 
 def load_agent():
     try:
@@ -47,8 +52,8 @@ def main():
         try:
             action = agent.getAction(inputs)
 
-            print(json.dumps(action+[c]))
-            sys.stdout.flush()
+            print(json.dumps(action+[c]), file=_proto)
+            _proto.flush()
 
         except Exception as e:
             error("Bot crashed", e)

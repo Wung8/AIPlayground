@@ -10,5 +10,5 @@ class Agent:
         ball_velocity = inputs["ball_velocity"]
 
         action = [-1, 0]
-
+        print('left')
         return action

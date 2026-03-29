@@ -14,7 +14,7 @@ from server import app
 class BotRunner:
     default_action = [0 for i in range(10)]
 
-    def __init__(self, bot, slug, fps=20):
+    def __init__(self, bot, slug, fps=20, debug_callback=None):
         path = os.path.join(
             app.root_path,
             "data",
@@ -24,7 +24,7 @@ class BotRunner:
             bot.name + ".py"
         )
 
-        self.ft = 1/fps
+        self.ft = 1/fps + 0.1
         self.container_name = f"bot_{uuid.uuid4().hex}"
         self.proc = subprocess.Popen(
             [
@@ -64,17 +64,16 @@ class BotRunner:
         self.read_queue = queue.Queue()
         self.read_thread = threading.Thread(target=read_stdout, args=(self.read_queue,), daemon=True)
         self.read_thread.start()
-        '''
-        def read_stderr(q):
+
+        def read_stderr():
             while True:
                 line = self.proc.stderr.readline()
                 if not line and self.proc.poll() is not None:
                     break
-                q.put(line)
+                if line and debug_callback:
+                    debug_callback(line.rstrip("\n"))
 
-        self.err_queue = queue.Queue()
-        threading.Thread(target=read_stderr, args=(self.err_queue,), daemon=True).start()
-        '''
+        threading.Thread(target=read_stderr, daemon=True).start()
 
         self.buffer = [0 for i in range(20)]
         self.buffer_idx = 0

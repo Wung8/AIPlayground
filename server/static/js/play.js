@@ -86,6 +86,8 @@ if (resetBtn) {
 
 function reset() {
   waitingForState = true;
+  const debugBox = document.getElementById("debugBox");
+  if (debugBox) debugBox.textContent = "";
 
   const inputs = document.querySelectorAll(".play-input");
   const players = [];
@@ -324,6 +326,9 @@ function reset() {
   function renderRows(rows) {
     browseList.innerHTML = "";
     rows.forEach(row => browseList.appendChild(row));
+
+    const emptyMsg = document.getElementById("browseEmpty");
+    if (emptyMsg) emptyMsg.style.display = rows.length === 0 ? "block" : "none";
   }
 
   function applyFiltersAndSort() {
@@ -439,6 +444,15 @@ document.addEventListener("click", async function (e) {
 
 socket.on("bot_error", (data) => {
   showBotError(data.message);
+});
+
+socket.on("bot_debug", (data) => {
+  if (!debugEnabled) return;
+  const debugBox = document.getElementById("debugBox");
+  if (debugBox) {
+    debugBox.textContent += `[P${data.player}] ${data.message}\n`;
+    debugBox.scrollTop = debugBox.scrollHeight;
+  }
 });
 
 function showBotError(message) {
@@ -557,18 +571,13 @@ socket.on("state", (state) => {
 
   draw(ctx, state);
 
-  if (debugEnabled) {
-    const debugBox = document.getElementById("debugBox");
-    if (debugBox) {
-      debugBox.textContent = JSON.stringify(state, null, 2);
-    }
-  }
 });
 
 const chkDebug = document.getElementById("chkDebug");
 if (chkDebug) {
-  chkDebug.addEventListener("change", (e) => {
-    debugEnabled = e.target.checked;
+  chkDebug.addEventListener("click", () => {
+    debugEnabled = !debugEnabled;
+    chkDebug.textContent = debugEnabled ? "Hide Debug" : "Show Debug";
   });
 }
 
