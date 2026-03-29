@@ -22,22 +22,28 @@
 
   --rule: rgb(31, 84, 87);
 
-  --gold: rgb(184, 168, 116);
-  --gold-dim: rgba(184, 168, 116, 0.35);
+  --gold: rgb(210, 176, 106);
+  --gold-dim: rgba(210, 176, 106, 0.35);
   --brown: rgb(141, 124, 95); /* for stars */
 
   --nav-text: rgb(128, 168, 176);
 
-  --text-strong: rgba(255,255,255,0.88);
-  --text: rgba(255,255,255,0.62);
-  --text-dim: rgba(255,255,255,0.30);
-  --text-mid: rgba(255,255,255,0.55);
+  /* consolidated text palette */
+  --c-gold: rgba(210, 176, 106, 0.90);
+  --c-strong: rgba(255, 255, 255, 0.88);
+  --c-body: rgba(255, 255, 255, 0.65);
+  --c-dim: rgba(255, 255, 255, 0.40);
+
+  --text-strong: var(--c-strong);
+  --text: var(--c-body);
+  --text-dim: var(--c-dim);
+  --text-mid: var(--c-dim);
 
   /* sidebar text */
-  --side-title: rgba(255,255,255,0.65);
-  --side-title-inactive: rgba(255,255,255,0.55);
-  --side-item: rgba(255,255,255,0.55);
-  --side-item-small: rgba(255,255,255,0.55);
+  --side-title: var(--c-body);
+  --side-title-inactive: var(--c-dim);
+  --side-item: var(--c-dim);
+  --side-item-small: var(--c-dim);
 
   /* layout */
   --sidebarW: 320px;
@@ -48,12 +54,17 @@
 
   --docPadLeft: 44px;
 
-  /* scale environments list only */
-  --ui-scale: 0.9;
 
   /* typography */
   --font-serif: 'Sora', sans-serif;
-  --font-mono: 'Inconsolata', monospace;
+
+  /* type scale */
+  --t-h1: 36px;
+  --t-h2: 25px;
+  --t-h3: 18px;
+  --t-body: 16px;
+  --t-secondary: 15px;
+  --t-label: 14px;
 }
 
 * { box-sizing: border-box; }
@@ -140,19 +151,8 @@ body{
 
 .nav-link:hover{ color: rgba(200, 220, 224, 0.95); }
 
-/* scale ONLY the environments list page */
-.content.env-page{
-  zoom: var(--ui-scale);
-  min-height: calc((100vh - var(--topH)) / var(--ui-scale));
-}
+.nav-link.is-active{ color: var(--c-strong); }
 
-@supports not (zoom: 1){
-  .content.env-page{
-    transform: scale(var(--ui-scale));
-    transform-origin: top left;
-    width: calc(100% / var(--ui-scale));
-  }
-}
 
 /* sidebar: float and do not get cut off */
 .sidebar{
@@ -246,7 +246,7 @@ body{
 }
 
 .side-title{
-  font-size: 22px;
+  font-size: var(--t-h3);
   font-weight: 500;
   color: var(--side-title);
   margin: 10px;
@@ -261,20 +261,20 @@ body{
   display: block;
   padding: 4px 0;
   margin-left: 10px;
-  font-size: 19px;
+  font-size: var(--t-secondary);
   color: var(--side-item);
   text-decoration: none;
 }
 
 .side-item.small{
-  font-size: 18px;
+  font-size: var(--t-label);
   color: var(--side-item-small);
   padding-left: 24px;
 }
 
-.side-item:hover{ color: rgba(255,255,255,0.65); }
+.side-item:hover{ color: var(--c-body); }
 
-.side-item.is-active{ color: rgba(255,255,255,0.86); }
+.side-item.is-active{ color: var(--c-strong); }
 
 
 /* global flash toasts */

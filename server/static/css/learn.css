@@ -10,9 +10,8 @@
 }
 
 .learn-section-title {
-  font-size: 24px;
-  font-family: var(--font-mono);
-  color: rgba(210,176,106,0.80);
+  font-size: var(--t-h3);
+  color: var(--c-gold);
   margin-bottom: 16px;
 }
 
@@ -23,17 +22,53 @@
 }
 
 .learn-empty {
-  font-size: 18px;
-  color: rgba(255,255,255,0.28);
+  font-size: var(--t-secondary);
+  color: var(--c-dim);
+}
+
+.learn-slideshow-items {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.learn-slideshow-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-decoration: none;
+  width: 240px;
+}
+
+.learn-slideshow-thumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
+}
+
+.learn-slideshow-card:hover .learn-slideshow-thumb {
+  border-color: rgba(255,255,255,0.30);
+}
+
+.learn-slideshow-label {
+  font-size: var(--t-label);
+  color: var(--c-body);
+}
+
+.learn-slideshow-card:hover .learn-slideshow-label {
+  color: var(--c-strong);
 }
 
 .learn-guide-link {
-  font-size: 18px;
-  color: rgba(255,255,255,0.75);
+  font-size: var(--t-body);
+  color: var(--c-body);
   text-decoration: none;
 }
 
 .learn-guide-link:hover {
-  color: #fff;
+  color: var(--c-strong);
   text-decoration: underline;
 }

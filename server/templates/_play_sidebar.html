@@ -7,21 +7,21 @@
     {% for i in range(num_players) %}
         <div class="play-field">
         <div class="play-label">P{{ i + 1 }}:</div>
-        <input 
-            class="play-input" 
-            id="p{{ i + 1 }}Input"
-            type="text" 
-            value="Human"
-        />
-        <button
-          type="button"
-          class="play-human-reset"
-          data-player-index="{{ i }}"
-          title="Set back to Human"
-          aria-label="Set player {{ i + 1 }} back to Human"
-        >
-          ×
-        </button>
+        <div class="play-input-wrap">
+          <input
+              class="play-input"
+              id="p{{ i + 1 }}Input"
+              type="text"
+              value="Human"
+          />
+          <button
+            type="button"
+            class="play-human-reset"
+            data-player-index="{{ i }}"
+            title="Set back to Human"
+            aria-label="Set player {{ i + 1 }} back to Human"
+          >×</button>
+        </div>
         </div>
     {% endfor %}
 
@@ -51,9 +51,8 @@
         <!-- browse tab -->
         <section class="play-pane is-active" role="tabpanel" id="tab-browse" aria-labelledby="tabBtnBrowse">
         <div class="play-search">
-            <div class="play-search-row">
-            <div class="play-search-label">Search bots:</div>
-            <input class="play-search-box-input" id="botSearch" type="text" placeholder="search" />
+            <div class="play-search-bar">
+            <input class="play-search-box-input" id="botSearch" type="text" placeholder="Search bots..." />
             </div>
 
             <div class="play-sort-row">
@@ -87,9 +86,6 @@
         <!-- my bots tab -->
         <section class="play-pane" role="tabpanel" id="tab-mine" aria-labelledby="tabBtnMine">
 
-        {% if current_user.is_authenticated %}
-        <div class="bot-upload-hint">Click to upload a bot</div>
-        {% endif %}
         <div class="play-botlist" id="myBotsList">
             {% if current_user.is_authenticated %}
                 {% for slot_index in range(3) %}
@@ -104,7 +100,7 @@
                                 </div>
                             </button>
 
-                            <button class="bot-delete-btn" type="button">X</button>
+                            <button class="bot-delete-btn" type="button">×</button>
                         </div>
                     {% else %}
                         <form
@@ -119,14 +115,17 @@
                             {{ form.agent_file(class="play-upload-input") }}
 
                             <button type="button" class="bot-select-btn play-upload-trigger">
-                                <div class="bot-upload-main">
-                                    <div class="bot-name">Upload Bot</div>
-                                </div>
+                                <div class="bot-name bot-empty-name">(empty)</div>
                                 <div class="bot-meta">
                                     <div class="bot-elo">{{env.metric}}: -</div>
                                     <div class="bot-by">by: {{ current_user.username }}</div>
                                 </div>
                             </button>
+                            <div class="bot-slot-icon">
+                              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6.5 8.5V1M3 4.5L6.5 1 10 4.5M1.5 11.5h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                              </svg>
+                            </div>
 
                         </form>
                     {% endif %}

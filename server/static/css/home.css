@@ -15,13 +15,13 @@
 .home-title {
   font-size: 62px;
   font-weight: 700;
-  color: rgba(210,176,106,0.92);
+  color: var(--c-gold);
   margin-bottom: 14px;
 }
 
 .home-subtitle {
   font-size: 22px;
-  color: rgba(255,255,255,0.70);
+  color: var(--c-body);
   line-height: 1.25;
   margin-bottom: 38px;
 }
@@ -38,7 +38,7 @@
   border: 1px solid rgba(255,255,255,0.50);
   padding: 14px 20px;
   font-size: 24px;
-  color: rgba(255,255,255,0.85);
+  color: var(--c-strong);
   text-decoration: none;
 }
 
@@ -49,7 +49,7 @@
   display: flex;
   gap: 28px;
   font-size: 18px;
-  color: rgba(255,255,255,0.50);
+  color: var(--c-dim);
 }
 
 .home-footer-link { color: inherit; text-decoration: none; }

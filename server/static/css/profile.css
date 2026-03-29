@@ -22,13 +22,13 @@
 
 .profile-name {
   font-size: 22px;
-  color: rgba(255,255,255,0.86);
+  color: var(--c-strong);
   margin-top: 6px;
 }
 
 .profile-rank {
   font-size: 18px;
-  color: rgba(255,255,255,0.55);
+  color: var(--c-dim);
   margin-top: 22px;
 }
 
@@ -52,7 +52,7 @@
 .pc-title {
   font-size: 30px;
   font-weight: 700;
-  color: rgba(210,176,106,0.92);
+  color: var(--c-gold);
   margin-bottom: 6px;
 }
 
@@ -61,26 +61,26 @@
   gap: 12px;
   align-items: center;
   font-size: 16px;
-  color: rgba(255,255,255,0.55);
+  color: var(--c-dim);
 }
 
-.pc-stars { color: rgba(210,176,106,0.70); letter-spacing: 1px; }
+.pc-stars { color: var(--c-gold); letter-spacing: 1px; }
 
 .pc-bot {
   font-size: 24px;
-  color: rgba(255,255,255,0.72);
+  color: var(--c-body);
 }
 
 .pc-edit {
   margin-left: 14px;
   font-size: 16px;
-  color: rgba(255,255,255,0.25);
+  color: var(--c-dim);
   text-decoration: none;
 }
 
 .pc-elo, .pc-rank {
   font-size: 18px;
-  color: rgba(255,255,255,0.55);
+  color: var(--c-dim);
   text-align: right;
 }
 

@@ -207,6 +207,7 @@ function reset() {
     if (!active) return;
 
     active.value = name;
+    updateResetBtn(activePlayerIdx);
     setActivePlayer(activePlayerIdx + 1);
   }
 
@@ -216,14 +217,24 @@ function reset() {
 
     input.value = "Human";
     setActivePlayer(idx);
+    updateResetBtn(idx);
+  }
+
+  function updateResetBtn(idx) {
+    const btn = resetButtons[idx];
+    if (!btn) return;
+    const val = (playerInputs[idx]?.value || "").trim();
+    btn.style.visibility = val === "Human" ? "hidden" : "visible";
   }
 
   ensureHighlightStyles();
   setActivePlayer(0);
+  resetButtons.forEach((_, idx) => updateResetBtn(idx));
 
   playerInputs.forEach((inp, idx) => {
     inp.addEventListener("focus", () => setActivePlayer(idx));
     inp.addEventListener("click", () => setActivePlayer(idx));
+    inp.addEventListener("input", () => updateResetBtn(idx));
   });
 
   resetButtons.forEach((btn) => {
