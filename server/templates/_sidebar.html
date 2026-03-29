@@ -3,7 +3,7 @@
     <div class="side-title">Environments</div>
     {% for e in environments %}
       <a
-        class="side-item small"
+        class="side-item small{% if env is defined and e.slug == env.slug %} is-active{% endif %}"
         href="{{ url_for('env_doc', slug=e.slug) }}"
       >
         {{ e.title }}
