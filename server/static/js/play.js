@@ -9,6 +9,7 @@ function getEnvSlug() {
 const ENV = getEnvSlug();
 
 let difficulty = "medium";
+let paused = false;
 const socket = io({
   transports: ["websocket"]
 });
@@ -527,7 +528,7 @@ const fps = 20;
 const frameDuration = 1000 / fps;
 
 function gameLoop(currentTime) {
-  if (currentTime - lastTime >= frameDuration) {
+  if (!paused && currentTime - lastTime >= frameDuration) {
     waitingForState = false;
     if (!waitingForState) {
       //console.log(currentTime - lastTime)
@@ -567,17 +568,31 @@ socket.on("connect", () => {
 socket.on("state", (state) => {
   waitingForState = false;
 
-  if (!draw) return;
+  if (paused || !draw) return;
 
   draw(ctx, state);
 
 });
 
+const btnPause = document.getElementById("btnPause");
+if (btnPause) {
+  btnPause.addEventListener("click", () => {
+    paused = !paused;
+    btnPause.textContent = paused ? "Resume" : "Pause";
+  });
+}
+
 const chkDebug = document.getElementById("chkDebug");
+const debugPanel = document.querySelector(".play-debug");
 if (chkDebug) {
   chkDebug.addEventListener("click", () => {
     debugEnabled = !debugEnabled;
     chkDebug.textContent = debugEnabled ? "Hide Debug" : "Show Debug";
+    if (debugPanel) debugPanel.classList.toggle("is-open", debugEnabled);
+    if (!debugEnabled && paused) {
+      paused = false;
+      if (btnPause) btnPause.textContent = "Pause";
+    }
   });
 }
 

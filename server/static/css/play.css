@@ -544,8 +544,19 @@
 
 .play-debug {
   margin-top: 18px;
-  display: grid;
+  display: none;
   justify-items: center;
+}
+
+.play-debug.is-open {
+  display: grid;
+}
+
+.play-debug-controls {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 6px;
 }
 
 .play-debug-box {
